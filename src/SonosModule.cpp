@@ -1,4 +1,5 @@
 #include "SonosModule.h"
+#include "SonosChannel.h"
 
 
 const std::string SonosModule::name()
@@ -11,6 +12,13 @@ const std::string SonosModule::version()
     // hides the module in the version output on the console, because the firmware version is sufficient.
     return "";
 }
+
+OpenKNX::Channel* SonosModule::createChannel(uint8_t _channelIndex /* this parameter is used in macros, do not rename */)
+{
+    SonosApi* sonosApi = new SonosApi("192.168.0.7");
+    return new SonosChannel(sonosApi);
+} 
+
 
 void SonosModule::init()
 {
