@@ -1,8 +1,10 @@
-#include "FileTransferModule.h"
 #include "Logic.h"
 #include "OpenKNX.h"
 #include "SonosModule.h"
+#ifdef ARDUINO_ARCH_RP2040
 //#include "UsbExchangeModule.h"
+#include "FileTransferModule.h"
+#endif
 
 void setup()
 {
@@ -10,8 +12,10 @@ void setup()
     openknx.init(firmwareRevision);
     openknx.addModule(1, openknxLogic);
     openknx.addModule(2, openknxSonosModule);
- //   openknx.addModule(3, openknxUsbExchangeModule);
+#ifdef ARDUINO_ARCH_RP2040
+    //openknx.addModule(3, openknxUsbExchangeModule);
     openknx.addModule(4, openknxFileTransferModule);
+#endif
     openknx.setup();
 }
 
