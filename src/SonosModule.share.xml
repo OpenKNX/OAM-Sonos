@@ -7,6 +7,12 @@
         <ApplicationProgram>
           <Static>
             <ParameterTypes>
+              <ParameterType Id="%AID%_PT-SonosName" Name="SonosName">
+                <TypeText SizeInBit="160" /> <!-- 20 characters -->
+              </ParameterType>
+              <ParameterType Id="%AID%_PT-SonosIPAddress" Name="SonosIPAddress">
+                <TypeIPAddress AddressType="HostAddress" />
+              </ParameterType>            
             </ParameterTypes>
             <Parameters>
             </Parameters>

@@ -7,7 +7,7 @@
     ApplicationVersion="1"
     ReplacesVersions="0"
     ApplicationRevision="0"
-    ProductName="Sonos Control"
+    ProductName="Sonos Steuerung"
     BusCurrent="30"
     BuildSuffix="-Dev"
     BuildSuffixText=" (Dev)"

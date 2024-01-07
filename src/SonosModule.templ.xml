@@ -7,17 +7,62 @@
         <ApplicationProgram>
           <Static>
             <Parameters>
+              <!-- Sonos Name -->
+              <Parameter Id="%AID%_P-%TT%%CC%001" Name="CH%C%SonosName" ParameterType="%AID%_PT-SonosName" Text="Name" Value="Sonos">
+              </Parameter>
+              <!-- Sonos IP -->
+              <Parameter Id="%AID%_P-%TT%%CC%002" Name="CH%C%SonosIPAddress" ParameterType="%AID%_PT-SonosIPAddress" Text="Sonos IP" Value="192.168.0.1%CC%">
+                <Memory CodeSegment="%AID%_RS-04-00000" Offset="0" BitOffset="0" />
+              </Parameter>
             </Parameters>
             <ParameterRefs>
+              <!-- Sonos Name -->
+              <ParameterRef Id="%AID%_P-%TT%%CC%001_R-%TT%%CC%00101" RefId="%AID%_P-%TT%%CC%001" />
+               <!-- Sonos IP -->
+              <ParameterRef Id="%AID%_P-%TT%%CC%002_R-%TT%%CC%00201" RefId="%AID%_P-%TT%%CC%002" />  
             </ParameterRefs>
             <ComObjectTable>
+              <!-- Volume Percentage -->
+              <ComObject Id="%AID%_O-%TT%%CC%001" Number="%K1%" Name="CH%C%Volume"             Text="%C% Lautstärke"               FunctionText="%C% Lautstärke setzen"        ObjectSize="1 Byte" DatapointType="DPST-5-1" TransmitFlag="Disabled" ReadFlag="Disabled" WriteFlag="Enabled"  UpdateFlag="Disabled" CommunicationFlag="Enabled" ReadOnInitFlag="Disabled" />         
+              <!-- Volume Percentage State -->
+              <ComObject Id="%AID%_O-%TT%%CC%002" Number="%K2%" Name="CH%C%ValumeState"        Text="%C% Lautstärke Status"        FunctionText="%C% Lautstärke Status"        ObjectSize="1 Byte" DatapointType="DPST-5-1" TransmitFlag="Enabled"  ReadFlag="Enabled"  UpdateFlag="Disabled" WriteFlag="Disabled" CommunicationFlag="Enabled" ReadOnInitFlag="Disabled" />  
+              <!-- Group Volume Percentage -->
+              <ComObject Id="%AID%_O-%TT%%CC%003" Number="%K3%" Name="CH%C%GroupVolume"        Text="%C% Gruppenlautstärke"        FunctionText="%C% Gruppenlautstärke setzen" ObjectSize="1 Byte" DatapointType="DPST-5-1" TransmitFlag="Disabled" ReadFlag="Disabled" WriteFlag="Enabled"  UpdateFlag="Disabled" CommunicationFlag="Enabled" ReadOnInitFlag="Disabled" />         
+              <!-- Group Volume Percentage State -->
+              <ComObject Id="%AID%_O-%TT%%CC%004" Number="%K4%" Name="CH%C%GroupVolumeState"   Text="%C% Gruppenlautstärke Status" FunctionText="%C% Gruppenlautstärke Status" ObjectSize="1 Byte" DatapointType="DPST-5-1" TransmitFlag="Enabled"  ReadFlag="Enabled"  UpdateFlag="Disabled" WriteFlag="Disabled" CommunicationFlag="Enabled" ReadOnInitFlag="Disabled" />  
             </ComObjectTable>
             <ComObjectRefs>
+              <!-- Volume Percentage -->
+              <ComObjectRef Id="%AID%_O-%TT%%CC%001_R-%TT%%CC%00101" RefId="%AID%_O-%TT%%CC%001" Text="%C%: Lautstärke"               FunctionText="%C% Lautstärke Setzten"            TextParameterRefId="%AID%_P-%TT%%CC%001_R-%TT%%CC%00101" />
+              <!-- Volume Percentage State -->
+              <ComObjectRef Id="%AID%_O-%TT%%CC%002_R-%TT%%CC%00201" RefId="%AID%_O-%TT%%CC%002" Text="%C%: Lautstärke Status"        FunctionText="%C% Lautstärke Rückmeldung"        TextParameterRefId="%AID%_P-%TT%%CC%001_R-%TT%%CC%00101" />
+              <!-- Group Volume Percentage -->
+              <ComObjectRef Id="%AID%_O-%TT%%CC%003_R-%TT%%CC%00301" RefId="%AID%_O-%TT%%CC%003" Text="%C%: Gruppenlautstärke"        FunctionText="%C% Gruppenlautstärke Setzten"     TextParameterRefId="%AID%_P-%TT%%CC%001_R-%TT%%CC%00101" />
+              <!-- Group Volume Percentage State -->
+              <ComObjectRef Id="%AID%_O-%TT%%CC%004_R-%TT%%CC%00401" RefId="%AID%_O-%TT%%CC%004" Text="%C%: Gruppenlautstärke Status" FunctionText="%C% Gruppenlautstärke Rückmeldung" TextParameterRefId="%AID%_P-%TT%%CC%001_R-%TT%%CC%00101" />
             </ComObjectRefs>
           </Static>
           <Dynamic>
             <ChannelIndependentBlock> 
-            
+              <ParameterBlock Id="%AID%_PB-%C%1" Name="Sonos%C%Page" Text="Sonos %C%: {{0: ...}}" TextParameterRefId="%AID%_P-%TT%%CC%001_R-%TT%%CC%00101" Icon="speaker" HelpContext="Empty">
+                <Channel Id="%AID%_CH-SON%CC%" Name="f%CC%SON" Number="SON%CC%" Text="Sonsos %CC%: {{0: ...}}" TextParameterRefId="%AID%_P-%TT%%CC%001_R-%TT%%CC%00101">
+                  <ParameterBlock Id="%AID%_PB-%TT%%CC%01" Name="SON%C%Wrapper" Inline="true">
+                    <ParameterSeparator Id="%AID%_PS-nnn" Text="Sonos Konfiguration" UIHint="Headline" />
+                      <!-- Parameter Sonos Name -->
+                      <ParameterRefRef RefId="%AID%_P-%TT%%CC%001_R-%TT%%CC%00101" /> 
+                      <!-- Parameter Sonos IP -->
+                      <ParameterRefRef RefId="%AID%_P-%TT%%CC%002_R-%TT%%CC%00201" /> 
+                      <!-- KO Volume Percentage -->
+                      <ComObjectRefRef RefId="%AID%_O-%TT%%CC%001_R-%TT%%CC%00101" />
+                      <!-- KO Volume Percentage State -->
+                      <ComObjectRefRef RefId="%AID%_O-%TT%%CC%002_R-%TT%%CC%00201" />
+                      <!-- KO Group Volume Percentage -->
+                      <ComObjectRefRef RefId="%AID%_O-%TT%%CC%003_R-%TT%%CC%00301" />
+                      <!-- KO Group Volume Percentage State -->
+                      <ComObjectRefRef RefId="%AID%_O-%TT%%CC%004_R-%TT%%CC%00401" />
+                  </ParameterBlock>
+                </Channel>
+              </ParameterBlock>
             </ChannelIndependentBlock>
           </Dynamic>
         </ApplicationProgram>
