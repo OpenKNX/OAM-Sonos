@@ -1,18 +1,38 @@
 #include "SonosChannel.h"
 
-#define KO_VOLUME           KoSON_VOLUME_ , DPT_Scaling
-#define KO_VOLUME_FEEDBACK  KoSON_VOLUME_FEEDBACK_ , DPT_Scaling
-
-SonosChannel::SonosChannel(SonosApi* sonosApi)
+SonosChannel::SonosChannel(SonosApi& sonosApi)
     : _sonosApi(sonosApi)
 {
+    auto parameterIP = (uint32_t) ParamSON_CHSonosIPAddress;
+    uint32_t arduinoIP = ((parameterIP & 0xFF000000) >> 24) | ((parameterIP & 0x00FF0000) >> 8) | ((parameterIP & 0x0000FF00) << 8) | ((parameterIP & 0x000000FF) << 24); 
+    _speakerIP = arduinoIP;
+    _name = _speakerIP.toString();
 }
 
 const std::string SonosChannel::name() 
 {
-    return _sonosApi->getName();
+    return std::string(_name.c_str());
 }
 const std::string SonosChannel::logPrefix()
 {
-    return "SonosChannel";
+    return "Sonos.Channel";
+}
+
+void SonosChannel::loop1()
+{
+    _volumeController.loop1(_sonosApi, _speakerIP, _channelIndex);
+}
+
+void SonosChannel::processInputKo(GroupObject &ko)
+{
+    switch (SON_KoCalcIndex(ko.asap()))
+    {
+        case SON_KoCHVolume:
+        {
+            uint8_t volume = ko.value(DPT_Scaling);
+            logDebugP("Set volume %d", volume);
+            _volumeController.setVolume(volume);
+            break;
+        }
+    }
 }

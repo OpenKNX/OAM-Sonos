@@ -1,14 +1,16 @@
 #pragma once
 #include "OpenKNX.h"
+#include "SonosUPnP.h"
 
 class SonosApi
 {
   private:
-    const char* _ipAdress;
-
+    SonosUPnP* _sonosUpn;
+    void ethernetConnectionError();
   public:
-    std::string getName();
-    SonosApi(const char* ipAdress);
-    void setVolume(uint8_t volume);
-    uint8_t getVolume();
+    SonosApi();
+    void setVolume(IPAddress speakerIP, uint8_t volume);
+    uint8_t getVolume(IPAddress speakerIP);
+    void setGroupVolume(IPAddress speakerIP, uint8_t volume);
+    uint8_t getGroupVolume(IPAddress speakerIP);
 };

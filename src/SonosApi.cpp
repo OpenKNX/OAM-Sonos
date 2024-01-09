@@ -1,20 +1,19 @@
 #include "SonosApi.h"
+#include "WiFiClient.h"
 
-SonosApi::SonosApi(const char* ipAdress)
-: _ipAdress(ipAdress)
+SonosApi::SonosApi()
 {
+    WiFiClient wifiClient;
+    _sonosUpn = new SonosUPnP(wifiClient, []() { } );
 }
 
-std::string SonosApi::getName()
+void SonosApi::setVolume(IPAddress speakerIP, uint8_t volume)
 {
-    return _ipAdress;
+    _sonosUpn->setVolume(speakerIP, volume); 
 }
 
-void SonosApi::setVolume(uint8_t volume)
-{
-}
 
-uint8_t SonosApi::getVolume()
+uint8_t SonosApi::getVolume(IPAddress speakerIP)
 {
-    return 50;
+    return  _sonosUpn->getVolume(speakerIP);
 }

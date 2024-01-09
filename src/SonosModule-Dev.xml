@@ -4,8 +4,8 @@
   <op:ETS
     OpenKnxId="0xAE"
     ApplicationNumber="0x2B"
-    ApplicationVersion="1"
-    ReplacesVersions="0"
+    ApplicationVersion="2"
+    ReplacesVersions="1"
     ApplicationRevision="0"
     ProductName="Sonos Steuerung"
     BusCurrent="30"
@@ -16,6 +16,12 @@
   <op:define prefix="BASE" ModuleType="10"
     share="../lib/OGM-Common/src/Common.share.xml">
     <op:verify File="../lib/OGM-Common/library.json" ModuleVersion="16" /> 
+  </op:define>
+
+  <op:config name="%NET_WifiConfig%" value="1" /> 
+  <op:define prefix="NET" ModuleType="11" 
+    share="../lib/OFM-Network/src/Network.share.xml">
+    <op:verify File="../lib/OFM-Network/library.json" ModuleVersion="2" /> 
   </op:define>
 
   <op:define prefix="SON" ModuleType="20"

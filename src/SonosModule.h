@@ -1,16 +1,23 @@
 #pragma once
 #include "OpenKNX.h"
 #include "ChannelOwnerModule.h"
+#include "SonosApi.h"
+
+#ifndef OPENKNX_DUALCORE
+#error Sonos Module requires OPENKNX_DUALCORE
+#endif
 
 class SonosModule : public ChannelOwnerModule
 {
+    SonosApi* _sonosApi;
+    bool _channelSetupCalled = false;
+    volatile bool _channelSetup1Called = false;
   public:
-    void loop(bool configured) override;
-    void setup(bool configured) override;
-#ifdef OPENKNX_DUALCORE
-    void loop1(bool configured) override;
-    void setup1(bool configured) override;
-#endif
+    SonosModule();
+
+    void setup() override;
+    void setup1() override;
+
     const std::string name() override;
     const std::string version() override;
     void processInputKo(GroupObject &ko) override;
@@ -20,7 +27,8 @@ class SonosModule : public ChannelOwnerModule
     void showHelp() override;
     void savePower() override;
     bool restorePower() override;
-    void init() override;
+    void loop() override;
+    void loop1() override;
     bool processCommand(const std::string cmd, bool diagnoseKo) override;
   protected:
     OpenKNX::Channel* createChannel(uint8_t _channelIndex /* this parameter is used in macros, do not rename */) override; 
