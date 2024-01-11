@@ -4,7 +4,7 @@
 
 SonosModule::SonosModule()
  : ChannelOwnerModule(SON_ChannelCount)
-{
+{ 
 
 }
 
@@ -18,13 +18,17 @@ const std::string SonosModule::version()
     // hides the module in the version output on the console, because the firmware version is sufficient.
     return "";
 }
+SonosChannel* firstChannel = nullptr;
 
 OpenKNX::Channel* SonosModule::createChannel(uint8_t _channelIndex /* this parameter is used in macros, do not rename */)
 {
     if (_channelIndex > 0)
         return nullptr;
 
-    return new SonosChannel(*_sonosApi);
+    auto channel = new SonosChannel(*_sonosApi);
+    if (firstChannel == nullptr)
+        firstChannel = channel;
+    return channel;
 } 
 
 
@@ -68,21 +72,17 @@ void SonosModule::processInputKo(GroupObject &ko)
     ChannelOwnerModule::processInputKo(ko);
 }
 
+
 bool SonosModule::processCommand(const std::string cmd, bool diagnoseKo)
 {
-    // if (cmd.substr(0, 5) == "play " && cmd.length() > 5)
-    // {
-    //     uint16_t file = std::stoi(cmd.substr(5, 10));
-    //     if (file > 0)
-    //     {
-    //         logInfoP("Manually play the file %i", file);
-    //         logIndentUp();
-    //         play(file, 0, 5);
-    //         logIndentDown();
-
-    //         return true;
-    //     }
-    // }
+    if (firstChannel == nullptr)
+        return false;
+    if (cmd == "test")
+    {
+        firstChannel->test();
+    
+       return true;
+    }
 
     return false;
 }
@@ -106,7 +106,7 @@ bool SonosModule::restorePower()
 {
     return true;
 }
-unsigned long x = 0;
+
 void SonosModule::loop()
 {
     
@@ -135,7 +135,7 @@ void SonosModule::loop1()
         return;
     if (!_channelSetup1Called)
     {
-        ChannelOwnerModule::setup();
+        ChannelOwnerModule::setup1();
         _channelSetup1Called = true;
     }
     ChannelOwnerModule::loop1();

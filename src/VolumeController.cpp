@@ -2,10 +2,12 @@
 
 void VolumeController::loop1(SonosApi& sonosApi, IPAddress speakerIP, uint8_t _channelIndex)
 {
+
     if (_targetVolume != 255)
     {
-        sonosApi.setVolume(speakerIP, _targetVolume);
+        auto volume = _targetVolume;
         _targetVolume = 255;
+        sonosApi.setVolume(speakerIP, volume);
     }
 }
 

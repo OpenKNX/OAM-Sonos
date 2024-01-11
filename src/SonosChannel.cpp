@@ -17,7 +17,6 @@ const std::string SonosChannel::logPrefix()
 {
     return "Sonos.Channel";
 }
-
 void SonosChannel::loop1()
 {
     _volumeController.loop1(_sonosApi, _speakerIP, _channelIndex);
@@ -35,4 +34,9 @@ void SonosChannel::processInputKo(GroupObject &ko)
             break;
         }
     }
+}
+
+void SonosChannel::test()
+{
+    _volumeController.setVolume(3);
 }

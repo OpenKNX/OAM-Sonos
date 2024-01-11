@@ -4,7 +4,7 @@
 
 class VolumeController
 {
-    uint8_t _targetVolume = 255;
+    volatile uint8_t _targetVolume = 255;
     uint8_t _currentVolume = 255;
     unsigned long _lastVolumeRead = 0;
 

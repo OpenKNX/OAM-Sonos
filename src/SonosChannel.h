@@ -18,5 +18,6 @@ class SonosChannel : public OpenKNX::Channel, public KoOwner
         SonosChannel(SonosApi& sonosApi);
         const std::string name() override;
         const std::string logPrefix() override;
+        void test();
         
 };

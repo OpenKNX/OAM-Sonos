@@ -4,11 +4,12 @@
 
 class SonosApi
 {
-  private:
-    SonosUPnP* _sonosUpn;
-    void ethernetConnectionError();
+    const std::string logPrefix()
+    {
+      return "Sonos.API";
+    }
+    int postAction(IPAddress speakerIP, const char* soapUrl, const char* soapAction, const char* action, String parameterXml);
   public:
-    SonosApi();
     void setVolume(IPAddress speakerIP, uint8_t volume);
     uint8_t getVolume(IPAddress speakerIP);
     void setGroupVolume(IPAddress speakerIP, uint8_t volume);
