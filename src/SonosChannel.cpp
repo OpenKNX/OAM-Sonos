@@ -9,6 +9,11 @@ SonosChannel::SonosChannel(SonosApi& sonosApi)
     _name = _speakerIP.toString();
 }
 
+const IPAddress& SonosChannel::speakerIP()
+{
+    return _speakerIP;
+}
+
 const std::string SonosChannel::name() 
 {
     return std::string(_name.c_str());
@@ -19,6 +24,7 @@ const std::string SonosChannel::logPrefix()
 }
 void SonosChannel::loop1()
 {
+    _sonosApi.loop();
     _volumeController.loop1(_sonosApi, _speakerIP, _channelIndex);
 }
 
@@ -43,10 +49,10 @@ bool SonosChannel::processCommand(const std::string cmd, bool diagnoseKo)
         Serial.println();
         _volumeController.setVolume(3);
     }
-    else if (cmd == "subscribe")
+    else if (cmd == "getvol")
     {
         Serial.println();
-        _sonosApi.subscribeAVTransport(_speakerIP);
+        Serial.println(_sonosApi.getVolume());
     }
     else
         return false;

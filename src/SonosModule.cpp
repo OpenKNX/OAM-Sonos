@@ -26,7 +26,9 @@ OpenKNX::Channel *SonosModule::createChannel(uint8_t _channelIndex /* this param
     if (_channelIndex > 0)
         return nullptr;
 
-    auto channel = new SonosChannel(*_sonosApi);
+    auto sonosApi = new SonosApi();
+    auto channel = new SonosChannel(*sonosApi);
+    sonosApi->init(_webServer, channel->speakerIP(), _channelIndex);
     if (firstChannel == nullptr)
         firstChannel = channel;
     return channel;
@@ -34,8 +36,6 @@ OpenKNX::Channel *SonosModule::createChannel(uint8_t _channelIndex /* this param
 
 void SonosModule::setup()
 {
-    _sonosApi = new SonosApi();
-
     WiFi.mode(WIFI_STA);
     WiFi.begin((const char *)ParamNET_WifiSSID, (const char *)ParamNET_WifiPassword);
     // Do not call baseclass, baseclass will be called after first WiFi connection
@@ -107,50 +107,12 @@ void SonosModule::loop()
     if (!_channelSetupCalled)
     {
         logInfoP("Wifi connected. IP: %s", WiFi.localIP().toString());
+        _webServer = new AsyncWebServer(80);
+  
         ChannelOwnerModule::setup();
         _channelSetupCalled = true;
 
-        webServer = new AsyncWebServer(80);
-        //  webServer->enableDelay(true);
-        // serve pages
-        // webServer->on("/notify", HTTPMethod::HTTP_NOTIFY, [=]()
-
-        webServer->onNotFound([=](AsyncWebServerRequest *request) {
-            //"NOTIFY"
-            Serial.println(request->client()->remoteIP());
-            Serial.println(request->method());
-            Serial.print(request->methodToString());
-            Serial.print(" ");
-            Serial.println(request->url());
-            Serial.print("Args: ");
-            Serial.println(request->args());
-            for (int i = 0; i < request->args(); i++)
-            {
-                Serial.print(request->argName(i));
-                Serial.print(": ");
-                Serial.println(request->arg(i));
-                Serial.println();
-            }
-
-            Serial.print("Headers: ");
-            Serial.println(request->headers());
-            for (int i = 0; i < request->headers(); i++)
-            {
-                Serial.print(request->headerName(i));
-                Serial.print(": ");
-                Serial.println(request->header(i));
-                Serial.println();
-            }
-
-            Serial.print("Content Length: ");
-            Serial.println(request->contentLength());
-           
-
-            //  request->("Server", WiFi.localIP().toString());
-            request->send(200);
-        });
-
-        webServer->begin();
+        _webServer->begin();
     }
     // if (webServer != nullptr)
     //     webServer->handleClient();
