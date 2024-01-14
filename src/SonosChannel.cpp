@@ -36,7 +36,19 @@ void SonosChannel::processInputKo(GroupObject &ko)
     }
 }
 
-void SonosChannel::test()
+bool SonosChannel::processCommand(const std::string cmd, bool diagnoseKo)
 {
-    _volumeController.setVolume(3);
+    if (cmd == "setvol")
+    {
+        Serial.println();
+        _volumeController.setVolume(3);
+    }
+    else if (cmd == "subscribe")
+    {
+        Serial.println();
+        _sonosApi.subscribeAVTransport(_speakerIP);
+    }
+    else
+        return false;
+    return true;
 }

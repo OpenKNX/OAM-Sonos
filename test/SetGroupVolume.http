@@ -1,0 +1,11 @@
+POST http://192.168.0.7:1400/MediaRenderer/GroupRenderingControl/Control HTTP/1.1
+SOAPAction: urn:schemas-upnp-org:service:GroupRenderingControl:1#SetGroupVolume
+
+<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+  <s:Body>
+    <u:SetGroupVolume xmlns:u="urn:schemas-upnp-org:service:GroupRenderingControl:1">
+      <InstanceID>0</InstanceID>
+      <DesiredVolume>3</DesiredVolume>
+    </u:SetGroupVolume>
+  </u:Body>
+</s:Envelope>

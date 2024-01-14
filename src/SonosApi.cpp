@@ -1,7 +1,8 @@
 #include "SonosApi.h"
 #include "WiFiClient.h"
+#include "WiFi.h"
 
-void WriteSoapHttpCall(Stream& stream, IPAddress ipAddress, const char* soapUrl, const char* soapAction, const char* action, String parameterXml)
+void SonosApi::writeSoapHttpCall(Stream& stream, IPAddress& ipAddress, const char* soapUrl, const char* soapAction, const char* action, String parameterXml)
 {
     uint16_t contentLength = 200 + strlen(action) * 2 + strlen(soapAction) + parameterXml.length();
     // HTTP Method, URL, version
@@ -36,7 +37,7 @@ void WriteSoapHttpCall(Stream& stream, IPAddress ipAddress, const char* soapUrl,
 
 
 
-int SonosApi::postAction(IPAddress speakerIP, const char* soapUrl, const char* soapAction, const char* action, String parameterXml)
+int SonosApi::postAction(IPAddress& speakerIP, const char* soapUrl, const char* soapAction, const char* action, String parameterXml)
 {
     WiFiClient wifiClient;
     if (wifiClient.connect(speakerIP, 1400) != true)
@@ -45,8 +46,8 @@ int SonosApi::postAction(IPAddress speakerIP, const char* soapUrl, const char* s
         return -1;
     }
    
-    WriteSoapHttpCall(Serial, speakerIP, soapUrl, soapAction, action, parameterXml);
-    WriteSoapHttpCall(wifiClient, speakerIP, soapUrl, soapAction, action, parameterXml);
+    writeSoapHttpCall(Serial, speakerIP, soapUrl, soapAction, action, parameterXml);
+    writeSoapHttpCall(wifiClient, speakerIP, soapUrl, soapAction, action, parameterXml);
    
     auto start = millis();
     while (!wifiClient.available())
@@ -71,7 +72,7 @@ int SonosApi::postAction(IPAddress speakerIP, const char* soapUrl, const char* s
 const char* renderingControlUrl PROGMEM = "/MediaRenderer/RenderingControl/Control";
 const char* renderingControlSoapAction PROGMEM = "urn:schemas-upnp-org:service:RenderingControl:1";
 
-void SonosApi::setVolume(IPAddress speakerIP, uint8_t volume)
+void SonosApi::setVolume(IPAddress& speakerIP, uint8_t volume)
 {
     String parameter;
     parameter += F("<Channel>Master</Channel>");
@@ -82,7 +83,63 @@ void SonosApi::setVolume(IPAddress speakerIP, uint8_t volume)
 }
 
 
-uint8_t SonosApi::getVolume(IPAddress speakerIP)
+uint8_t SonosApi::getVolume(IPAddress& speakerIP)
 {
    return 0;
+}
+
+void SonosApi::writeSubscribeHttpCall(Stream& stream, IPAddress& ipAddress, const char* soapUrl)
+{
+    auto ip = ipAddress.toString();
+    // HTTP Method, URL, version
+    stream.print("SUBSCRIBE ");
+    stream.print(soapUrl);
+    stream.print(" HTTP/1.1\r\n");
+    // Header
+    stream.print("HOST: ");
+    stream.print(ip);
+    stream.print("\r\n");
+    stream.print("callback: <http://");
+    stream.print(WiFi.localIP());
+    stream.print("/>\r\n");
+    stream.print("NT: upnp:event\r\n");
+    stream.print("Timeout: Second-3600\r\n");
+    stream.print("Content-Length: 0\r\n");
+    stream.print("\r\n");
+}
+
+int SonosApi::subscribeEvents(IPAddress& speakerIP, const char* soapUrl)
+{
+    WiFiClient wifiClient;
+    if (wifiClient.connect(speakerIP, 1400) != true)
+    {
+        logErrorP("connect to %s:1400 failed", speakerIP.toString());
+        return -1;
+    }
+   
+    writeSubscribeHttpCall(Serial, speakerIP, soapUrl);
+    writeSubscribeHttpCall(wifiClient, speakerIP, soapUrl);
+
+    auto start = millis();
+    while (!wifiClient.available())
+    {
+        if (millis() - start > 3000)
+        {
+            return -2;
+        }
+    }
+    while (auto c = wifiClient.read()) 
+    {
+        if (c == -1)
+            break;
+        Serial.print((char) c);
+    }
+    Serial.println();
+    wifiClient.stop();
+    return 0;
+}
+
+void SonosApi::subscribeAVTransport(IPAddress& ipAddress)
+{
+    subscribeEvents(ipAddress, "/MediaRenderer/AVTransport/Event");
 }

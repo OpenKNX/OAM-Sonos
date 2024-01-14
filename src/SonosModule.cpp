@@ -1,11 +1,12 @@
 #include "SonosModule.h"
 #include "SonosChannel.h"
 
+#include <AsyncTCP.h>
+#include <ESPAsyncWebServer.h>
 
 SonosModule::SonosModule()
- : ChannelOwnerModule(SON_ChannelCount)
-{ 
-
+    : ChannelOwnerModule(SON_ChannelCount)
+{
 }
 
 const std::string SonosModule::name()
@@ -18,9 +19,9 @@ const std::string SonosModule::version()
     // hides the module in the version output on the console, because the firmware version is sufficient.
     return "";
 }
-SonosChannel* firstChannel = nullptr;
+SonosChannel *firstChannel = nullptr;
 
-OpenKNX::Channel* SonosModule::createChannel(uint8_t _channelIndex /* this parameter is used in macros, do not rename */)
+OpenKNX::Channel *SonosModule::createChannel(uint8_t _channelIndex /* this parameter is used in macros, do not rename */)
 {
     if (_channelIndex > 0)
         return nullptr;
@@ -29,12 +30,11 @@ OpenKNX::Channel* SonosModule::createChannel(uint8_t _channelIndex /* this param
     if (firstChannel == nullptr)
         firstChannel = channel;
     return channel;
-} 
-
+}
 
 void SonosModule::setup()
-{  
-     _sonosApi = new SonosApi();
+{
+    _sonosApi = new SonosApi();
 
     WiFi.mode(WIFI_STA);
     WiFi.begin((const char *)ParamNET_WifiSSID, (const char *)ParamNET_WifiPassword);
@@ -48,11 +48,9 @@ void SonosModule::setup1()
 
 void SonosModule::processBeforeRestart()
 {
-
 }
 void SonosModule::processBeforeTablesUnload()
 {
-
 }
 
 void SonosModule::processInputKo(GroupObject &ko)
@@ -61,10 +59,9 @@ void SonosModule::processInputKo(GroupObject &ko)
     uint16_t asap = ko.asap();
     switch (asap)
     {
-        // case XXX:
-        //     processInputKoDayNight(ko);
-        //     break;
-
+            // case XXX:
+            //     processInputKoDayNight(ko);
+            //     break;
 
         default:
             break;
@@ -72,34 +69,25 @@ void SonosModule::processInputKo(GroupObject &ko)
     ChannelOwnerModule::processInputKo(ko);
 }
 
-
 bool SonosModule::processCommand(const std::string cmd, bool diagnoseKo)
 {
     if (firstChannel == nullptr)
         return false;
-    if (cmd == "test")
-    {
-        firstChannel->test();
-    
-       return true;
-    }
 
-    return false;
+    return firstChannel->processCommand(cmd, diagnoseKo);
 }
 
 void SonosModule::showHelp()
 {
-//    openknx.console.printHelpLine("play XXX", "Manually play the file");
+    //    openknx.console.printHelpLine("play XXX", "Manually play the file");
 }
 
 void SonosModule::showInformations()
 {
-    
 }
 
 void SonosModule::savePower()
 {
-
 }
 
 bool SonosModule::restorePower()
@@ -107,9 +95,10 @@ bool SonosModule::restorePower()
     return true;
 }
 
+AsyncWebServer *webServer;
 void SonosModule::loop()
 {
-    
+
     bool connected = WiFi.status() == WL_CONNECTED;
     if (!connected)
     {
@@ -120,7 +109,51 @@ void SonosModule::loop()
         logInfoP("Wifi connected. IP: %s", WiFi.localIP().toString());
         ChannelOwnerModule::setup();
         _channelSetupCalled = true;
+
+        webServer = new AsyncWebServer(80);
+        //  webServer->enableDelay(true);
+        // serve pages
+        // webServer->on("/notify", HTTPMethod::HTTP_NOTIFY, [=]()
+
+        webServer->onNotFound([=](AsyncWebServerRequest *request) {
+            //"NOTIFY"
+            Serial.println(request->client()->remoteIP());
+            Serial.println(request->method());
+            Serial.print(request->methodToString());
+            Serial.print(" ");
+            Serial.println(request->url());
+            Serial.print("Args: ");
+            Serial.println(request->args());
+            for (int i = 0; i < request->args(); i++)
+            {
+                Serial.print(request->argName(i));
+                Serial.print(": ");
+                Serial.println(request->arg(i));
+                Serial.println();
+            }
+
+            Serial.print("Headers: ");
+            Serial.println(request->headers());
+            for (int i = 0; i < request->headers(); i++)
+            {
+                Serial.print(request->headerName(i));
+                Serial.print(": ");
+                Serial.println(request->header(i));
+                Serial.println();
+            }
+
+            Serial.print("Content Length: ");
+            Serial.println(request->contentLength());
+           
+
+            //  request->("Server", WiFi.localIP().toString());
+            request->send(200);
+        });
+
+        webServer->begin();
     }
+    // if (webServer != nullptr)
+    //     webServer->handleClient();
     if (!_channelSetup1Called)
     {
         return;
