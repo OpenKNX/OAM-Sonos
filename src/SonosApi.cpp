@@ -1,7 +1,6 @@
 #include "SonosApi.h"
-#include "WiFiClient.h"
 #include "WiFi.h"
-
+#include "WiFiClient.h"
 
 void SonosApi::init(AsyncWebServer* webServer, IPAddress speakerIP, uint16_t channelIndex)
 {
@@ -9,7 +8,18 @@ void SonosApi::init(AsyncWebServer* webServer, IPAddress speakerIP, uint16_t cha
     _channelIndex = channelIndex;
     webServer->addHandler(this);
     subscribeAll();
+}
 
+void SonosApi::wifiClient_xPath(MicroXPath_P& xPath, WiFiClient& wifiClient, PGM_P* path, uint8_t pathSize, char* resultBuffer, size_t resultBufferSize)
+{
+    xPath.setPath(path, pathSize);
+    while (wifiClient.available() && !xPath.getValue(wifiClient.read(), resultBuffer, resultBufferSize))
+        ;
+}
+
+void SonosApi::setCallback(SonosApiNotificationHandler* notificationHandler)
+{
+    _notificationHandler = notificationHandler;
 }
 
 void SonosApi::subscribeAll()
@@ -32,11 +42,11 @@ void SonosApi::loop()
     }
 }
 
-bool SonosApi::canHandle(AsyncWebServerRequest *request)
+bool SonosApi::canHandle(AsyncWebServerRequest* request)
 {
     if (request->url().startsWith("/notification/"))
     {
-        if (request->url() == "/notification/" + (String) _channelIndex)
+        if (request->url() == "/notification/" + (String)_channelIndex)
         {
             return true;
         }
@@ -44,22 +54,23 @@ bool SonosApi::canHandle(AsyncWebServerRequest *request)
     return false;
 }
 
-
 const char p_PropertySet[] PROGMEM = "e:propertyset";
 const char p_Property[] PROGMEM = "e:property";
 const char p_LastChange[] PROGMEM = "LastChange";
 
-void charBuffer_xPath(MicroXPath_P& xPath,  const char* readBuffer, size_t readBufferLength, PGM_P *path, uint8_t pathSize, char *resultBuffer, size_t resultBufferSize)
+void charBuffer_xPath(MicroXPath_P& xPath, const char* readBuffer, size_t readBufferLength, PGM_P* path, uint8_t pathSize, char* resultBuffer, size_t resultBufferSize)
 {
-  xPath.setPath(path, pathSize);
-  for (size_t i = 0; i < readBufferLength; i++)
-  {
-    if (xPath.getValue(readBuffer[i], resultBuffer, resultBufferSize))
-        return;
-  }
+    xPath.setPath(path, pathSize);
+    for (size_t i = 0; i < readBufferLength; i++)
+    {
+        if (xPath.getValue(readBuffer[i], resultBuffer, resultBufferSize))
+            return;
+    }
 }
 
-void SonosApi::handleBody(AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) 
+const char masterVolume[] PROGMEM = "&lt;Volume channel=&quot;Master&quot; val=&quot;";
+
+void SonosApi::handleBody(AsyncWebServerRequest* request, uint8_t* data, size_t len, size_t index, size_t total)
 {
     Serial.println("Notification");
     Serial.print("Headers: ");
@@ -70,14 +81,34 @@ void SonosApi::handleBody(AsyncWebServerRequest *request, uint8_t *data, size_t 
         Serial.print(": ");
         Serial.println(request->header(i));
     }
-    MicroXPath_P xPath;
-    char* buffer = new char[2000];
-    PGM_P path[] = { p_PropertySet, p_Property, p_LastChange};
-    charBuffer_xPath(xPath, (const char*) data, len, path, 3, buffer, 1000);
-    Serial.println(buffer);
-    delete buffer;
-
-    //Serial.println(String(data, len));
+    if (_notificationHandler != nullptr)
+    {
+        MicroXPath_P xPath;
+        char* buffer = new char[2000];
+        PGM_P path[] = {p_PropertySet, p_Property, p_LastChange};
+        charBuffer_xPath(xPath, (const char*)data, len, path, 3, buffer, 1000);
+        const char* begin = strstr(buffer, masterVolume);
+        if (begin != nullptr)
+        {
+            char numberBuffer[4];
+            begin += strlen(masterVolume);
+            int i = 0;
+            for (; i < sizeof(numberBuffer) - 1; i++)
+            {
+                auto c = *begin;
+                if (c == '&' || c == '\0')
+                    break;
+                numberBuffer[i] = c;
+                begin++;
+            }
+            numberBuffer[i] = '\0';
+            _currentVolume = constrain(atoi(numberBuffer), 0, 100);
+            _notificationHandler->notificationVolumeChanged(_currentVolume);
+        }
+        // Serial.println(buffer);
+        delete buffer;
+    }
+    // Serial.println(String(data, len));
     request->send(200);
 }
 
@@ -107,14 +138,12 @@ void SonosApi::writeSoapHttpCall(Stream& stream, const char* soapUrl, const char
     stream.print(" xmlns:u='");
     stream.print(soapAction);
     stream.print(F("'><InstanceID>0</InstanceID>"));
-    stream.print (parameterXml);
+    stream.print(parameterXml);
 
     stream.print("</u:");
     stream.print(action);
     stream.print(F("></s:Body></s:Envelope>"));
 }
-
-
 
 int SonosApi::postAction(const char* soapUrl, const char* soapAction, const char* action, String parameterXml, THandlerWifiResultFunction wifiResultFunction)
 {
@@ -124,10 +153,10 @@ int SonosApi::postAction(const char* soapUrl, const char* soapAction, const char
         logErrorP("connect to %s:1400 failed", _speakerIP.toString());
         return -1;
     }
-   
+
     writeSoapHttpCall(Serial, soapUrl, soapAction, action, parameterXml);
     writeSoapHttpCall(wifiClient, soapUrl, soapAction, action, parameterXml);
-   
+
     auto start = millis();
     while (!wifiClient.available())
     {
@@ -140,14 +169,14 @@ int SonosApi::postAction(const char* soapUrl, const char* soapAction, const char
         wifiResultFunction(wifiClient);
     else
     {
-        while (auto c = wifiClient.read()) 
+        while (auto c = wifiClient.read())
         {
             if (c == -1)
                 break;
-            Serial.print((char) c);
+            Serial.print((char)c);
         }
     }
-    
+
     Serial.println();
     wifiClient.stop();
     return 0;
@@ -163,15 +192,9 @@ void SonosApi::setVolume(uint8_t volume)
     parameter += F("<DesiredVolume>");
     parameter += volume;
     parameter += F("</DesiredVolume>");
-    postAction(renderingControlUrl, renderingControlSoapAction, "SetVolume",  parameter);
+    postAction(renderingControlUrl, renderingControlSoapAction, "SetVolume", parameter);
 }
 
-
-void wifiClient_xPath(MicroXPath_P& xPath,  WiFiClient& wifiClient, PGM_P *path, uint8_t pathSize, char *resultBuffer, size_t resultBufferSize)
-{
-  xPath.setPath(path, pathSize);
-  while (wifiClient.available() && !xPath.getValue(wifiClient.read(), resultBuffer, resultBufferSize));
-}
 
 
 const char p_SoapEnvelope[] PROGMEM = "s:Envelope";
@@ -181,19 +204,41 @@ uint8_t SonosApi::getVolume()
 {
     String parameter;
     parameter += F("<Channel>Master</Channel>");
-    postAction(renderingControlUrl, renderingControlSoapAction, "GetVolume",  parameter, [=] (WiFiClient& wifiClient) 
-    {
+    postAction(renderingControlUrl, renderingControlSoapAction, "GetVolume", parameter, [=](WiFiClient& wifiClient) {
         MicroXPath_P xPath;
-        PGM_P path[] = { p_SoapEnvelope, p_SoapBody, "u:GetVolumeResponse", "CurrentVolume" };
+        PGM_P path[] = {p_SoapEnvelope, p_SoapBody, "u:GetVolumeResponse", "CurrentVolume"};
         char resultBuffer[10];
         wifiClient_xPath(xPath, wifiClient, path, 4, resultBuffer, sizeof(resultBuffer));
-        _currentVolume = (uint8_t) constrain(atoi(resultBuffer), 0, 100);
-    }
-    );
-   return _currentVolume;
+        _currentVolume = (uint8_t)constrain(atoi(resultBuffer), 0, 100);
+    });
+    return _currentVolume;
+}
+
+const char* renderingGroupControlUrl PROGMEM = "/MediaRenderer/GroupRenderingControl/Control";
+const char* renderingGroupControlSoapAction PROGMEM = "urn:schemas-upnp-org:service:GroupRenderingControl:1";
+
+void SonosApi::setGroupVolume(uint8_t volume)
+{
+    String parameter;
+    parameter += F("<DesiredVolume>");
+    parameter += volume;
+    parameter += F("</DesiredVolume>");
+    postAction(renderingGroupControlUrl, renderingGroupControlSoapAction, "SetGroupVolume", parameter);
 }
 
 
+uint8_t SonosApi::getGroupVolume()
+{
+    String parameter;
+    postAction(renderingControlUrl, renderingControlSoapAction, "GetGroupVolume", parameter, [=](WiFiClient& wifiClient) {
+        MicroXPath_P xPath;
+        PGM_P path[] = {p_SoapEnvelope, p_SoapBody, "u:GetGroupVolumeResponse", "CurrentVolume"};
+        char resultBuffer[10];
+        wifiClient_xPath(xPath, wifiClient, path, 4, resultBuffer, sizeof(resultBuffer));
+        _currentVolume = (uint8_t)constrain(atoi(resultBuffer), 0, 100);
+    });
+    return _currentVolume;
+}
 
 void SonosApi::writeSubscribeHttpCall(Stream& stream, const char* soapUrl)
 {
@@ -227,7 +272,7 @@ int SonosApi::subscribeEvents(const char* soapUrl)
         logErrorP("connect to %s:1400 failed", _speakerIP.toString());
         return -1;
     }
-   
+
     writeSubscribeHttpCall(Serial, soapUrl);
     writeSubscribeHttpCall(wifiClient, soapUrl);
 
@@ -239,14 +284,13 @@ int SonosApi::subscribeEvents(const char* soapUrl)
             return -2;
         }
     }
-    while (auto c = wifiClient.read()) 
+    while (auto c = wifiClient.read())
     {
         if (c == -1)
             break;
-        Serial.print((char) c);
+        Serial.print((char)c);
     }
     Serial.println();
     wifiClient.stop();
     return 0;
 }
-

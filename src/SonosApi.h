@@ -4,6 +4,17 @@
 #include "WiFi.h"
 #include <ESPAsyncWebServer.h>
 
+enum SonosApiNotification
+{
+  SonosVolumeChange = 0,
+};
+
+class SonosApiNotificationHandler
+{
+  public:
+    virtual void notificationVolumeChanged(uint8_t volume) = 0;
+};
+
 class SonosApi : AsyncWebHandler
 {
     const static uint32_t _subscriptionTimeInSeconds = 600;
@@ -13,11 +24,14 @@ class SonosApi : AsyncWebHandler
     uint32_t _renderControlSeq = 0;
     unsigned long _subscriptionTime = 0;
     volatile uint8_t _currentVolume = 0;
+    SonosApiNotificationHandler* _notificationHandler = nullptr;
   
     const std::string logPrefix()
     {
       return "Sonos.API";
     }
+
+    void wifiClient_xPath(MicroXPath_P& xPath, WiFiClient& wifiClient, PGM_P* path, uint8_t pathSize, char* resultBuffer, size_t resultBufferSize);
 
     void writeSoapHttpCall(Stream& stream, const char* soapUrl, const char* soapAction, const char* action, String parameterXml);
     void writeSubscribeHttpCall(Stream& stream, const char* soapUrl);
@@ -34,6 +48,7 @@ class SonosApi : AsyncWebHandler
    
   public:
     void init(AsyncWebServer* webServer, IPAddress speakerIP, uint16_t channelIndex);
+    void setCallback(SonosApiNotificationHandler* notificationHandler);
     void loop();
     void setVolume(uint8_t volume);
     uint8_t getVolume();

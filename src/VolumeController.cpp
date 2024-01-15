@@ -1,5 +1,10 @@
 #include "VolumeController.h"
 
+VolumeController::VolumeController(bool groupVolume)
+ : _groupVolume(groupVolume)
+ {
+ }
+
 void VolumeController::loop1(SonosApi& sonosApi, IPAddress speakerIP, uint8_t _channelIndex)
 {
 
@@ -7,7 +12,10 @@ void VolumeController::loop1(SonosApi& sonosApi, IPAddress speakerIP, uint8_t _c
     {
         auto volume = _targetVolume;
         _targetVolume = 255;
-        sonosApi.setVolume(volume);
+        if (_groupVolume)
+            sonosApi.setGroupVolume(volume);
+        else
+            sonosApi.setVolume(volume);
     }
 }
 
