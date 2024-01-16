@@ -2,6 +2,9 @@
 #include "WiFi.h"
 #include "WiFiClient.h"
 
+const char p_SoapEnvelope[] PROGMEM = "s:Envelope";
+const char p_SoapBody[] PROGMEM = "s:Body";
+
 void SonosApi::init(AsyncWebServer* webServer, IPAddress speakerIP, uint16_t channelIndex)
 {
     _speakerIP = speakerIP;
@@ -197,11 +200,9 @@ void SonosApi::setVolume(uint8_t volume)
 
 
 
-const char p_SoapEnvelope[] PROGMEM = "s:Envelope";
-const char p_SoapBody[] PROGMEM = "s:Body";
-
 uint8_t SonosApi::getVolume()
 {
+    _currentVolume = 0;
     String parameter;
     parameter += F("<Channel>Master</Channel>");
     postAction(renderingControlUrl, renderingControlSoapAction, "GetVolume", parameter, [=](WiFiClient& wifiClient) {
@@ -214,8 +215,8 @@ uint8_t SonosApi::getVolume()
     return _currentVolume;
 }
 
-const char* renderingGroupControlUrl PROGMEM = "/MediaRenderer/GroupRenderingControl/Control";
-const char* renderingGroupControlSoapAction PROGMEM = "urn:schemas-upnp-org:service:GroupRenderingControl:1";
+const char* renderingGroupRenderingControlUrl PROGMEM = "/MediaRenderer/GroupRenderingControl/Control";
+const char* renderingGroupRenderingControlSoapAction PROGMEM = "urn:schemas-upnp-org:service:GroupRenderingControl:1";
 
 void SonosApi::setGroupVolume(uint8_t volume)
 {
@@ -223,21 +224,46 @@ void SonosApi::setGroupVolume(uint8_t volume)
     parameter += F("<DesiredVolume>");
     parameter += volume;
     parameter += F("</DesiredVolume>");
-    postAction(renderingGroupControlUrl, renderingGroupControlSoapAction, "SetGroupVolume", parameter);
+    postAction(renderingGroupRenderingControlUrl, renderingGroupRenderingControlSoapAction, "SetGroupVolume", parameter);
 }
 
 
 uint8_t SonosApi::getGroupVolume()
 {
+    _currentGroupVolume = 0;
     String parameter;
-    postAction(renderingControlUrl, renderingControlSoapAction, "GetGroupVolume", parameter, [=](WiFiClient& wifiClient) {
+    postAction(renderingGroupRenderingControlUrl, renderingGroupRenderingControlSoapAction, "GetGroupVolume", parameter, [=](WiFiClient& wifiClient) {
         MicroXPath_P xPath;
         PGM_P path[] = {p_SoapEnvelope, p_SoapBody, "u:GetGroupVolumeResponse", "CurrentVolume"};
         char resultBuffer[10];
         wifiClient_xPath(xPath, wifiClient, path, 4, resultBuffer, sizeof(resultBuffer));
-        _currentVolume = (uint8_t)constrain(atoi(resultBuffer), 0, 100);
+        _currentGroupVolume = (uint8_t)constrain(atoi(resultBuffer), 0, 100);
     });
-    return _currentVolume;
+    return _currentGroupVolume;
+}
+
+const char* renderingAVTransportUrl PROGMEM = "/MediaRenderer/AVTransport/Control";
+const char* renderingAVTransportSoapAction PROGMEM = "urn:schemas-upnp-org:service:AVTransport:1";
+
+SonosApiPlayState SonosApi::getPlayState()
+{
+    _currentPlayState = SonosApiPlayState::Unkown;
+    String parameter;
+    postAction(renderingAVTransportUrl, renderingAVTransportSoapAction, "GetTransportInfo", parameter, [=](WiFiClient& wifiClient) {
+        MicroXPath_P xPath;
+        PGM_P path[] = {p_SoapEnvelope, p_SoapBody, "u:GetTransportInfoResponse", "CurrentTransportState"};
+        char resultBuffer[20];
+        wifiClient_xPath(xPath, wifiClient, path, 4, resultBuffer, sizeof(resultBuffer));
+        if (strcmp(resultBuffer, "STOPPED") == 0)
+            _currentPlayState = SonosApiPlayState::Stopped;
+        else if (strcmp(resultBuffer, "PLAYING") == 0)
+            _currentPlayState = SonosApiPlayState::Playing;
+        else if (strcmp(resultBuffer, "PAUSED_PLAYBACK") == 0)
+            _currentPlayState = SonosApiPlayState::Paused_Playback;
+        else if (strcmp(resultBuffer, "TRANSITIONING") == 0)
+            _currentPlayState = SonosApiPlayState::Transitioning;
+    });
+    return _currentPlayState;
 }
 
 void SonosApi::writeSubscribeHttpCall(Stream& stream, const char* soapUrl)

@@ -3,8 +3,8 @@
 SonosChannel::SonosChannel(SonosApi& sonosApi)
     : _sonosApi(sonosApi), _groupVolumeController(true)
 {
-    auto parameterIP = (uint32_t) ParamSON_CHSonosIPAddress;
-    uint32_t arduinoIP = ((parameterIP & 0xFF000000) >> 24) | ((parameterIP & 0x00FF0000) >> 8) | ((parameterIP & 0x0000FF00) << 8) | ((parameterIP & 0x000000FF) << 24); 
+    auto parameterIP = (uint32_t)ParamSON_CHSonosIPAddress;
+    uint32_t arduinoIP = ((parameterIP & 0xFF000000) >> 24) | ((parameterIP & 0x00FF0000) >> 8) | ((parameterIP & 0x0000FF00) << 8) | ((parameterIP & 0x000000FF) << 24);
     _speakerIP = arduinoIP;
     _name = _speakerIP.toString();
 }
@@ -14,7 +14,7 @@ const IPAddress& SonosChannel::speakerIP()
     return _speakerIP;
 }
 
-const std::string SonosChannel::name() 
+const std::string SonosChannel::name()
 {
     return std::string(_name.c_str());
 }
@@ -28,13 +28,13 @@ void SonosChannel::loop1()
     _volumeController.loop1(_sonosApi, _speakerIP, _channelIndex);
 }
 
-void SonosChannel::notificationVolumeChanged(uint8_t volume) 
+void SonosChannel::notificationVolumeChanged(uint8_t volume)
 {
-    if (volume != (uint8_t) KoSON_CHValumeState.value(DPT_Scaling))
+    if (volume != (uint8_t)KoSON_CHValumeState.value(DPT_Scaling))
         KoSON_CHValumeState.value(volume, DPT_Scaling);
 }
 
-void SonosChannel::processInputKo(GroupObject &ko)
+void SonosChannel::processInputKo(GroupObject& ko)
 {
     switch (SON_KoCalcIndex(ko.asap()))
     {
@@ -57,15 +57,23 @@ void SonosChannel::processInputKo(GroupObject &ko)
 
 bool SonosChannel::processCommand(const std::string cmd, bool diagnoseKo)
 {
-    if (cmd == "setvol")
+    if (cmd.rfind("setvol ", 0) == 0)
     {
         Serial.println();
-        _volumeController.setVolume(3);
+        int value = atoi(cmd.c_str() + 7);
+        if (value < 0 || value > 100)
+            Serial.printf("Invalid volume %d\r\n", value);
+        else
+            _volumeController.setVolume(value);
     }
-    else if (cmd == "setgroupvol")
+    else if (cmd.rfind("setgroupvol ", 0) == 0)
     {
         Serial.println();
-        _volumeController.setVolume(3);
+        int value = atoi(cmd.c_str() + 12);
+        if (value < 0 || value > 100)
+            Serial.printf("Invalid volume %d\r\n", value);
+        else
+            _volumeController.setVolume(value);
     }
     else if (cmd == "getvol")
     {
@@ -76,6 +84,11 @@ bool SonosChannel::processCommand(const std::string cmd, bool diagnoseKo)
     {
         Serial.println();
         Serial.println(_sonosApi.getGroupVolume());
+    }
+    else if (cmd == "getplaystate")
+    {
+        Serial.println();
+        Serial.println(_sonosApi.getPlayState());
     }
     else
         return false;

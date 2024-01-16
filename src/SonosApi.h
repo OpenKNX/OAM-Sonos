@@ -15,6 +15,15 @@ class SonosApiNotificationHandler
     virtual void notificationVolumeChanged(uint8_t volume) = 0;
 };
 
+enum SonosApiPlayState : byte
+{
+  Unkown,
+  Stopped,
+  Transitioning,
+  Playing,
+  Paused_Playback,
+};
+
 class SonosApi : AsyncWebHandler
 {
     const static uint32_t _subscriptionTimeInSeconds = 600;
@@ -24,6 +33,8 @@ class SonosApi : AsyncWebHandler
     uint32_t _renderControlSeq = 0;
     unsigned long _subscriptionTime = 0;
     volatile uint8_t _currentVolume = 0;
+    volatile uint8_t _currentGroupVolume = 0;
+    volatile SonosApiPlayState _currentPlayState = SonosApiPlayState::Unkown;
     SonosApiNotificationHandler* _notificationHandler = nullptr;
   
     const std::string logPrefix()
@@ -54,4 +65,5 @@ class SonosApi : AsyncWebHandler
     uint8_t getVolume();
     void setGroupVolume(uint8_t volume);
     uint8_t getGroupVolume();
+    SonosApiPlayState getPlayState();
 };
