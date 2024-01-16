@@ -30,8 +30,8 @@ void SonosChannel::loop1()
 
 void SonosChannel::notificationVolumeChanged(uint8_t volume)
 {
-    if (volume != (uint8_t)KoSON_CHValumeState.value(DPT_Scaling))
-        KoSON_CHValumeState.value(volume, DPT_Scaling);
+    if (volume != (uint8_t)KoSON_CHVolumeState.value(DPT_Scaling))
+        KoSON_CHVolumeState.value(volume, DPT_Scaling);
 }
 
 void SonosChannel::processInputKo(GroupObject& ko)
@@ -57,7 +57,12 @@ void SonosChannel::processInputKo(GroupObject& ko)
 
 bool SonosChannel::processCommand(const std::string cmd, bool diagnoseKo)
 {
-    if (cmd.rfind("setvol ", 0) == 0)
+    if (cmd == "getuuid")
+    {
+        Serial.println();
+        Serial.println(_sonosApi.getLocalUID().c_str());
+    }
+    else if (cmd.rfind("setvol ", 0) == 0)
     {
         Serial.println();
         int value = atoi(cmd.c_str() + 7);

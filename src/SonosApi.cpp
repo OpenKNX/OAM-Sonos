@@ -320,3 +320,43 @@ int SonosApi::subscribeEvents(const char* soapUrl)
     wifiClient.stop();
     return 0;
 }
+
+std::string SonosApi::getLocalUID()
+{
+    if (_uuid.empty())
+    {
+        WiFiClient wifiClient;
+        if (wifiClient.connect(_speakerIP, 1400) != true)
+        {
+            logErrorP("connect to %s:1400 failed", _speakerIP.toString());
+            return _uuid;
+        }
+        wifiClient.print("GET ");
+        wifiClient.print(_speakerIP.toString());
+        wifiClient.print(":1400/status/zp HTTP/1.1\r\n");
+        // Header
+        wifiClient.print("HOST: ");
+        wifiClient.print(_speakerIP.toString());
+        wifiClient.print("\r\n");
+        wifiClient.print("Connection: close\r\n");
+        wifiClient.print("\r\n");;
+
+        auto start = millis();
+        while (!wifiClient.available())
+        {
+            if (millis() - start > 3000)
+            {
+                return _uuid;
+            }
+        }
+        MicroXPath_P xPath;
+        PGM_P path[] = {"ZPSupportInfo", "ZPInfo", "LocalUID"};
+        char resultBuffer[30];
+        wifiClient_xPath(xPath, wifiClient, path, 3, resultBuffer, sizeof(resultBuffer));
+        Serial.println(resultBuffer);
+        _uuid = std::string(resultBuffer);
+        wifiClient.stop();
+    }
+    return _uuid;
+}
+

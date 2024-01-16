@@ -27,7 +27,7 @@ enum SonosApiPlayState : byte
 class SonosApi : AsyncWebHandler
 {
     const static uint32_t _subscriptionTimeInSeconds = 600;
-
+    std::string _uuid;
     IPAddress _speakerIP;
     uint16_t _channelIndex;
     uint32_t _renderControlSeq = 0;
@@ -66,4 +66,5 @@ class SonosApi : AsyncWebHandler
     void setGroupVolume(uint8_t volume);
     uint8_t getGroupVolume();
     SonosApiPlayState getPlayState();
+    std::string getLocalUID();
 };

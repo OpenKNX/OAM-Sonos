@@ -7,6 +7,13 @@
         <ApplicationProgram>
           <Static>
             <ParameterTypes>
+              <ParameterType Id="%AID%_PT-SonosChannelUsage" Name="SonosChannelUsage">
+                <TypeRestriction Base="Value" SizeInBit="8">
+                  <Enumeration Text="Inaktiv (Konfiguration erhalten)" Value="1" Id="%AID%_PT-SonosChannelUsage_EN-2" />
+                  <Enumeration Text="Inaktiv"  Value="0" Id="%AID%_PT-SonosChannelUsage_EN-0" />
+                  <Enumeration Text="Aktiv"    Value="2" Id="%AID%_PT-SonosChannelUsage_EN-1" />
+                </TypeRestriction>
+              </ParameterType>   
               <ParameterType Id="%AID%_PT-SonosName" Name="SonosName">
                 <TypeText SizeInBit="160" /> <!-- 20 characters -->
               </ParameterType>
