@@ -1,13 +1,15 @@
 #include "SonosChannel.h"
 
-SonosChannel::SonosChannel(SonosApi& sonosApi)
-    : _sonosApi(sonosApi), _groupVolumeController(true)
+SonosChannel::SonosChannel(uint8_t _channelIndex /* this parameter is used in macros, do not rename */, SonosApi& sonosApi)
+    : _sonosApi(sonosApi), _groupVolumeController(true), _speakerIP(), _name()
 {
+    this->_channelIndex = _channelIndex;
     auto parameterIP = (uint32_t)ParamSON_CHSonosIPAddress;
     uint32_t arduinoIP = ((parameterIP & 0xFF000000) >> 24) | ((parameterIP & 0x00FF0000) >> 8) | ((parameterIP & 0x0000FF00) << 8) | ((parameterIP & 0x000000FF) << 24);
     _speakerIP = arduinoIP;
     _name = _speakerIP.toString();
-}
+    _sonosApi.setCallback(this);
+ }
 
 const IPAddress& SonosChannel::speakerIP()
 {

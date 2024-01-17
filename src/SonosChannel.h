@@ -6,17 +6,17 @@
 class SonosChannel : public OpenKNX::Channel, protected SonosApiNotificationHandler
 {
     private:
-        IPAddress _speakerIP;
-        String _name;
         SonosApi& _sonosApi;
         VolumeController _volumeController;
         VolumeController _groupVolumeController;
+        IPAddress _speakerIP;
+        String _name;
         void notificationVolumeChanged(uint8_t volume) override;
     protected:
         void loop1() override;
         void processInputKo(GroupObject &ko) override;
     public:
-        SonosChannel(SonosApi& sonosApi);
+        SonosChannel(uint8_t _channelIndex /* this parameter is used in macros, do not rename */, SonosApi& sonosApi);
         const IPAddress& speakerIP();
         const std::string name() override;
         const std::string logPrefix() override;

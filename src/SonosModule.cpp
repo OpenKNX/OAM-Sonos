@@ -23,11 +23,11 @@ SonosChannel *firstChannel = nullptr;
 
 OpenKNX::Channel *SonosModule::createChannel(uint8_t _channelIndex /* this parameter is used in macros, do not rename */)
 {
-    if (ParamSON_CHSonosChannelUsage == 2)
+    if (ParamSON_CHSonosChannelUsage != 2)
         return nullptr;
 
     auto sonosApi = new SonosApi();
-    auto channel = new SonosChannel(*sonosApi);
+    auto channel = new SonosChannel(_channelIndex, *sonosApi);
     sonosApi->init(_webServer, channel->speakerIP(), _channelIndex);
     if (firstChannel == nullptr)
         firstChannel = channel;
