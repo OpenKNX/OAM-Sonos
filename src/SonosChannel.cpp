@@ -65,12 +65,12 @@ void SonosChannel::processInputKo(GroupObject& ko)
 
 bool SonosChannel::processCommand(const std::string cmd, bool diagnoseKo)
 {
-    if (cmd == "getuuid")
+    if (cmd == "uid")
     {
         Serial.println();
         Serial.println(_sonosApi.getUID().c_str());
     }
-    else if (cmd == "gettrackinfo")
+    else if (cmd == "track")
     {
         Serial.println();
         auto trackInfo = _sonosApi.getTrackInfo();
@@ -80,35 +80,35 @@ bool SonosChannel::processCommand(const std::string cmd, bool diagnoseKo)
         Serial.println(trackInfo->uri);
         Serial.println(trackInfo->metadata);
     }
-    else if (cmd.rfind("setvol ", 0) == 0)
+    else if (cmd.rfind("vol ", 0) == 0)
     {
         Serial.println();
-        int value = atoi(cmd.c_str() + 7);
+        int value = atoi(cmd.c_str() + 4);
         if (value < 0 || value > 100)
             Serial.printf("Invalid volume %d\r\n", value);
         else
             _volumeController.setVolume(value);
     }
-    else if (cmd.rfind("setgroupvol ", 0) == 0)
+    else if (cmd.rfind("gvol ", 0) == 0)
     {
         Serial.println();
-        int value = atoi(cmd.c_str() + 12);
+        int value = atoi(cmd.c_str() + 5);
         if (value < 0 || value > 100)
             Serial.printf("Invalid volume %d\r\n", value);
         else
             _volumeController.setVolume(value);
     }
-    else if (cmd == "getvol")
+    else if (cmd == "vol")
     {
         Serial.println();
         Serial.println(_sonosApi.getVolume());
     }
-    else if (cmd == "getgroupvol")
+    else if (cmd == "gvol")
     {
         Serial.println();
         Serial.println(_sonosApi.getGroupVolume());
     }
-    else if (cmd == "getplaystate")
+    else if (cmd == "state")
     {
         Serial.println();
         Serial.println(_sonosApi.getPlayState());

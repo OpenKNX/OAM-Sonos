@@ -25,7 +25,9 @@ public:
         */
     virtual void loop(bool configured) override;
     virtual void loop() override;
-    uint16_t getNumberOfUsedChannels();
+    uint8_t getNumberOfUsedChannels();
+    uint8_t getNumberOfChannels();
+    OpenKNX::Channel* getChannel(uint8_t channelIndex);
 
 #ifdef OPENKNX_DUALCORE
     /*
