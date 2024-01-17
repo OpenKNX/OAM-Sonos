@@ -12,7 +12,8 @@ enum SonosApiNotification
 class SonosApiNotificationHandler
 {
   public:
-    virtual void notificationVolumeChanged(uint8_t volume) = 0;
+    virtual void notificationVolumeChanged(uint8_t volume) {}
+    virtual void notificationGroupVolumeChanged(uint8_t volume) {};
 };
 
 enum SonosApiPlayState : byte

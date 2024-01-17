@@ -36,6 +36,12 @@ void SonosChannel::notificationVolumeChanged(uint8_t volume)
         KoSON_CHVolumeState.value(volume, DPT_Scaling);
 }
 
+void SonosChannel::notificationGroupVolumeChanged(uint8_t volume)
+{
+    if (volume != (uint8_t)KoSON_CHGroupVolumeState.value(DPT_Scaling))
+        KoSON_CHGroupVolumeState.value(volume, DPT_Scaling);
+}
+
 void SonosChannel::processInputKo(GroupObject& ko)
 {
     switch (SON_KoCalcIndex(ko.asap()))

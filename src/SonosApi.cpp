@@ -32,6 +32,7 @@ void SonosApi::subscribeAll()
         _subscriptionTime = 1;
     _renderControlSeq = 0;
     subscribeEvents("/MediaRenderer/RenderingControl/Event");
+    subscribeEvents("/MediaRenderer/GroupRenderingControl/Event");
 }
 
 void SonosApi::loop()
@@ -75,21 +76,16 @@ const char masterVolume[] PROGMEM = "&lt;Volume channel=&quot;Master&quot; val=&
 
 void SonosApi::handleBody(AsyncWebServerRequest* request, uint8_t* data, size_t len, size_t index, size_t total)
 {
-    Serial.println("Notification");
-    Serial.print("Headers: ");
-    Serial.println(request->headers());
-    for (size_t i = 0; i < request->headers(); i++)
-    {
-        Serial.print(request->headerName(i));
-        Serial.print(": ");
-        Serial.println(request->header(i));
-    }
+    Serial.printf("Notification received");
     if (_notificationHandler != nullptr)
     {
         MicroXPath_P xPath;
-        char* buffer = new char[2000];
-        PGM_P path[] = {p_PropertySet, p_Property, p_LastChange};
-        charBuffer_xPath(xPath, (const char*)data, len, path, 3, buffer, 1000);
+        const int bufferSize = 2000;
+        char* buffer = new char[bufferSize + 1];
+        buffer[bufferSize] = 0;
+        buffer[0] = 0;
+        PGM_P pathLastChange[] = {p_PropertySet, p_Property, p_LastChange};
+        charBuffer_xPath(xPath, (const char*)data, len, pathLastChange, 3, buffer, bufferSize);
         const char* begin = strstr(buffer, masterVolume);
         if (begin != nullptr)
         {
@@ -106,9 +102,21 @@ void SonosApi::handleBody(AsyncWebServerRequest* request, uint8_t* data, size_t 
             }
             numberBuffer[i] = '\0';
             _currentVolume = constrain(atoi(numberBuffer), 0, 100);
+            Serial.print("Volume: ");
+            Serial.println(_currentVolume);
             _notificationHandler->notificationVolumeChanged(_currentVolume);
         }
-        // Serial.println(buffer);
+        xPath.reset();
+        buffer[0] = 0;
+        PGM_P pathGroupValue[] = {p_PropertySet, p_Property, "GroupVolume"};
+        charBuffer_xPath(xPath, (const char*)data, len, pathGroupValue, 3, buffer, bufferSize);
+        if (strlen(buffer) > 0)
+        {
+            _currentGroupVolume = constrain(atoi(buffer), 0, 100);
+            Serial.print("Group Volume: ");
+            Serial.println(_currentGroupVolume);
+            _notificationHandler->notificationGroupVolumeChanged(_currentGroupVolume);
+        }
         delete buffer;
     }
     // Serial.println(String(data, len));
