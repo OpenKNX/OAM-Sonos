@@ -76,7 +76,7 @@ const char masterVolume[] PROGMEM = "&lt;Volume channel=&quot;Master&quot; val=&
 
 void SonosApi::handleBody(AsyncWebServerRequest* request, uint8_t* data, size_t len, size_t index, size_t total)
 {
-    Serial.printf("Notification received");
+    Serial.print("Notification received ");
     if (_notificationHandler != nullptr)
     {
         MicroXPath_P xPath;
