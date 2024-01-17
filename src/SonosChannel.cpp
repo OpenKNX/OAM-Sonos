@@ -68,7 +68,17 @@ bool SonosChannel::processCommand(const std::string cmd, bool diagnoseKo)
     if (cmd == "getuuid")
     {
         Serial.println();
-        Serial.println(_sonosApi.getLocalUID().c_str());
+        Serial.println(_sonosApi.getUID().c_str());
+    }
+    else if (cmd == "gettrackinfo")
+    {
+        Serial.println();
+        auto trackInfo = _sonosApi.getTrackInfo();
+        Serial.println(trackInfo->queueIndex);
+        Serial.println(trackInfo->duration);
+        Serial.println(trackInfo->position);
+        Serial.println(trackInfo->uri);
+        Serial.println(trackInfo->metadata);
     }
     else if (cmd.rfind("setvol ", 0) == 0)
     {

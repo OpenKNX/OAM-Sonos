@@ -4,6 +4,8 @@
 #include "WiFi.h"
 #include <ESPAsyncWebServer.h>
 
+
+
 enum SonosApiNotification
 {
   SonosVolumeChange = 0,
@@ -25,10 +27,24 @@ enum SonosApiPlayState : byte
   Paused_Playback,
 };
 
-class SonosApi : AsyncWebHandler
+class SonosTrackInfo
+{
+	public:
+    SonosTrackInfo(uint16_t queueIndex, uint32_t duration, uint32_t position, String& uri, String& metadata)
+      : queueIndex(queueIndex), duration(duration), position(position), uri(uri), metadata(metadata)
+    {}
+  public:
+    const uint16_t queueIndex;
+	  const uint32_t duration;
+	  const uint32_t position;
+	  const String uri;
+    const String metadata;
+};
+
+class SonosApi : private AsyncWebHandler
 {
     const static uint32_t _subscriptionTimeInSeconds = 600;
-    std::string _uuid;
+    String _uuid;
     IPAddress _speakerIP;
     uint16_t _channelIndex;
     uint32_t _renderControlSeq = 0;
@@ -36,6 +52,7 @@ class SonosApi : AsyncWebHandler
     volatile uint8_t _currentVolume = 0;
     volatile uint8_t _currentGroupVolume = 0;
     volatile SonosApiPlayState _currentPlayState = SonosApiPlayState::Unkown;
+    SonosTrackInfo* _currentTrackInfo = nullptr;
     SonosApiNotificationHandler* _notificationHandler = nullptr;
   
     const std::string logPrefix()
@@ -67,5 +84,6 @@ class SonosApi : AsyncWebHandler
     void setGroupVolume(uint8_t volume);
     uint8_t getGroupVolume();
     SonosApiPlayState getPlayState();
-    std::string getLocalUID();
+    SonosTrackInfo* getTrackInfo();
+    String& getUID();
 };

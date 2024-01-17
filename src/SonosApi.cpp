@@ -173,6 +173,7 @@ int SonosApi::postAction(const char* soapUrl, const char* soapAction, const char
     {
         if (millis() - start > 3000)
         {
+            wifiClient.stop();
             return -2;
         }
     }
@@ -315,6 +316,7 @@ int SonosApi::subscribeEvents(const char* soapUrl)
     {
         if (millis() - start > 3000)
         {
+            wifiClient.stop();
             return -2;
         }
     }
@@ -329,9 +331,9 @@ int SonosApi::subscribeEvents(const char* soapUrl)
     return 0;
 }
 
-std::string SonosApi::getLocalUID()
+String& SonosApi::getUID()
 {
-    if (_uuid.empty())
+    if (_uuid.length() == 0)
     {
         WiFiClient wifiClient;
         if (wifiClient.connect(_speakerIP, 1400) != true)
@@ -339,7 +341,7 @@ std::string SonosApi::getLocalUID()
             logErrorP("connect to %s:1400 failed", _speakerIP.toString());
             return _uuid;
         }
-        wifiClient.print("GET ");
+        wifiClient.print("GET http://");
         wifiClient.print(_speakerIP.toString());
         wifiClient.print(":1400/status/zp HTTP/1.1\r\n");
         // Header
@@ -354,17 +356,79 @@ std::string SonosApi::getLocalUID()
         {
             if (millis() - start > 3000)
             {
+                wifiClient.stop();
                 return _uuid;
             }
         }
-        MicroXPath_P xPath;
+    
         PGM_P path[] = {"ZPSupportInfo", "ZPInfo", "LocalUID"};
         char resultBuffer[30];
-        wifiClient_xPath(xPath, wifiClient, path, 3, resultBuffer, sizeof(resultBuffer));
-        Serial.println(resultBuffer);
-        _uuid = std::string(resultBuffer);
+        MicroXPath_P xPath;
+       
+        wifiClient_xPath(xPath, wifiClient, path, 3, resultBuffer, 30);
+        _uuid = resultBuffer;
         wifiClient.stop();
     }
     return _uuid;
+}
+
+ uint32_t formatedTimestampToSeconds(char* durationAsString) {
+        const char* begin = durationAsString;
+        int multiplicator = 3600;
+        uint32_t result = 0;
+        for (size_t i = 0; ; i++)
+        {
+            auto c = durationAsString[i];
+            if (c == ':' || c == 0)
+            {
+                durationAsString[i] = 0;
+                result += atoi(begin) * multiplicator;
+                begin = durationAsString + i + 1;
+                if (multiplicator == 1 || c == 0)
+                    break;
+                multiplicator = multiplicator / 60;
+            }
+        }
+        return result;
+	}
+
+SonosTrackInfo* SonosApi::getTrackInfo()
+{
+    String parameter;
+    postAction(renderingAVTransportUrl, renderingAVTransportSoapAction, "GetPositionInfo", parameter, [=](WiFiClient& wifiClient) {
+        MicroXPath_P xPath;
+        const int bufferSize = 2000;
+        auto resultBuffer = new char[bufferSize];
+        uint16_t queueIndex;
+        uint32_t duration;
+        uint32_t position;
+        String uri;
+        String metadata;
+        PGM_P pathTrack[] = {p_SoapEnvelope, p_SoapBody, "u:GetPositionInfoResponse", "Track"};
+        wifiClient_xPath(xPath, wifiClient, pathTrack, 4, resultBuffer, bufferSize);
+        queueIndex = atoi(resultBuffer);
+        PGM_P pathDuration[] = {p_SoapEnvelope, p_SoapBody, "u:GetPositionInfoResponse", "TrackDuration"};   
+        wifiClient_xPath(xPath, wifiClient, pathDuration, 4, resultBuffer, bufferSize);
+        duration = formatedTimestampToSeconds(resultBuffer);
+        PGM_P pathMetadata[] = {p_SoapEnvelope, p_SoapBody, "u:GetPositionInfoResponse", "TrackMetaData"};   
+        wifiClient_xPath(xPath, wifiClient, pathMetadata, 4, resultBuffer, bufferSize);
+        metadata = resultBuffer;
+        PGM_P pathUri[] = {p_SoapEnvelope, p_SoapBody, "u:GetPositionInfoResponse", "TrackURI"};   
+        wifiClient_xPath(xPath, wifiClient, pathUri, 4, resultBuffer, bufferSize);
+        uri = resultBuffer;
+        PGM_P pathRelTime[] = {p_SoapEnvelope, p_SoapBody, "u:GetPositionInfoResponse", "RelTime"};   
+        wifiClient_xPath(xPath, wifiClient, pathRelTime, 4, resultBuffer, bufferSize);
+        position = formatedTimestampToSeconds(resultBuffer);
+
+        delete resultBuffer;
+        _currentTrackInfo = new SonosTrackInfo(queueIndex, duration, position, uri, metadata);
+   
+    });
+    if (_currentTrackInfo == nullptr)
+    {
+        auto empty = String();
+        _currentTrackInfo = new SonosTrackInfo(0, 0, 0, empty, empty);
+    }
+    return _currentTrackInfo;
 }
 
