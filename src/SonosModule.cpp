@@ -106,6 +106,10 @@ void SonosModule::showHelp()
     openknx.console.printHelpLine("son<CC> gvol <XXX>", "Set group volume of channel CC. i.e. son01 gvol 17");
     openknx.console.printHelpLine("son<CC> track", "Show the track info of channel CC. i.e. son01 track");
     openknx.console.printHelpLine("son<CC> state", "Show the play state of channel CC. i.e. son01 state");
+    openknx.console.printHelpLine("son<CC> play", "Start playing of the current media of channel CC. i.e. son01 play");
+    openknx.console.printHelpLine("son<CC> pause", "Pause playing of channel CC. i.e. son01 pause");
+    openknx.console.printHelpLine("son<CC> next", "Channel CC go to next song. i.e. son01 next");
+    openknx.console.printHelpLine("son<CC> prev", "Channel CC go to previous song. i.e. son01 prev");
 }
 
 void SonosModule::showInformations()

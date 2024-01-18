@@ -288,6 +288,18 @@ void SonosApi::pause()
     postAction(renderingAVTransportUrl, renderingAVTransportSoapAction, "Pause", parameter);
 }
 
+void SonosApi::next()
+{
+    String parameter;
+    postAction(renderingAVTransportUrl, renderingAVTransportSoapAction, "Next", parameter);
+}
+
+void SonosApi::previous()
+{
+    String parameter;
+    postAction(renderingAVTransportUrl, renderingAVTransportSoapAction, "Previous", parameter);
+}
+
 void SonosApi::writeSubscribeHttpCall(Stream& stream, const char* soapUrl)
 {
     auto ip = _speakerIP.toString();

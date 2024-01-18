@@ -118,10 +118,20 @@ bool SonosChannel::processCommand(const std::string cmd, bool diagnoseKo)
         Serial.println();
         _sonosApi.play();
     }
-     else if (cmd == "pause")
+    else if (cmd == "pause")
     {
         Serial.println();
         _sonosApi.pause();
+    }
+    else if (cmd == "next")
+    {
+        Serial.println();
+        _sonosApi.next();
+    }
+    else if (cmd == "prev")
+    {
+        Serial.println();
+        _sonosApi.previous();
     }
     else
         return false;
