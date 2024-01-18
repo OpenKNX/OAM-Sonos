@@ -275,6 +275,19 @@ SonosApiPlayState SonosApi::getPlayState()
     return _currentPlayState;
 }
 
+void SonosApi::play()
+{
+    String parameter;
+    parameter += F("<Speed>1</Speed>");
+    postAction(renderingAVTransportUrl, renderingAVTransportSoapAction, "Play", parameter);
+}
+
+void SonosApi::pause()
+{
+    String parameter;
+    postAction(renderingAVTransportUrl, renderingAVTransportSoapAction, "Pause", parameter);
+}
+
 void SonosApi::writeSubscribeHttpCall(Stream& stream, const char* soapUrl)
 {
     auto ip = _speakerIP.toString();

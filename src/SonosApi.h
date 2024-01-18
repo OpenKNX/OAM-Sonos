@@ -84,6 +84,8 @@ class SonosApi : private AsyncWebHandler
     void setGroupVolume(uint8_t volume);
     uint8_t getGroupVolume();
     SonosApiPlayState getPlayState();
+    void play();
+    void pause();
     SonosTrackInfo* getTrackInfo();
     String& getUID();
 };

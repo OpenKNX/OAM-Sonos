@@ -56,7 +56,7 @@ void SonosModule::processBeforeTablesUnload()
 void SonosModule::processInputKo(GroupObject &ko)
 {
     // we have to check first, if external KO are used
-    uint16_t asap = ko.asap();
+    auto asap = ko.asap();
     switch (asap)
     {
             // case XXX:

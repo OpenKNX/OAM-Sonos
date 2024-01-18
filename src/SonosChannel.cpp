@@ -113,6 +113,16 @@ bool SonosChannel::processCommand(const std::string cmd, bool diagnoseKo)
         Serial.println();
         Serial.println(_sonosApi.getPlayState());
     }
+    else if (cmd == "play")
+    {
+        Serial.println();
+        _sonosApi.play();
+    }
+     else if (cmd == "pause")
+    {
+        Serial.println();
+        _sonosApi.pause();
+    }
     else
         return false;
     return true;
