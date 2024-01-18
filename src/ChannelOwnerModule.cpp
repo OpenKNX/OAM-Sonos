@@ -38,7 +38,7 @@ void ChannelOwnerModule::setup()
     if (_pChannels != nullptr)
     {
         logDebugP("Setting up %d channels", _numberOfChannels);
-        for (uint16_t _channelIndex = 0; _channelIndex < _numberOfChannels; _channelIndex++)
+        for (uint8_t _channelIndex = 0; _channelIndex < _numberOfChannels; _channelIndex++)
         {
             logDebugP("Create channel %d", _channelIndex);  
             logIndentUp();
@@ -114,7 +114,7 @@ uint8_t ChannelOwnerModule::getNumberOfChannels()
 
 uint8_t ChannelOwnerModule::getNumberOfUsedChannels()
 {
-    uint16_t activeChannels = 0;
+    uint8_t activeChannels = 0;
     if (_pChannels != nullptr)
     {
         for (uint8_t _channelIndex = 0; _channelIndex < _numberOfChannels; _channelIndex++)
