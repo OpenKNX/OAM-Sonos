@@ -9,9 +9,12 @@
             <ParameterTypes>
               <ParameterType Id="%AID%_PT-SonosChannelUsage" Name="SonosChannelUsage">
                 <TypeRestriction Base="Value" SizeInBit="8">
-                  <Enumeration Text="Inaktiv (Konfiguration erhalten)" Value="1" Id="%AID%_PT-SonosChannelUsage_EN-2" />
-                  <Enumeration Text="Inaktiv"  Value="0" Id="%AID%_PT-SonosChannelUsage_EN-0" />
-                  <Enumeration Text="Aktiv"    Value="2" Id="%AID%_PT-SonosChannelUsage_EN-1" />
+                  <Enumeration Text="Inaktiv (Konfiguration erhalten)" Value="0" Id="%AID%_PT-SonosChannelUsage_EN-0" />
+                  <Enumeration Text="Inaktiv"                          Value="1" Id="%AID%_PT-SonosChannelUsage_EN-1" />
+                  <Enumeration Text="Einzelsteuerung"                  Value="2" Id="%AID%_PT-SonosChannelUsage_EN-2" />
+                  <Enumeration Text="Gruppensteuerung"                 Value="3" Id="%AID%_PT-SonosChannelUsage_EN-3" />
+                  <Enumeration Text="Einzel- und Gruppensteurung"      Value="4" Id="%AID%_PT-SonosChannelUsage_EN-4" />
+                  <Enumeration Text="Nur Gruppenteilnehmer"            Value="5" Id="%AID%_PT-SonosChannelUsage_EN-5" />            
                 </TypeRestriction>
               </ParameterType>   
               <ParameterType Id="%AID%_PT-SonosName" Name="SonosName">
@@ -19,7 +22,10 @@
               </ParameterType>
               <ParameterType Id="%AID%_PT-SonosIPAddress" Name="SonosIPAddress">
                 <TypeIPAddress AddressType="HostAddress" />
-              </ParameterType>            
+              </ParameterType>   
+              <ParameterType Id="%AID%_PT-RelativVolumeStep" Name="RelativVolumeStep">
+                <TypeNumber SizeInBit="8" Type="unsignedInt" minInclusive="1" maxInclusive="10" />
+              </ParameterType>   
             </ParameterTypes>
             <Parameters>
             </Parameters>
