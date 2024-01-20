@@ -15,7 +15,9 @@ class SonosApiNotificationHandler
 {
   public:
     virtual void notificationVolumeChanged(uint8_t volume) {}
+    virtual void notificationMuteChanged(boolean mute) {}
     virtual void notificationGroupVolumeChanged(uint8_t volume) {};
+    virtual void notificationGroupMuteChanged(boolean mute) {};
 };
 
 enum SonosApiPlayState : byte
@@ -29,16 +31,12 @@ enum SonosApiPlayState : byte
 
 class SonosTrackInfo
 {
-	public:
-    SonosTrackInfo(uint16_t queueIndex, uint32_t duration, uint32_t position, String& uri, String& metadata)
-      : queueIndex(queueIndex), duration(duration), position(position), uri(uri), metadata(metadata)
-    {}
   public:
-    const uint16_t queueIndex;
-	  const uint32_t duration;
-	  const uint32_t position;
-	  const String uri;
-    const String metadata;
+    uint16_t queueIndex;
+	  uint32_t duration;
+	  uint32_t position;
+	  String uri;
+    String metadata;
 };
 
 class SonosApi : private AsyncWebHandler
@@ -49,10 +47,6 @@ class SonosApi : private AsyncWebHandler
     uint16_t _channelIndex;
     uint32_t _renderControlSeq = 0;
     unsigned long _subscriptionTime = 0;
-    volatile uint8_t _currentVolume = 0;
-    volatile uint8_t _currentGroupVolume = 0;
-    volatile SonosApiPlayState _currentPlayState = SonosApiPlayState::Unkown;
-    SonosTrackInfo* _currentTrackInfo = nullptr;
     SonosApiNotificationHandler* _notificationHandler = nullptr;
   
     const std::string logPrefix()
@@ -80,14 +74,20 @@ class SonosApi : private AsyncWebHandler
     void setCallback(SonosApiNotificationHandler* notificationHandler);
     void loop();
     void setVolume(uint8_t volume);
+    void setVolumeRelative(int8_t volume);
     uint8_t getVolume();
+    void setMute(boolean mute);
+    boolean getMute();
     void setGroupVolume(uint8_t volume);
+    void setGroupVolumeRelative(int8_t volume);
     uint8_t getGroupVolume();
+    void setGroupMute(boolean mute);
+    boolean getGroupMute();
     SonosApiPlayState getPlayState();
     void play();
     void pause();
     void next();
     void previous();
-    SonosTrackInfo* getTrackInfo();
+    const SonosTrackInfo getTrackInfo();
     String& getUID();
 };

@@ -12,7 +12,9 @@ class SonosChannel : public OpenKNX::Channel, protected SonosApiNotificationHand
         IPAddress _speakerIP;
         String _name;
         void notificationVolumeChanged(uint8_t volume) override;
+        void notificationMuteChanged(boolean mute) override;
         void notificationGroupVolumeChanged(uint8_t volume) override;
+        void notificationGroupMuteChanged(boolean mute) override;
     protected:
         void loop1() override;
         void processInputKo(GroupObject &ko) override;

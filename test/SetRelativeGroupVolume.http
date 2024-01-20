@@ -5,7 +5,7 @@ SOAPAction: urn:schemas-upnp-org:service:GroupRenderingControl:1#SetRelativeGrou
   <s:Body>
     <u:SetRelativeGroupVolume xmlns:u="urn:schemas-upnp-org:service:GroupRenderingControl:1">
       <InstanceID>0</InstanceID>
-      <Adjustment>3</Adjustment>
+      <Adjustment>1</Adjustment>
     </u:SetRelativeGroupVolume>
   </u:Body>
 </s:Envelope>

@@ -73,6 +73,30 @@ void charBuffer_xPath(MicroXPath_P& xPath, const char* readBuffer, size_t readBu
 }
 
 const char masterVolume[] PROGMEM = "&lt;Volume channel=&quot;Master&quot; val=&quot;";
+const char masterMute[] PROGMEM = "&lt;Mute channel=&quot;Master&quot; val=&quot;";
+
+boolean readFromEncodeXML(const char* encodedXML, const char* search,  char* resultBuffer, size_t resultBufferSize)
+{
+    if (resultBufferSize > 0)
+        resultBuffer[0] = '\0';
+    const char* begin = strstr(encodedXML, search);
+    if (begin != nullptr)
+    {
+        begin += strlen(masterVolume);
+        int i = 0;
+        for (; i < resultBufferSize - 1; i++)
+        {
+            auto c = *begin;
+            if (c == '&' || c == '\0')
+                break;
+            resultBuffer[i] = c;
+            begin++;
+        }
+        resultBuffer[i] = '\0';
+        return true;
+    }
+    return false;
+}
 
 void SonosApi::handleBody(AsyncWebServerRequest* request, uint8_t* data, size_t len, size_t index, size_t total)
 {
@@ -86,36 +110,42 @@ void SonosApi::handleBody(AsyncWebServerRequest* request, uint8_t* data, size_t 
         buffer[0] = 0;
         PGM_P pathLastChange[] = {p_PropertySet, p_Property, p_LastChange};
         charBuffer_xPath(xPath, (const char*)data, len, pathLastChange, 3, buffer, bufferSize);
-        const char* begin = strstr(buffer, masterVolume);
-        if (begin != nullptr)
+        char numberBuffer[4];
+        if (readFromEncodeXML(buffer, masterVolume, numberBuffer, sizeof(numberBuffer)))
         {
-            char numberBuffer[4];
-            begin += strlen(masterVolume);
-            int i = 0;
-            for (; i < sizeof(numberBuffer) - 1; i++)
-            {
-                auto c = *begin;
-                if (c == '&' || c == '\0')
-                    break;
-                numberBuffer[i] = c;
-                begin++;
-            }
-            numberBuffer[i] = '\0';
-            _currentVolume = constrain(atoi(numberBuffer), 0, 100);
+            auto currentVolume = constrain(atoi(numberBuffer), 0, 100);
             Serial.print("Volume: ");
-            Serial.println(_currentVolume);
-            _notificationHandler->notificationVolumeChanged(_currentVolume);
+            Serial.println(currentVolume);
+            _notificationHandler->notificationVolumeChanged(currentVolume);
+        }
+        if (readFromEncodeXML(buffer, masterMute, numberBuffer, sizeof(numberBuffer)))
+        {
+            auto currentMute = numberBuffer[0] == '1';
+            Serial.print("Mute: ");
+            Serial.println(currentMute);
+            _notificationHandler->notificationMuteChanged(currentMute);
         }
         xPath.reset();
         buffer[0] = 0;
-        PGM_P pathGroupValue[] = {p_PropertySet, p_Property, "GroupVolume"};
-        charBuffer_xPath(xPath, (const char*)data, len, pathGroupValue, 3, buffer, bufferSize);
+        PGM_P pathGroupVolume[] = {p_PropertySet, p_Property, "GroupVolume"};
+        charBuffer_xPath(xPath, (const char*)data, len, pathGroupVolume, 3, buffer, bufferSize);
         if (strlen(buffer) > 0)
         {
-            _currentGroupVolume = constrain(atoi(buffer), 0, 100);
+            auto currentGroupVolume = constrain(atoi(buffer), 0, 100);
             Serial.print("Group Volume: ");
-            Serial.println(_currentGroupVolume);
-            _notificationHandler->notificationGroupVolumeChanged(_currentGroupVolume);
+            Serial.println(currentGroupVolume);
+            _notificationHandler->notificationGroupVolumeChanged(currentGroupVolume);
+        }
+        xPath.reset();
+        buffer[0] = 0;
+        PGM_P pathGroupMute[] = {p_PropertySet, p_Property, "GroupMute"};
+        charBuffer_xPath(xPath, (const char*)data, len, pathGroupMute, 3, buffer, bufferSize);
+        if (strlen(buffer) > 0)
+        {
+            auto currentGroupMute = buffer[0] == '1';
+            Serial.print("Group Mute: ");
+            Serial.println(currentGroupMute);
+            _notificationHandler->notificationGroupMuteChanged(currentGroupMute);
         }
         delete buffer;
     }
@@ -207,22 +237,58 @@ void SonosApi::setVolume(uint8_t volume)
     postAction(renderingControlUrl, renderingControlSoapAction, "SetVolume", parameter);
 }
 
-
+void SonosApi::setVolumeRelative(int8_t volume)
+{
+    String parameter;
+    parameter += F("<Channel>Master</Channel>");
+    parameter += F("<Adjustment>");
+    parameter += volume;
+    parameter += F("</Adjustment>");
+    postAction(renderingControlUrl, renderingControlSoapAction, "SetRelativeVolume", parameter);
+}
 
 uint8_t SonosApi::getVolume()
 {
-    _currentVolume = 0;
+    uint8_t currentVolume = 0;
     String parameter;
     parameter += F("<Channel>Master</Channel>");
-    postAction(renderingControlUrl, renderingControlSoapAction, "GetVolume", parameter, [=](WiFiClient& wifiClient) {
+    postAction(renderingControlUrl, renderingControlSoapAction, "GetVolume", parameter, [=, &currentVolume](WiFiClient& wifiClient) {
         MicroXPath_P xPath;
         PGM_P path[] = {p_SoapEnvelope, p_SoapBody, "u:GetVolumeResponse", "CurrentVolume"};
         char resultBuffer[10];
         wifiClient_xPath(xPath, wifiClient, path, 4, resultBuffer, sizeof(resultBuffer));
-        _currentVolume = (uint8_t)constrain(atoi(resultBuffer), 0, 100);
+        currentVolume = (uint8_t)constrain(atoi(resultBuffer), 0, 100);
     });
-    return _currentVolume;
+    return currentVolume;
 }
+
+void SonosApi::setMute(boolean mute)
+{
+    String parameter;
+    parameter += F("<Channel>Master</Channel>");
+    parameter += F("<DesiredMute>");
+    parameter += mute ? "1" : "0";
+    parameter += F("</DesiredMute>");
+    postAction(renderingControlUrl, renderingControlSoapAction, "SetMute", parameter);
+
+}
+
+boolean SonosApi::getMute()
+{
+    boolean currentMute = 0;
+    String parameter;
+    parameter += F("<Channel>Master</Channel>");
+    postAction(renderingControlUrl, renderingControlSoapAction, "GetMute", parameter, [=, &currentMute](WiFiClient& wifiClient) {
+        MicroXPath_P xPath;
+        PGM_P path[] = {p_SoapEnvelope, p_SoapBody, "u:GetMuteResponse", "CurrentMute"};
+        char resultBuffer[10];
+        wifiClient_xPath(xPath, wifiClient, path, 4, resultBuffer, sizeof(resultBuffer));
+        currentMute = resultBuffer[0] == '1';
+    });
+    return currentMute;
+
+}
+
 
 const char* renderingGroupRenderingControlUrl PROGMEM = "/MediaRenderer/GroupRenderingControl/Control";
 const char* renderingGroupRenderingControlSoapAction PROGMEM = "urn:schemas-upnp-org:service:GroupRenderingControl:1";
@@ -236,19 +302,51 @@ void SonosApi::setGroupVolume(uint8_t volume)
     postAction(renderingGroupRenderingControlUrl, renderingGroupRenderingControlSoapAction, "SetGroupVolume", parameter);
 }
 
+void SonosApi::setGroupVolumeRelative(int8_t volume)
+{
+    String parameter;
+    parameter += F("<Adjustment>");
+    parameter += volume;
+    parameter += F("</Adjustment>");
+    postAction(renderingGroupRenderingControlUrl, renderingGroupRenderingControlSoapAction, "SetRelativeGroupVolume", parameter);
+}
 
 uint8_t SonosApi::getGroupVolume()
 {
-    _currentGroupVolume = 0;
+    uint8_t currentGroupVolume = 0;
     String parameter;
-    postAction(renderingGroupRenderingControlUrl, renderingGroupRenderingControlSoapAction, "GetGroupVolume", parameter, [=](WiFiClient& wifiClient) {
+    postAction(renderingGroupRenderingControlUrl, renderingGroupRenderingControlSoapAction, "GetGroupVolume", parameter, [=, &currentGroupVolume](WiFiClient& wifiClient) {
         MicroXPath_P xPath;
         PGM_P path[] = {p_SoapEnvelope, p_SoapBody, "u:GetGroupVolumeResponse", "CurrentVolume"};
         char resultBuffer[10];
         wifiClient_xPath(xPath, wifiClient, path, 4, resultBuffer, sizeof(resultBuffer));
-        _currentGroupVolume = (uint8_t)constrain(atoi(resultBuffer), 0, 100);
+        currentGroupVolume = (uint8_t)constrain(atoi(resultBuffer), 0, 100);
     });
-    return _currentGroupVolume;
+    return currentGroupVolume;
+}
+
+void SonosApi::setGroupMute(boolean mute)
+{
+    String parameter;
+    parameter += F("<DesiredMute>");
+    parameter += mute ? "1" : "0";
+    parameter += F("</DesiredMute>");
+    postAction(renderingGroupRenderingControlUrl, renderingGroupRenderingControlSoapAction, "SetGroupVolume", parameter);
+
+}
+
+boolean SonosApi::getGroupMute()
+{
+    boolean currentGroupMute = false;
+    String parameter;
+    postAction(renderingGroupRenderingControlUrl, renderingGroupRenderingControlSoapAction, "GetGroupMute", parameter, [=, &currentGroupMute](WiFiClient& wifiClient) {
+        MicroXPath_P xPath;
+        PGM_P path[] = {p_SoapEnvelope, p_SoapBody, "u:GetGroupMuteResponse", "CurrentMute"};
+        char resultBuffer[10];
+        wifiClient_xPath(xPath, wifiClient, path, 4, resultBuffer, sizeof(resultBuffer));
+        currentGroupMute = resultBuffer[0] == '1';
+    });
+    return currentGroupMute;   
 }
 
 const char* renderingAVTransportUrl PROGMEM = "/MediaRenderer/AVTransport/Control";
@@ -256,23 +354,23 @@ const char* renderingAVTransportSoapAction PROGMEM = "urn:schemas-upnp-org:servi
 
 SonosApiPlayState SonosApi::getPlayState()
 {
-    _currentPlayState = SonosApiPlayState::Unkown;
+    SonosApiPlayState currentPlayState = SonosApiPlayState::Unkown;
     String parameter;
-    postAction(renderingAVTransportUrl, renderingAVTransportSoapAction, "GetTransportInfo", parameter, [=](WiFiClient& wifiClient) {
+    postAction(renderingAVTransportUrl, renderingAVTransportSoapAction, "GetTransportInfo", parameter, [=, &currentPlayState](WiFiClient& wifiClient) {
         MicroXPath_P xPath;
         PGM_P path[] = {p_SoapEnvelope, p_SoapBody, "u:GetTransportInfoResponse", "CurrentTransportState"};
         char resultBuffer[20];
         wifiClient_xPath(xPath, wifiClient, path, 4, resultBuffer, sizeof(resultBuffer));
         if (strcmp(resultBuffer, "STOPPED") == 0)
-            _currentPlayState = SonosApiPlayState::Stopped;
+            currentPlayState = SonosApiPlayState::Stopped;
         else if (strcmp(resultBuffer, "PLAYING") == 0)
-            _currentPlayState = SonosApiPlayState::Playing;
+            currentPlayState = SonosApiPlayState::Playing;
         else if (strcmp(resultBuffer, "PAUSED_PLAYBACK") == 0)
-            _currentPlayState = SonosApiPlayState::Paused_Playback;
+            currentPlayState = SonosApiPlayState::Paused_Playback;
         else if (strcmp(resultBuffer, "TRANSITIONING") == 0)
-            _currentPlayState = SonosApiPlayState::Transitioning;
+            currentPlayState = SonosApiPlayState::Transitioning;
     });
-    return _currentPlayState;
+    return currentPlayState;
 }
 
 void SonosApi::play()
@@ -417,10 +515,11 @@ String& SonosApi::getUID()
         return result;
 	}
 
-SonosTrackInfo* SonosApi::getTrackInfo()
+const SonosTrackInfo SonosApi::getTrackInfo()
 {
+    SonosTrackInfo sonosTrackInfo;
     String parameter;
-    postAction(renderingAVTransportUrl, renderingAVTransportSoapAction, "GetPositionInfo", parameter, [=](WiFiClient& wifiClient) {
+    postAction(renderingAVTransportUrl, renderingAVTransportSoapAction, "GetPositionInfo", parameter, [=, &sonosTrackInfo](WiFiClient& wifiClient) {
         MicroXPath_P xPath;
         const int bufferSize = 2000;
         auto resultBuffer = new char[bufferSize];
@@ -446,14 +545,12 @@ SonosTrackInfo* SonosApi::getTrackInfo()
         position = formatedTimestampToSeconds(resultBuffer);
 
         delete resultBuffer;
-        _currentTrackInfo = new SonosTrackInfo(queueIndex, duration, position, uri, metadata);
-   
+        sonosTrackInfo.queueIndex = queueIndex;
+        sonosTrackInfo.duration = duration;
+        sonosTrackInfo.position = position;
+        sonosTrackInfo.uri = uri;
+        sonosTrackInfo.metadata = metadata;
     });
-    if (_currentTrackInfo == nullptr)
-    {
-        auto empty = String();
-        _currentTrackInfo = new SonosTrackInfo(0, 0, 0, empty, empty);
-    }
-    return _currentTrackInfo;
+    return sonosTrackInfo;
 }
 

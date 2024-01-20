@@ -36,10 +36,22 @@ void SonosChannel::notificationVolumeChanged(uint8_t volume)
         KoSON_CHVolumeState.value(volume, DPT_Scaling);
 }
 
+void SonosChannel::notificationMuteChanged(boolean mute)
+{
+    if (mute != (boolean)KoSON_CHMuteState.value(DPT_Switch))
+        KoSON_CHMuteState.value(mute, DPT_Switch);
+}
+
 void SonosChannel::notificationGroupVolumeChanged(uint8_t volume)
 {
     if (volume != (uint8_t)KoSON_CHGroupVolumeState.value(DPT_Scaling))
         KoSON_CHGroupVolumeState.value(volume, DPT_Scaling);
+}
+
+void SonosChannel::notificationGroupMuteChanged(boolean mute)
+{
+    if (mute != (boolean)KoSON_CHGroupMuteState.value(DPT_Switch))
+        KoSON_CHGroupMuteState.value(mute, DPT_Switch);
 }
 
 void SonosChannel::processInputKo(GroupObject& ko)
@@ -53,11 +65,41 @@ void SonosChannel::processInputKo(GroupObject& ko)
             _volumeController.setVolume(volume);
             break;
         }
+        case SON_KoCHVolumeRelativ:
+        {
+            bool increase = ko.value(DPT_Step);
+            auto volume = increase ? (int8_t) ParamSON_CHRelativVolumeStep : -(int8_t) ParamSON_CHRelativVolumeStep;
+            logDebugP("Set volume relative %d", volume);
+            _sonosApi.setVolumeRelative(volume);
+            break;
+        }
+        case SON_KoCHMute:
+        {
+            boolean mute = ko.value(DPT_Switch);
+            logDebugP("Set mute %d", mute);
+            _sonosApi.setMute(mute);
+            break;            
+        }
         case SON_KoCHGroupVolume:
         {
             uint8_t volume = ko.value(DPT_Scaling);
             logDebugP("Set group volume %d", volume);
             _groupVolumeController.setVolume(volume);
+            break;
+        }
+        case SON_KoCHGroupVolumeRelativ:
+        {
+            bool increase = ko.value(DPT_Step);
+            auto volume = increase ? (int8_t) ParamSON_CHGroupRelativVolumeStep : -(int8_t) ParamSON_CHGroupRelativVolumeStep;
+            logDebugP("Set volume relative %d", volume);
+            _sonosApi.setGroupVolumeRelative(volume);
+            break;
+        }
+        case SON_KoCHGroupMute:
+        {
+            boolean mute = ko.value(DPT_Switch);
+            logDebugP("Set group mute %d", mute);
+            _sonosApi.setGroupMute(mute);
             break;
         }
     }
@@ -74,11 +116,11 @@ bool SonosChannel::processCommand(const std::string cmd, bool diagnoseKo)
     {
         Serial.println();
         auto trackInfo = _sonosApi.getTrackInfo();
-        Serial.println(trackInfo->queueIndex);
-        Serial.println(trackInfo->duration);
-        Serial.println(trackInfo->position);
-        Serial.println(trackInfo->uri);
-        Serial.println(trackInfo->metadata);
+        Serial.println(trackInfo.queueIndex);
+        Serial.println(trackInfo.duration);
+        Serial.println(trackInfo.position);
+        Serial.println(trackInfo.uri);
+        Serial.println(trackInfo.metadata);
     }
     else if (cmd.rfind("vol ", 0) == 0)
     {
@@ -98,6 +140,18 @@ bool SonosChannel::processCommand(const std::string cmd, bool diagnoseKo)
         else
             _volumeController.setVolume(value);
     }
+    else if (cmd.rfind("mute ", 0) == 0)
+    {
+        Serial.println();
+        bool mute = cmd == "1";
+        _sonosApi.setMute(mute);
+    }
+    else if (cmd.rfind("gmute ", 0) == 0)
+    {
+        Serial.println();
+        bool mute = cmd == "1";
+        _sonosApi.setGroupMute(mute);
+    }
     else if (cmd == "vol")
     {
         Serial.println();
@@ -107,6 +161,16 @@ bool SonosChannel::processCommand(const std::string cmd, bool diagnoseKo)
     {
         Serial.println();
         Serial.println(_sonosApi.getGroupVolume());
+    }
+    else if (cmd == "mute")
+    {
+        Serial.println();
+        Serial.println(_sonosApi.getMute() ? "1" : "0");
+    }
+    else if (cmd == "gmute")
+    {
+        Serial.println();
+        Serial.println(_sonosApi.getGroupMute() ? "1" : "0");
     }
     else if (cmd == "state")
     {

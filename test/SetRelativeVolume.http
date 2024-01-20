@@ -1,0 +1,11 @@
+POST http://192.168.0.7:1400/MediaRenderer/RenderingControl/Control HTTP/1.1
+SOAPAction: urn:schemas-upnp-org:service:RenderingControl:1#SetRelativeVolume
+
+<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+  <s:Body>
+    <u:SetRelativeVolume xmlns:u="urn:schemas-upnp-org:service:RenderingControl:1">
+        <InstanceID>0</InstanceID>
+        <Channel>Master</Channel>
+        <Adjustment>1</Adjustment>
+    </u:SetRelativeVolume>
+</s:Envelope>
