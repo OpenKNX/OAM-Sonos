@@ -82,7 +82,7 @@ boolean readFromEncodeXML(const char* encodedXML, const char* search,  char* res
     const char* begin = strstr(encodedXML, search);
     if (begin != nullptr)
     {
-        begin += strlen(masterVolume);
+        begin += strlen(search);
         int i = 0;
         for (; i < resultBufferSize - 1; i++)
         {
@@ -111,6 +111,7 @@ void SonosApi::handleBody(AsyncWebServerRequest* request, uint8_t* data, size_t 
         PGM_P pathLastChange[] = {p_PropertySet, p_Property, p_LastChange};
         charBuffer_xPath(xPath, (const char*)data, len, pathLastChange, 3, buffer, bufferSize);
         char numberBuffer[4];
+   //     Serial.println(buffer);
         if (readFromEncodeXML(buffer, masterVolume, numberBuffer, sizeof(numberBuffer)))
         {
             auto currentVolume = constrain(atoi(numberBuffer), 0, 100);
@@ -331,7 +332,7 @@ void SonosApi::setGroupMute(boolean mute)
     parameter += F("<DesiredMute>");
     parameter += mute ? "1" : "0";
     parameter += F("</DesiredMute>");
-    postAction(renderingGroupRenderingControlUrl, renderingGroupRenderingControlSoapAction, "SetGroupVolume", parameter);
+    postAction(renderingGroupRenderingControlUrl, renderingGroupRenderingControlSoapAction, "SetGroupMute", parameter);
 
 }
 

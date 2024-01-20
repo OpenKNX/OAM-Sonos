@@ -102,8 +102,14 @@ void SonosModule::showHelp()
     openknx.console.printHelpLine("son<CC> uid", "Show sonos UID of channel CC. i.e. son01 uid");
     openknx.console.printHelpLine("son<CC> vol", "Show volume of channel CC. i.e. son01 vol");
     openknx.console.printHelpLine("son<CC> vol <XXX>", "Set volume of channel CC. i.e. son01 vol 17");
+    openknx.console.printHelpLine("son<CC> rvol <XXX>", "Set relative volume of channel CC. i.e. son01 rvol -1");
+    openknx.console.printHelpLine("son<CC> mute", "Show mute state of channel CC. i.e. son01 mute");
+    openknx.console.printHelpLine("son<CC> mute <X>", "Set mute state of channel CC. i.e. son01 mute 1");
     openknx.console.printHelpLine("son<CC> gvol", "Show group volume of channel CC. i.e. son01 gvol");
+    openknx.console.printHelpLine("son<CC> rgvol <XXX>", "Set relative group volume of channel CC. i.e. son01 rgvol -1");
     openknx.console.printHelpLine("son<CC> gvol <XXX>", "Set group volume of channel CC. i.e. son01 gvol 17");
+    openknx.console.printHelpLine("son<CC> gmute", "Show group mute state of channel CC. i.e. son01 gmute");
+    openknx.console.printHelpLine("son<CC> gmute <X>", "Set group mute state of channel CC. i.e. son01 gmute 1");
     openknx.console.printHelpLine("son<CC> track", "Show the track info of channel CC. i.e. son01 track");
     openknx.console.printHelpLine("son<CC> state", "Show the play state of channel CC. i.e. son01 state");
     openknx.console.printHelpLine("son<CC> play", "Start playing of the current media of channel CC. i.e. son01 play");

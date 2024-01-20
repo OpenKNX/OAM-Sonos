@@ -131,6 +131,15 @@ bool SonosChannel::processCommand(const std::string cmd, bool diagnoseKo)
         else
             _volumeController.setVolume(value);
     }
+    else if (cmd.rfind("rvol ", 0) == 0)
+    {
+        Serial.println();
+        int value = atoi(cmd.c_str() + 5);
+        if (value < -100 || value > 100)
+            Serial.printf("Invalid relative volume %d\r\n", value);
+        else
+            _sonosApi.setVolumeRelative(value);
+    }
     else if (cmd.rfind("gvol ", 0) == 0)
     {
         Serial.println();
@@ -140,16 +149,25 @@ bool SonosChannel::processCommand(const std::string cmd, bool diagnoseKo)
         else
             _volumeController.setVolume(value);
     }
+    else if (cmd.rfind("rgvol ", 0) == 0)
+    {
+        Serial.println();
+        int value = atoi(cmd.c_str() + 6);
+        if (value < -100 || value > 100)
+            Serial.printf("Invalid relative volume %d\r\n", value);
+        else
+            _sonosApi.setGroupVolumeRelative(value);
+    }
     else if (cmd.rfind("mute ", 0) == 0)
     {
         Serial.println();
-        bool mute = cmd == "1";
+        bool mute = cmd.substr(5) == "1";
         _sonosApi.setMute(mute);
     }
     else if (cmd.rfind("gmute ", 0) == 0)
     {
         Serial.println();
-        bool mute = cmd == "1";
+        bool mute = cmd.substr(6) == "1";
         _sonosApi.setGroupMute(mute);
     }
     else if (cmd == "vol")
