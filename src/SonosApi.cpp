@@ -31,15 +31,16 @@ void SonosApi::subscribeAll()
     if (_subscriptionTime == 0)
         _subscriptionTime = 1;
     _renderControlSeq = 0;
-    subscribeEvents("/MediaRenderer/RenderingControl/Event");
-    subscribeEvents("/MediaRenderer/GroupRenderingControl/Event");
+   // subscribeEvents("/MediaRenderer/RenderingControl/Event");
+   // subscribeEvents("/MediaRenderer/GroupRenderingControl/Event");
+    subscribeEvents("/MediaRenderer/AVTransport/Event");
 }
 
 void SonosApi::loop()
 {
     if (_subscriptionTime > 0)
     {
-        if (millis() - _subscriptionTime > (_subscriptionTimeInSeconds * 0.9) * 1000) // 90% of time
+        if (millis() - _subscriptionTime > _subscriptionTimeInSeconds * 1000)
         {
             subscribeAll();
         }
@@ -72,9 +73,6 @@ void charBuffer_xPath(MicroXPath_P& xPath, const char* readBuffer, size_t readBu
     }
 }
 
-const char masterVolume[] PROGMEM = "&lt;Volume channel=&quot;Master&quot; val=&quot;";
-const char masterMute[] PROGMEM = "&lt;Mute channel=&quot;Master&quot; val=&quot;";
-
 boolean readFromEncodeXML(const char* encodedXML, const char* search,  char* resultBuffer, size_t resultBufferSize)
 {
     if (resultBufferSize > 0)
@@ -98,9 +96,81 @@ boolean readFromEncodeXML(const char* encodedXML, const char* search,  char* res
     return false;
 }
 
+SonosApiPlayState SonosApi::getPlayStateFromString(const char* value)
+{
+    if (strcmp(value, "STOPPED") == 0)
+        return SonosApiPlayState::Stopped;
+    else if (strcmp(value, "PLAYING") == 0)
+        return SonosApiPlayState::Playing;
+    else if (strcmp(value, "PAUSED_PLAYBACK") == 0)
+        return SonosApiPlayState::Paused_Playback;
+    else if (strcmp(value, "TRANSITIONING") == 0)
+        return SonosApiPlayState::Transitioning;
+    return SonosApiPlayState::Unkown;
+}
+
+const char p_PlayModeNormal[] PROGMEM = "NORMAL"; 
+const char p_PlayModeRepeatOne[] PROGMEM = "REPEAT_ONE"; 
+const char p_PlayModeRepeatAll[] PROGMEM = "REPEAT_ALL"; 
+const char p_PlayModeShuffle[] PROGMEM = "SHUFFLE"; 
+const char p_PlayModeShuffleRepeatOne[] PROGMEM = "SHUFFLE_REPEAT_ONE"; 
+const char p_PlayModeShuffleNoRepeat[] PROGMEM = "SHUFFLE_NOREPEAT"; 
+
+/*
+  Normal = 0, // NORMAL
+  Repeat = 1, // REPEAT_ONE || REPEAT_ALL || SHUFFLE_REPEAT_ONE || SHUFFLE_NOREPEAT
+  RepeatModeAll = 2, // REPEAT_ALL || SHUFFLE
+  Shuffle = 4 // SHUFFLE_NOREPEAT || SHUFFLE_NOREPEAT || SHUFFLE || SHUFFLE_REPEAT_ONE
+*/
+
+SonosApiPlayMode SonosApi::getPlayModeFromString(const char* value)
+{
+    if (strcmp(value, p_PlayModeNormal) == 0)
+        return SonosApiPlayMode::Normal;
+    if (strcmp(value, p_PlayModeRepeatOne) == 0)
+        return SonosApiPlayMode::Repeat;
+    if (strcmp(value, p_PlayModeRepeatAll) == 0)
+        return (SonosApiPlayMode)((byte) SonosApiPlayMode::Repeat | (byte) SonosApiPlayMode::RepeatModeAll);
+    if (strcmp(value, p_PlayModeShuffle) == 0)
+        return (SonosApiPlayMode)((byte) SonosApiPlayMode::Shuffle | (byte) SonosApiPlayMode::Repeat | (byte) SonosApiPlayMode::RepeatModeAll);
+    if (strcmp(value, p_PlayModeShuffleRepeatOne) == 0)
+        return (SonosApiPlayMode)((byte) SonosApiPlayMode::Shuffle | (byte) SonosApiPlayMode::Repeat);
+    if (strcmp(value, p_PlayModeShuffleNoRepeat) == 0)
+        return SonosApiPlayMode::Shuffle;
+    else
+        return SonosApiPlayMode::Normal;
+}
+
+const char* SonosApi::getPlayModeString(SonosApiPlayMode playMode)
+{
+    if (playMode == SonosApiPlayMode::Normal)
+        return p_PlayModeNormal;
+    if (playMode == SonosApiPlayMode::Repeat)
+        return p_PlayModeRepeatOne;
+    if (playMode == (SonosApiPlayMode)((byte) SonosApiPlayMode::Repeat | (byte) SonosApiPlayMode::RepeatModeAll))
+        return p_PlayModeRepeatAll;
+    if (playMode == (SonosApiPlayMode)((byte) SonosApiPlayMode::Shuffle | (byte) SonosApiPlayMode::Repeat | (byte) SonosApiPlayMode::RepeatModeAll))
+        return p_PlayModeShuffle;
+    if (playMode == (SonosApiPlayMode)((byte) SonosApiPlayMode::Shuffle | (byte) SonosApiPlayMode::Repeat))
+        return p_PlayModeShuffleRepeatOne;
+    if (playMode == SonosApiPlayMode::Shuffle)
+        return p_PlayModeShuffleNoRepeat;
+    return p_PlayModeNormal;
+}
+
+
+const char masterVolume[] PROGMEM = "&lt;Volume channel=&quot;Master&quot; val=&quot;";
+const char masterMute[] PROGMEM = "&lt;Mute channel=&quot;Master&quot; val=&quot;";
+const char transportState[] PROGMEM = "&lt;TransportState val=&quot;";
+const char playMode[] PROGMEM = "&lt;CurrentPlayMode val=&quot;";
+// const char numberOfTracks[] PROGMEM = "&lt;NumberOfTracks val=&quot;";
+// const char currentTrack[] PROGMEM = "&lt;CurrentTrack val=&quot;";
+// const char trackURI[] PROGMEM = "&lt;CurrentTrackURI val=&quot;";
+
 void SonosApi::handleBody(AsyncWebServerRequest* request, uint8_t* data, size_t len, size_t index, size_t total)
 {
-    Serial.print("Notification received ");
+    Serial.println("Notification received");
+   // Serial.println(String(data, len));
     if (_notificationHandler != nullptr)
     {
         MicroXPath_P xPath;
@@ -110,21 +180,34 @@ void SonosApi::handleBody(AsyncWebServerRequest* request, uint8_t* data, size_t 
         buffer[0] = 0;
         PGM_P pathLastChange[] = {p_PropertySet, p_Property, p_LastChange};
         charBuffer_xPath(xPath, (const char*)data, len, pathLastChange, 3, buffer, bufferSize);
-        char numberBuffer[4];
-   //     Serial.println(buffer);
-        if (readFromEncodeXML(buffer, masterVolume, numberBuffer, sizeof(numberBuffer)))
+        char valueBuffer[20];
+        if (readFromEncodeXML(buffer, masterVolume, valueBuffer, sizeof(valueBuffer)))
         {
-            auto currentVolume = constrain(atoi(numberBuffer), 0, 100);
+            auto currentVolume = constrain(atoi(valueBuffer), 0, 100);
             Serial.print("Volume: ");
             Serial.println(currentVolume);
             _notificationHandler->notificationVolumeChanged(currentVolume);
         }
-        if (readFromEncodeXML(buffer, masterMute, numberBuffer, sizeof(numberBuffer)))
+        if (readFromEncodeXML(buffer, masterMute, valueBuffer, sizeof(valueBuffer)))
         {
-            auto currentMute = numberBuffer[0] == '1';
+            auto currentMute = valueBuffer[0] == '1';
             Serial.print("Mute: ");
             Serial.println(currentMute);
             _notificationHandler->notificationMuteChanged(currentMute);
+        }
+        if (readFromEncodeXML(buffer, transportState, valueBuffer, sizeof(valueBuffer)))
+        {
+            auto playState = getPlayStateFromString(valueBuffer);
+            Serial.print("Play State: ");
+            Serial.println(playState);
+            _notificationHandler->notificationPlayStateChanged(playState);
+        }
+        if (readFromEncodeXML(buffer, playMode, valueBuffer, sizeof(valueBuffer)))
+        {
+            auto playMode = getPlayModeFromString(valueBuffer);
+            Serial.print("Play Mode: ");
+            Serial.println(playMode);
+            _notificationHandler->notificationPlayModeChanged(playMode);
         }
         xPath.reset();
         buffer[0] = 0;
@@ -362,14 +445,7 @@ SonosApiPlayState SonosApi::getPlayState()
         PGM_P path[] = {p_SoapEnvelope, p_SoapBody, "u:GetTransportInfoResponse", "CurrentTransportState"};
         char resultBuffer[20];
         wifiClient_xPath(xPath, wifiClient, path, 4, resultBuffer, sizeof(resultBuffer));
-        if (strcmp(resultBuffer, "STOPPED") == 0)
-            currentPlayState = SonosApiPlayState::Stopped;
-        else if (strcmp(resultBuffer, "PLAYING") == 0)
-            currentPlayState = SonosApiPlayState::Playing;
-        else if (strcmp(resultBuffer, "PAUSED_PLAYBACK") == 0)
-            currentPlayState = SonosApiPlayState::Paused_Playback;
-        else if (strcmp(resultBuffer, "TRANSITIONING") == 0)
-            currentPlayState = SonosApiPlayState::Transitioning;
+        currentPlayState = getPlayStateFromString(resultBuffer);
     });
     return currentPlayState;
 }
@@ -398,6 +474,30 @@ void SonosApi::previous()
     String parameter;
     postAction(renderingAVTransportUrl, renderingAVTransportSoapAction, "Previous", parameter);
 }
+
+SonosApiPlayMode SonosApi::getPlayMode()
+{
+    SonosApiPlayMode currentPlayMode = SonosApiPlayMode::Normal;
+    String parameter;
+    postAction(renderingAVTransportUrl, renderingAVTransportSoapAction, "GetTransportSettings", parameter, [=, &currentPlayMode](WiFiClient& wifiClient) {
+        MicroXPath_P xPath;
+        PGM_P path[] = {p_SoapEnvelope, p_SoapBody, "u:GetTransportSettingsResponse", "PlayMode"};
+        char resultBuffer[20];
+        wifiClient_xPath(xPath, wifiClient, path, 4, resultBuffer, sizeof(resultBuffer));
+        currentPlayMode = getPlayModeFromString(resultBuffer);
+    });
+    return currentPlayMode;
+}
+
+void SonosApi::setPlayMode(SonosApiPlayMode playMode)
+{
+    String parameter;
+    parameter += F("<NewPlayMode>");
+    parameter += getPlayModeString(playMode);
+    parameter += F("</NewPlayMode>");
+    postAction(renderingAVTransportUrl, renderingAVTransportSoapAction, "SetPlayMode", parameter);
+}
+
 
 void SonosApi::writeSubscribeHttpCall(Stream& stream, const char* soapUrl)
 {

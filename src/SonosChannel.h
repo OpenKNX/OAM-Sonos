@@ -15,6 +15,7 @@ class SonosChannel : public OpenKNX::Channel, protected SonosApiNotificationHand
         void notificationMuteChanged(boolean mute) override;
         void notificationGroupVolumeChanged(uint8_t volume) override;
         void notificationGroupMuteChanged(boolean mute) override;
+        void notificationPlayStateChanged(SonosApiPlayState playState) override;
     protected:
         void loop1() override;
         void processInputKo(GroupObject &ko) override;

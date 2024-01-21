@@ -6,10 +6,23 @@
 
 
 
-enum SonosApiNotification
+enum SonosApiPlayState : byte
 {
-  SonosVolumeChange = 0,
+  Unkown,
+  Stopped, // STOPPED
+  Transitioning, // TRANSITIONING
+  Playing, // PLAYING
+  Paused_Playback, // PAUSED_PLAYBACK
 };
+
+enum SonosApiPlayMode : byte
+{
+  Normal = 0, // NORMAL
+  Repeat = 1, // REPEAT_ONE || REPEAT_ALL || SHUFFLE_REPEAT_ONE || SHUFFLE_NOREPEAT
+  RepeatModeAll = 2, // REPEAT_ALL || SHUFFLE
+  Shuffle = 4 // SHUFFLE_NOREPEAT || SHUFFLE_NOREPEAT || SHUFFLE || SHUFFLE_REPEAT_ONE
+};
+
 
 class SonosApiNotificationHandler
 {
@@ -18,15 +31,8 @@ class SonosApiNotificationHandler
     virtual void notificationMuteChanged(boolean mute) {}
     virtual void notificationGroupVolumeChanged(uint8_t volume) {};
     virtual void notificationGroupMuteChanged(boolean mute) {};
-};
-
-enum SonosApiPlayState : byte
-{
-  Unkown,
-  Stopped,
-  Transitioning,
-  Playing,
-  Paused_Playback,
+    virtual void notificationPlayStateChanged(SonosApiPlayState playState) {};
+    virtual void notificationPlayModeChanged(SonosApiPlayMode playMode) {};
 };
 
 class SonosTrackInfo
@@ -58,7 +64,10 @@ class SonosApi : private AsyncWebHandler
 
     void writeSoapHttpCall(Stream& stream, const char* soapUrl, const char* soapAction, const char* action, String parameterXml);
     void writeSubscribeHttpCall(Stream& stream, const char* soapUrl);
-
+    
+    SonosApiPlayState getPlayStateFromString(const char* value);
+    SonosApiPlayMode getPlayModeFromString(const char* value);
+    const char* getPlayModeString(SonosApiPlayMode playMode);
 
     typedef std::function<void(WiFiClient&)> THandlerWifiResultFunction;
     int postAction(const char* soapUrl, const char* soapAction, const char* action, String parameterXml, THandlerWifiResultFunction wifiResultFunction = nullptr);
@@ -88,6 +97,8 @@ class SonosApi : private AsyncWebHandler
     void pause();
     void next();
     void previous();
+    SonosApiPlayMode getPlayMode();
+    void setPlayMode(SonosApiPlayMode playMode);
     const SonosTrackInfo getTrackInfo();
     String& getUID();
 };

@@ -54,6 +54,13 @@ void SonosChannel::notificationGroupMuteChanged(boolean mute)
         KoSON_CHGroupMuteState.value(mute, DPT_Switch);
 }
 
+void SonosChannel::notificationPlayStateChanged(SonosApiPlayState playState)
+{
+    bool playing = playState == SonosApiPlayState::Playing || playState == SonosApiPlayState::Transitioning;
+    if (playing != (boolean)KoSON_CHPlayFeedback.value(DPT_Start))
+        KoSON_CHPlayFeedback.value(playing, DPT_Start);
+}
+
 void SonosChannel::processInputKo(GroupObject& ko)
 {
     switch (SON_KoCalcIndex(ko.asap()))

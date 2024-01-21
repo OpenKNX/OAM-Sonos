@@ -1,0 +1,87 @@
+ <!-- RenderingControl -->
+ 
+ <?xml version="1.0" encoding="UTF-8"?>
+<e:propertyset xmlns:e="urn:schemas-upnp-org:event-1-0">
+   <e:property>
+      <LastChange>&lt;Event xmlns="urn:schemas-upnp-org:metadata-1-0/RCS/"&gt;&lt;InstanceID val="0"&gt;&lt;Volume channel="Master" val="11"/&gt;&lt;Volume channel="LF" val="100"/&gt;&lt;Volume channel="RF" val="100"/&gt;&lt;Mute channel="Master" val="0"/&gt;&lt;Mute channel="LF" val="0"/&gt;&lt;Mute channel="RF" val="0"/&gt;&lt;Bass val="0"/&gt;&lt;Treble val="0"/&gt;&lt;Loudness channel="Master" val="0"/&gt;&lt;OutputFixed val="0"/&gt;&lt;SpeakerSize val="7"/&gt;&lt;SubGain val="0"/&gt;&lt;SubCrossover val="0"/&gt;&lt;SubPolarity val="0"/&gt;&lt;SubEnabled val="1"/&gt;&lt;SonarEnabled val="1"/&gt;&lt;SonarCalibrationAvailable val="1"/&gt;&lt;PresetNameList val="FactoryDefaults"/&gt;&lt;/InstanceID&gt;&lt;/Event&gt;</LastChange>
+   </e:property>
+</e:propertyset>
+ 
+<!-- Last Change decoded: -->
+
+<?xml version="1.0" encoding="UTF-8"?>
+<Event xmlns="urn:schemas-upnp-org:metadata-1-0/RCS/">
+   <InstanceID val="0">
+      <Volume channel="Master" val="11" />
+      <Volume channel="LF" val="100" />
+      <Volume channel="RF" val="100" />
+      <Mute channel="Master" val="0" />
+      <Mute channel="LF" val="0" />
+      <Mute channel="RF" val="0" />
+      <Bass val="0" />
+      <Treble val="0" />
+      <Loudness channel="Master" val="0" />
+      <OutputFixed val="0" />
+      <SpeakerSize val="7" />
+      <SubGain val="0" />
+      <SubCrossover val="0" />
+      <SubPolarity val="0" />
+      <SubEnabled val="1" />
+      <SonarEnabled val="1" />
+      <SonarCalibrationAvailable val="1" />
+      <PresetNameList val="FactoryDefaults" />
+   </InstanceID>
+</Event>
+
+<!-- AVTransport -->
+
+<?xml version="1.0" encoding="UTF-8"?>
+<e:propertyset xmlns:e="urn:schemas-upnp-org:event-1-0">
+   <e:property>
+      <LastChange>&lt;Event xmlns="urn:schemas-upnp-org:metadata-1-0/AVT/" xmlns:r="urn:schemas-rinconnetworks-com:metadata-1-0/"&gt;&lt;InstanceID val="0"&gt;&lt;TransportState val="PLAYING"/&gt;&lt;CurrentPlayMode val="NORMAL"/&gt;&lt;CurrentCrossfadeMode val="0"/&gt;&lt;NumberOfTracks val="9"/&gt;&lt;CurrentTrack val="8"/&gt;&lt;CurrentSection val="0"/&gt;&lt;CurrentTrackURI val="x-file-cifs://192.168.0.1/Share/Storage/Musik/Depeche%20Mode/Violator/Depeche%20Mode%20-%2008%20-%20Blue%20Dress.mp3"/&gt;&lt;CurrentTrackDuration val="0:05:40"/&gt;&lt;CurrentTrackMetaData val="&amp;lt;DIDL-Lite xmlns:dc=&amp;quot;http://purl.org/dc/elements/1.1/&amp;quot; xmlns:upnp=&amp;quot;urn:schemas-upnp-org:metadata-1-0/upnp/&amp;quot; xmlns:r=&amp;quot;urn:schemas-rinconnetworks-com:metadata-1-0/&amp;quot; xmlns=&amp;quot;urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/&amp;quot;&amp;gt;&amp;lt;item id=&amp;quot;-1&amp;quot; parentID=&amp;quot;-1&amp;quot; restricted=&amp;quot;true&amp;quot;&amp;gt;&amp;lt;res protocolInfo=&amp;quot;x-file-cifs:*:audio/mpeg:*&amp;quot; duration=&amp;quot;0:05:40&amp;quot;&amp;gt;x-file-cifs://192.168.0.1/Share/Storage/Musik/Depeche%20Mode/Violator/Depeche%20Mode%20-%2008%20-%20Blue%20Dress.mp3&amp;lt;/res&amp;gt;&amp;lt;r:streamContent&amp;gt;&amp;lt;/r:streamContent&amp;gt;&amp;lt;r:radioShowMd&amp;gt;&amp;lt;/r:radioShowMd&amp;gt;&amp;lt;r:streamInfo&amp;gt;bd:16,sr:44100,c:0,l:0,d:0&amp;lt;/r:streamInfo&amp;gt;&amp;lt;upnp:albumArtURI&amp;gt;/getaa?u=x-file-cifs%3a%2f%2f192.168.0.1%2fShare%2fStorage%2fMusik%2fDepeche%2520Mode%2fViolator%2fDepeche%2520Mode%2520-%252008%2520-%2520Blue%2520Dress.mp3&amp;amp;amp;v=48&amp;lt;/upnp:albumArtURI&amp;gt;&amp;lt;dc:title&amp;gt;Blue Dress&amp;lt;/dc:title&amp;gt;&amp;lt;upnp:class&amp;gt;object.item.audioItem.musicTrack&amp;lt;/upnp:class&amp;gt;&amp;lt;dc:creator&amp;gt;Depeche Mode&amp;lt;/dc:creator&amp;gt;&amp;lt;upnp:album&amp;gt;Violator&amp;lt;/upnp:album&amp;gt;&amp;lt;upnp:originalTrackNumber&amp;gt;8&amp;lt;/upnp:originalTrackNumber&amp;gt;&amp;lt;r:albumArtist&amp;gt;Depeche Mode&amp;lt;/r:albumArtist&amp;gt;&amp;lt;/item&amp;gt;&amp;lt;/DIDL-Lite&amp;gt;"/&gt;&lt;r:NextTrackURI val="x-file-cifs://192.168.0.1/Share/Storage/Musik/Depeche%20Mode/Violator/Depeche%20Mode%20-%2009%20-%20Clean.mp3"/&gt;&lt;r:NextTrackMetaData val="&amp;lt;DIDL-Lite xmlns:dc=&amp;quot;http://purl.org/dc/elements/1.1/&amp;quot; xmlns:upnp=&amp;quot;urn:schemas-upnp-org:metadata-1-0/upnp/&amp;quot; xmlns:r=&amp;quot;urn:schemas-rinconnetworks-com:metadata-1-0/&amp;quot; xmlns=&amp;quot;urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/&amp;quot;&amp;gt;&amp;lt;item id=&amp;quot;-1&amp;quot; parentID=&amp;quot;-1&amp;quot; restricted=&amp;quot;true&amp;quot;&amp;gt;&amp;lt;res protocolInfo=&amp;quot;x-file-cifs:*:audio/mpeg:*&amp;quot; duration=&amp;quot;0:05:32&amp;quot;&amp;gt;x-file-cifs://192.168.0.1/Share/Storage/Musik/Depeche%20Mode/Violator/Depeche%20Mode%20-%2009%20-%20Clean.mp3&amp;lt;/res&amp;gt;&amp;lt;upnp:albumArtURI&amp;gt;/getaa?u=x-file-cifs%3a%2f%2f192.168.0.1%2fShare%2fStorage%2fMusik%2fDepeche%2520Mode%2fViolator%2fDepeche%2520Mode%2520-%252009%2520-%2520Clean.mp3&amp;amp;amp;v=48&amp;lt;/upnp:albumArtURI&amp;gt;&amp;lt;dc:title&amp;gt;Clean&amp;lt;/dc:title&amp;gt;&amp;lt;upnp:class&amp;gt;object.item.audioItem.musicTrack&amp;lt;/upnp:class&amp;gt;&amp;lt;dc:creator&amp;gt;Depeche Mode&amp;lt;/dc:creator&amp;gt;&amp;lt;upnp:album&amp;gt;Violator&amp;lt;/upnp:album&amp;gt;&amp;lt;upnp:originalTrackNumber&amp;gt;9&amp;lt;/upnp:originalTrackNumber&amp;gt;&amp;lt;r:albumArtist&amp;gt;Depeche Mode&amp;lt;/r:albumArtist&amp;gt;&amp;lt;/item&amp;gt;&amp;lt;/DIDL-Lite&amp;gt;"/&gt;&lt;r:EnqueuedTransportURI val="x-rincon-playlist:RINCON_347E5CE313D801400#S://192.168.0.1/Share/Storage/Musik/Depeche Mode/Violator"/&gt;&lt;EnqueuedTransportURIMetaData val=""/&gt;&lt;PlaybackStorageMedium val="NETWORK"/&gt;&lt;AVTransportURI val="x-rincon-queue:RINCON_347E5CE313D801400#0"/&gt;&lt;AVTransportURIMetaData val=""/&gt;&lt;NextAVTransportURI val=""/&gt;&lt;NextAVTransportURIMetaData val=""/&gt;&lt;CurrentTransportActions val="Set, Stop, Pause, Play, X_DLNA_SeekTime, Next, Previous, X_DLNA_SeekTrackNr"/&gt;&lt;r:CurrentValidPlayModes val="SHUFFLE,REPEAT,REPEATONE,CROSSFADE"/&gt;&lt;r:DirectControlClientID val=""/&gt;&lt;r:DirectControlIsSuspended val="0"/&gt;&lt;r:DirectControlAccountID val=""/&gt;&lt;TransportStatus val="OK"/&gt;&lt;r:SleepTimerGeneration val="0"/&gt;&lt;r:AlarmRunning val="0"/&gt;&lt;r:SnoozeRunning val="0"/&gt;&lt;r:RestartPending val="0"/&gt;&lt;TransportPlaySpeed val="NOT_IMPLEMENTED"/&gt;&lt;CurrentMediaDuration val="NOT_IMPLEMENTED"/&gt;&lt;RecordStorageMedium val="NOT_IMPLEMENTED"/&gt;&lt;PossiblePlaybackStorageMedia val="NONE, NETWORK"/&gt;&lt;PossibleRecordStorageMedia val="NOT_IMPLEMENTED"/&gt;&lt;RecordMediumWriteStatus val="NOT_IMPLEMENTED"/&gt;&lt;CurrentRecordQualityMode val="NOT_IMPLEMENTED"/&gt;&lt;PossibleRecordQualityModes val="NOT_IMPLEMENTED"/&gt;&lt;/InstanceID&gt;&lt;/Event&gt;</LastChange>
+   </e:property>
+</e:propertyset>
+
+<!-- Last Change decoded: -->
+
+<?xml version="1.0" encoding="UTF-8"?>
+<Event xmlns="urn:schemas-upnp-org:metadata-1-0/AVT/" xmlns:r="urn:schemas-rinconnetworks-com:metadata-1-0/">
+   <InstanceID val="0">
+      <TransportState val="PLAYING" />
+      <CurrentPlayMode val="NORMAL" />
+      <CurrentCrossfadeMode val="0" />
+      <NumberOfTracks val="9" />
+      <CurrentTrack val="8" />
+      <CurrentSection val="0" />
+      <CurrentTrackURI val="x-file-cifs://192.168.0.1/Share/Storage/Musik/Depeche%20Mode/Violator/Depeche%20Mode%20-%2008%20-%20Blue%20Dress.mp3" />
+      <CurrentTrackDuration val="0:05:40" />
+      <CurrentTrackMetaData val="&lt;DIDL-Lite xmlns:dc=&quot;http://purl.org/dc/elements/1.1/&quot; xmlns:upnp=&quot;urn:schemas-upnp-org:metadata-1-0/upnp/&quot; xmlns:r=&quot;urn:schemas-rinconnetworks-com:metadata-1-0/&quot; xmlns=&quot;urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/&quot;&gt;&lt;item id=&quot;-1&quot; parentID=&quot;-1&quot; restricted=&quot;true&quot;&gt;&lt;res protocolInfo=&quot;x-file-cifs:*:audio/mpeg:*&quot; duration=&quot;0:05:40&quot;&gt;x-file-cifs://192.168.0.1/Share/Storage/Musik/Depeche%20Mode/Violator/Depeche%20Mode%20-%2008%20-%20Blue%20Dress.mp3&lt;/res&gt;&lt;r:streamContent&gt;&lt;/r:streamContent&gt;&lt;r:radioShowMd&gt;&lt;/r:radioShowMd&gt;&lt;r:streamInfo&gt;bd:16,sr:44100,c:0,l:0,d:0&lt;/r:streamInfo&gt;&lt;upnp:albumArtURI&gt;/getaa?u=x-file-cifs%3a%2f%2f192.168.0.1%2fShare%2fStorage%2fMusik%2fDepeche%2520Mode%2fViolator%2fDepeche%2520Mode%2520-%252008%2520-%2520Blue%2520Dress.mp3&amp;amp;v=48&lt;/upnp:albumArtURI&gt;&lt;dc:title&gt;Blue Dress&lt;/dc:title&gt;&lt;upnp:class&gt;object.item.audioItem.musicTrack&lt;/upnp:class&gt;&lt;dc:creator&gt;Depeche Mode&lt;/dc:creator&gt;&lt;upnp:album&gt;Violator&lt;/upnp:album&gt;&lt;upnp:originalTrackNumber&gt;8&lt;/upnp:originalTrackNumber&gt;&lt;r:albumArtist&gt;Depeche Mode&lt;/r:albumArtist&gt;&lt;/item&gt;&lt;/DIDL-Lite&gt;" />
+      <r:NextTrackURI val="x-file-cifs://192.168.0.1/Share/Storage/Musik/Depeche%20Mode/Violator/Depeche%20Mode%20-%2009%20-%20Clean.mp3" />
+      <r:NextTrackMetaData val="&lt;DIDL-Lite xmlns:dc=&quot;http://purl.org/dc/elements/1.1/&quot; xmlns:upnp=&quot;urn:schemas-upnp-org:metadata-1-0/upnp/&quot; xmlns:r=&quot;urn:schemas-rinconnetworks-com:metadata-1-0/&quot; xmlns=&quot;urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/&quot;&gt;&lt;item id=&quot;-1&quot; parentID=&quot;-1&quot; restricted=&quot;true&quot;&gt;&lt;res protocolInfo=&quot;x-file-cifs:*:audio/mpeg:*&quot; duration=&quot;0:05:32&quot;&gt;x-file-cifs://192.168.0.1/Share/Storage/Musik/Depeche%20Mode/Violator/Depeche%20Mode%20-%2009%20-%20Clean.mp3&lt;/res&gt;&lt;upnp:albumArtURI&gt;/getaa?u=x-file-cifs%3a%2f%2f192.168.0.1%2fShare%2fStorage%2fMusik%2fDepeche%2520Mode%2fViolator%2fDepeche%2520Mode%2520-%252009%2520-%2520Clean.mp3&amp;amp;v=48&lt;/upnp:albumArtURI&gt;&lt;dc:title&gt;Clean&lt;/dc:title&gt;&lt;upnp:class&gt;object.item.audioItem.musicTrack&lt;/upnp:class&gt;&lt;dc:creator&gt;Depeche Mode&lt;/dc:creator&gt;&lt;upnp:album&gt;Violator&lt;/upnp:album&gt;&lt;upnp:originalTrackNumber&gt;9&lt;/upnp:originalTrackNumber&gt;&lt;r:albumArtist&gt;Depeche Mode&lt;/r:albumArtist&gt;&lt;/item&gt;&lt;/DIDL-Lite&gt;" />
+      <r:EnqueuedTransportURI val="x-rincon-playlist:RINCON_347E5CE313D801400#S://192.168.0.1/Share/Storage/Musik/Depeche Mode/Violator" />
+      <EnqueuedTransportURIMetaData val="" />
+      <PlaybackStorageMedium val="NETWORK" />
+      <AVTransportURI val="x-rincon-queue:RINCON_347E5CE313D801400#0" />
+      <AVTransportURIMetaData val="" />
+      <NextAVTransportURI val="" />
+      <NextAVTransportURIMetaData val="" />
+      <CurrentTransportActions val="Set, Stop, Pause, Play, X_DLNA_SeekTime, Next, Previous, X_DLNA_SeekTrackNr" />
+      <r:CurrentValidPlayModes val="SHUFFLE,REPEAT,REPEATONE,CROSSFADE" />
+      <r:DirectControlClientID val="" />
+      <r:DirectControlIsSuspended val="0" />
+      <r:DirectControlAccountID val="" />
+      <TransportStatus val="OK" />
+      <r:SleepTimerGeneration val="0" />
+      <r:AlarmRunning val="0" />
+      <r:SnoozeRunning val="0" />
+      <r:RestartPending val="0" />
+      <TransportPlaySpeed val="NOT_IMPLEMENTED" />
+      <CurrentMediaDuration val="NOT_IMPLEMENTED" />
+      <RecordStorageMedium val="NOT_IMPLEMENTED" />
+      <PossiblePlaybackStorageMedia val="NONE, NETWORK" />
+      <PossibleRecordStorageMedia val="NOT_IMPLEMENTED" />
+      <RecordMediumWriteStatus val="NOT_IMPLEMENTED" />
+      <CurrentRecordQualityMode val="NOT_IMPLEMENTED" />
+      <PossibleRecordQualityModes val="NOT_IMPLEMENTED" />
+   </InstanceID>
+</Event>
