@@ -73,7 +73,7 @@
               <ComObject Id="%AID%_O-%TT%%CC%013" Number="%K13%" Name="CH%C%GroupMuteState"      Text="%C% Gruppe Mute Status"                   FunctionText="{{0:-}} Gruppe Mute Status"                   ObjectSize="1 Bit" DatapointType="DPST-1-1" TransmitFlag="Enabled"  ReadFlag="Enabled"  UpdateFlag="Disabled" WriteFlag="Disabled" CommunicationFlag="Enabled" ReadOnInitFlag="Disabled" />  
 
               <!-- Join next active group -->
-              <ComObject Id="%AID%_O-%TT%%CC%014" Number="%K14%" Name="CH%C%JoinNextActiveGroup" Text="%C% Nächste aktiven Gruppe beitreten"     FunctionText="{{0:-}} Nächste aktiven Gruppe beitreten" ObjectSize="1 Bit" DatapointType="DPST-1-17" TransmitFlag="Disabled" ReadFlag="Disabled" WriteFlag="Enabled"  UpdateFlag="Disabled" CommunicationFlag="Enabled" ReadOnInitFlag="Disabled" />         
+              <ComObject Id="%AID%_O-%TT%%CC%014" Number="%K14%" Name="CH%C%JoinNextActiveGroup" Text="%C% Nächster aktiven Gruppe beitreten"     FunctionText="{{0:-}} Nächster aktiven Gruppe beitreten" ObjectSize="1 Bit" DatapointType="DPST-1-17" TransmitFlag="Disabled" ReadFlag="Disabled" WriteFlag="Enabled"  UpdateFlag="Disabled" CommunicationFlag="Enabled" ReadOnInitFlag="Disabled" />         
     
             </ComObjectTable>
             <ComObjectRefs>
@@ -104,7 +104,7 @@
               <!-- Group Mute State-->
               <ComObjectRef Id="%AID%_O-%TT%%CC%013_R-%TT%%CC%01301" RefId="%AID%_O-%TT%%CC%013" Text="%C%: Gruppe Mute Status"                  FunctionText="{{0:-}} Gruppe Mute Status"                  TextParameterRefId="%AID%_P-%TT%%CC%002_R-%TT%%CC%00201" />
               <!-- Join next active group -->
-              <ComObjectRef Id="%AID%_O-%TT%%CC%014_R-%TT%%CC%01401" RefId="%AID%_O-%TT%%CC%014" Text="%C%: Nächste aktiven Gruppe beitreten"    FunctionText="{{0:-}} Nächste aktiven Gruppe beitreten"    TextParameterRefId="%AID%_P-%TT%%CC%002_R-%TT%%CC%00201" />
+              <ComObjectRef Id="%AID%_O-%TT%%CC%014_R-%TT%%CC%01401" RefId="%AID%_O-%TT%%CC%014" Text="%C%: Nächster aktiven Gruppe beitreten"    FunctionText="{{0:-}} Nächster aktiven Gruppe beitreten"    TextParameterRefId="%AID%_P-%TT%%CC%002_R-%TT%%CC%00201" />
     
             </ComObjectRefs>
           </Static>
