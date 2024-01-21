@@ -63,12 +63,7 @@ void SonosChannel::notificationPlayStateChanged(SonosApi& caller, SonosApiPlaySt
 
 void SonosChannel::processInputKo(GroupObject& ko)
 {
- 
-    auto index = SON_KoCalcIndex(ko.asap());
-    Serial.println("##############");
-    Serial.println(index);
-     Serial.println(ko.asap());
-    switch (index)
+    switch (SON_KoCalcIndex(ko.asap()))
     {
         case SON_KoCHVolume:
         {
@@ -141,11 +136,9 @@ void SonosChannel::processInputKo(GroupObject& ko)
         }
         case SON_KoCHJoinNextActiveGroup:
         {
-            Serial.println("##############");
             boolean trigger = ko.value(DPT_Trigger);
             if (trigger)
             {
-                 Serial.println("*****************");
                 logDebugP("Join next playing group");
                 joinNextPlayingGroup();
             }
