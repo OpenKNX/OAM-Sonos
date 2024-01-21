@@ -28,7 +28,7 @@ OpenKNX::Channel *SonosModule::createChannel(uint8_t _channelIndex /* this param
 
     auto sonosApi = new SonosApi();
     auto channel = new SonosChannel(_channelIndex, *sonosApi);
-    sonosApi->init(_webServer, channel->speakerIP(), _channelIndex);
+    sonosApi->init(_webServer, channel->speakerIP());
     if (firstChannel == nullptr)
         firstChannel = channel;
     return channel;
@@ -116,6 +116,8 @@ void SonosModule::showHelp()
     openknx.console.printHelpLine("son<CC> pause", "Pause playing of channel CC. i.e. son01 pause");
     openknx.console.printHelpLine("son<CC> next", "Channel CC go to next song. i.e. son01 next");
     openknx.console.printHelpLine("son<CC> prev", "Channel CC go to previous song. i.e. son01 prev");
+    openknx.console.printHelpLine("son<CC> findc", "Find the coordinator of the Channel CC. i.e. son01 findc");
+    openknx.console.printHelpLine("son<CC> findnpc", "Find next playing coordinator of the Channel CC. i.e. son01 findnpc");
 }
 
 void SonosModule::showInformations()

@@ -30,31 +30,31 @@ void SonosChannel::loop1()
     _volumeController.loop1(_sonosApi, _speakerIP, _channelIndex);
 }
 
-void SonosChannel::notificationVolumeChanged(uint8_t volume)
+void SonosChannel::notificationVolumeChanged(SonosApi& caller, uint8_t volume)
 {
     if (volume != (uint8_t)KoSON_CHVolumeState.value(DPT_Scaling))
         KoSON_CHVolumeState.value(volume, DPT_Scaling);
 }
 
-void SonosChannel::notificationMuteChanged(boolean mute)
+void SonosChannel::notificationMuteChanged(SonosApi& caller, boolean mute)
 {
     if (mute != (boolean)KoSON_CHMuteState.value(DPT_Switch))
         KoSON_CHMuteState.value(mute, DPT_Switch);
 }
 
-void SonosChannel::notificationGroupVolumeChanged(uint8_t volume)
+void SonosChannel::notificationGroupVolumeChanged(SonosApi& caller, uint8_t volume)
 {
     if (volume != (uint8_t)KoSON_CHGroupVolumeState.value(DPT_Scaling))
         KoSON_CHGroupVolumeState.value(volume, DPT_Scaling);
 }
 
-void SonosChannel::notificationGroupMuteChanged(boolean mute)
+void SonosChannel::notificationGroupMuteChanged(SonosApi& caller, boolean mute)
 {
     if (mute != (boolean)KoSON_CHGroupMuteState.value(DPT_Switch))
         KoSON_CHGroupMuteState.value(mute, DPT_Switch);
 }
 
-void SonosChannel::notificationPlayStateChanged(SonosApiPlayState playState)
+void SonosChannel::notificationPlayStateChanged(SonosApi& caller, SonosApiPlayState playState)
 {
     bool playing = playState == SonosApiPlayState::Playing || playState == SonosApiPlayState::Transitioning;
     if (playing != (boolean)KoSON_CHPlayFeedback.value(DPT_Start))
@@ -246,6 +246,24 @@ bool SonosChannel::processCommand(const std::string cmd, bool diagnoseKo)
     {
         Serial.println();
         _sonosApi.previous();
+    }
+    else if (cmd == "findc")
+    {
+        Serial.println();
+        auto groupCoordinator = _sonosApi.findGroupCoordinator();
+        if (groupCoordinator != nullptr)
+            Serial.println(groupCoordinator->getSpeakerIP().toString());
+        else
+            Serial.println("Not found");
+    }
+    else if (cmd == "findnpc")
+    {
+        Serial.println();
+        auto groupCoordinator = _sonosApi.findNextPlayingGroupCoordinator();
+        if (groupCoordinator != nullptr)
+            Serial.println(groupCoordinator->getSpeakerIP().toString());
+        else
+            Serial.println("Not found");
     }
     else
         return false;

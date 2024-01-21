@@ -4,8 +4,6 @@
 #include "WiFi.h"
 #include <ESPAsyncWebServer.h>
 
-
-
 enum SonosApiPlayState : byte
 {
   Unkown,
@@ -23,16 +21,17 @@ enum SonosApiPlayMode : byte
   Shuffle = 4 // SHUFFLE_NOREPEAT || SHUFFLE_NOREPEAT || SHUFFLE || SHUFFLE_REPEAT_ONE
 };
 
+class SonosApi;
 
 class SonosApiNotificationHandler
 {
   public:
-    virtual void notificationVolumeChanged(uint8_t volume) {}
-    virtual void notificationMuteChanged(boolean mute) {}
-    virtual void notificationGroupVolumeChanged(uint8_t volume) {};
-    virtual void notificationGroupMuteChanged(boolean mute) {};
-    virtual void notificationPlayStateChanged(SonosApiPlayState playState) {};
-    virtual void notificationPlayModeChanged(SonosApiPlayMode playMode) {};
+    virtual void notificationVolumeChanged(SonosApi& caller, uint8_t volume) {}
+    virtual void notificationMuteChanged(SonosApi& caller, boolean mute) {}
+    virtual void notificationGroupVolumeChanged(SonosApi& caller, uint8_t volume) {};
+    virtual void notificationGroupMuteChanged(SonosApi& caller, boolean mute) {};
+    virtual void notificationPlayStateChanged(SonosApi& caller, SonosApiPlayState playState) {};
+    virtual void notificationPlayModeChanged(SonosApi& caller, SonosApiPlayMode playMode) {};
 };
 
 class SonosTrackInfo
@@ -47,6 +46,7 @@ class SonosTrackInfo
 
 class SonosApi : private AsyncWebHandler
 {
+    static std::vector<SonosApi*> AllSonosApis;
     const static uint32_t _subscriptionTimeInSeconds = 600;
     String _uuid;
     IPAddress _speakerIP;
@@ -79,7 +79,9 @@ class SonosApi : private AsyncWebHandler
     void handleBody(AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) override final;
    
   public:
-    void init(AsyncWebServer* webServer, IPAddress speakerIP, uint16_t channelIndex);
+    ~SonosApi();
+    IPAddress& getSpeakerIP();
+    void init(AsyncWebServer* webServer, IPAddress speakerIP);
     void setCallback(SonosApiNotificationHandler* notificationHandler);
     void loop();
     void setVolume(uint8_t volume);
@@ -101,4 +103,7 @@ class SonosApi : private AsyncWebHandler
     void setPlayMode(SonosApiPlayMode playMode);
     const SonosTrackInfo getTrackInfo();
     String& getUID();
+    SonosApi* findGroupCoordinator();
+    SonosApi* findNextPlayingGroupCoordinator();
+
 };
