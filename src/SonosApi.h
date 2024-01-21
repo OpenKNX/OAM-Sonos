@@ -60,7 +60,7 @@ class SonosApi : private AsyncWebHandler
       return "Sonos.API";
     }
 
-    void wifiClient_xPath(MicroXPath_P& xPath, WiFiClient& wifiClient, PGM_P* path, uint8_t pathSize, char* resultBuffer, size_t resultBufferSize);
+    static void wifiClient_xPath(MicroXPath_P& xPath, WiFiClient& wifiClient, PGM_P* path, uint8_t pathSize, char* resultBuffer, size_t resultBufferSize);
 
     void writeSoapHttpCall(Stream& stream, const char* soapUrl, const char* soapAction, const char* action, String parameterXml);
     void writeSubscribeHttpCall(Stream& stream, const char* soapUrl);
@@ -80,6 +80,9 @@ class SonosApi : private AsyncWebHandler
    
   public:
     ~SonosApi();
+    String& getUID();
+    static String getUID(IPAddress ipAddress);
+
     IPAddress& getSpeakerIP();
     void init(AsyncWebServer* webServer, IPAddress speakerIP);
     void setCallback(SonosApiNotificationHandler* notificationHandler);
@@ -102,8 +105,9 @@ class SonosApi : private AsyncWebHandler
     SonosApiPlayMode getPlayMode();
     void setPlayMode(SonosApiPlayMode playMode);
     const SonosTrackInfo getTrackInfo();
-    String& getUID();
     SonosApi* findGroupCoordinator();
     SonosApi* findNextPlayingGroupCoordinator();
-
+    void setAVTransportURI(const char* schema, const char* currentURI, const char* currentURIMetaData = nullptr);
+    void joinToGroupCoordinator(SonosApi* coordinator);
+    void joinToGroupCoordinator(const char* uid);
 };

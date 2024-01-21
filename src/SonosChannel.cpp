@@ -63,7 +63,12 @@ void SonosChannel::notificationPlayStateChanged(SonosApi& caller, SonosApiPlaySt
 
 void SonosChannel::processInputKo(GroupObject& ko)
 {
-    switch (SON_KoCalcIndex(ko.asap()))
+ 
+    auto index = SON_KoCalcIndex(ko.asap());
+    Serial.println("##############");
+    Serial.println(index);
+     Serial.println(ko.asap());
+    switch (index)
     {
         case SON_KoCHVolume:
         {
@@ -131,6 +136,18 @@ void SonosChannel::processInputKo(GroupObject& ko)
             {
                 logDebugP("Set Previous");
                 _sonosApi.previous();
+            }
+            break;
+        }
+        case SON_KoCHJoinNextActiveGroup:
+        {
+            Serial.println("##############");
+            boolean trigger = ko.value(DPT_Trigger);
+            if (trigger)
+            {
+                 Serial.println("*****************");
+                logDebugP("Join next playing group");
+                joinNextPlayingGroup();
             }
             break;
         }
@@ -265,7 +282,24 @@ bool SonosChannel::processCommand(const std::string cmd, bool diagnoseKo)
         else
             Serial.println("Not found");
     }
+    else if (cmd == "joinnext")
+    {
+       Serial.println();
+       joinNextPlayingGroup();
+    }
     else
         return false;
     return true;
+}
+
+void SonosChannel::joinNextPlayingGroup()
+{
+    auto groupCoordinator = _sonosApi.findNextPlayingGroupCoordinator();
+    if (groupCoordinator != nullptr)
+    {
+         logDebugP("Join with %s", groupCoordinator->getSpeakerIP().toString().c_str());
+        _sonosApi.joinToGroupCoordinator(groupCoordinator);
+    }
+    else
+        logDebugP("No next playing group found");
 }

@@ -326,6 +326,7 @@ int SonosApi::postAction(const char* soapUrl, const char* soapAction, const char
     return 0;
 }
 
+
 const char* renderingControlUrl PROGMEM = "/MediaRenderer/RenderingControl/Control";
 const char* renderingControlSoapAction PROGMEM = "urn:schemas-upnp-org:service:RenderingControl:1";
 
@@ -454,6 +455,34 @@ boolean SonosApi::getGroupMute()
 const char* renderingAVTransportUrl PROGMEM = "/MediaRenderer/AVTransport/Control";
 const char* renderingAVTransportSoapAction PROGMEM = "urn:schemas-upnp-org:service:AVTransport:1";
 
+void SonosApi::setAVTransportURI(const char* schema, const char* currentURI, const char* currentURIMetaData)
+{
+    String parameter;
+    parameter += F("<CurrentURI>");
+    if (schema != nullptr)
+        parameter += schema;
+    parameter += currentURI;
+    parameter +=  F("</CurrentURI>");
+    parameter += F("<CurrentURIMetaData>");
+    if (currentURIMetaData != nullptr)
+        parameter += currentURIMetaData;
+    parameter +=  F("</CurrentURIMetaData>");
+    postAction(renderingAVTransportUrl, renderingAVTransportSoapAction, "SetAVTransportURI", parameter);
+}
+
+const char sonosSchemaMaster[] PROGMEM = "x-rincon:";
+
+void SonosApi::joinToGroupCoordinator(SonosApi* coordinator)
+{
+    joinToGroupCoordinator(coordinator->getUID().c_str());
+}
+
+void SonosApi::joinToGroupCoordinator(const char* uid)
+{
+    setAVTransportURI(sonosSchemaMaster, uid);
+}
+
+
 SonosApiPlayState SonosApi::getPlayState()
 {
     SonosApiPlayState currentPlayState = SonosApiPlayState::Unkown;
@@ -573,43 +602,47 @@ int SonosApi::subscribeEvents(const char* soapUrl)
     return 0;
 }
 
+String SonosApi::getUID(IPAddress ipAddress)
+{
+    WiFiClient wifiClient;
+    if (wifiClient.connect(ipAddress, 1400) != true)
+    {
+        return String();
+    }
+    wifiClient.print("GET http://");
+    wifiClient.print(ipAddress.toString());
+    wifiClient.print(":1400/status/zp HTTP/1.1\r\n");
+    // Header
+    wifiClient.print("HOST: ");
+    wifiClient.print(ipAddress.toString());
+    wifiClient.print("\r\n");
+    wifiClient.print("Connection: close\r\n");
+    wifiClient.print("\r\n");;
+
+    auto start = millis();
+    while (!wifiClient.available())
+    {
+        if (millis() - start > 3000)
+        {
+            wifiClient.stop();
+            return String();
+        }
+    }
+
+    PGM_P path[] = {"ZPSupportInfo", "ZPInfo", "LocalUID"};
+    char resultBuffer[30];
+    MicroXPath_P xPath;
+    
+    wifiClient_xPath(xPath, wifiClient, path, 3, resultBuffer, 30);
+    wifiClient.stop();
+    return resultBuffer;
+}
+
 String& SonosApi::getUID()
 {
     if (_uuid.length() == 0)
     {
-        WiFiClient wifiClient;
-        if (wifiClient.connect(_speakerIP, 1400) != true)
-        {
-            logErrorP("connect to %s:1400 failed", _speakerIP.toString());
-            return _uuid;
-        }
-        wifiClient.print("GET http://");
-        wifiClient.print(_speakerIP.toString());
-        wifiClient.print(":1400/status/zp HTTP/1.1\r\n");
-        // Header
-        wifiClient.print("HOST: ");
-        wifiClient.print(_speakerIP.toString());
-        wifiClient.print("\r\n");
-        wifiClient.print("Connection: close\r\n");
-        wifiClient.print("\r\n");;
-
-        auto start = millis();
-        while (!wifiClient.available())
-        {
-            if (millis() - start > 3000)
-            {
-                wifiClient.stop();
-                return _uuid;
-            }
-        }
-    
-        PGM_P path[] = {"ZPSupportInfo", "ZPInfo", "LocalUID"};
-        char resultBuffer[30];
-        MicroXPath_P xPath;
-       
-        wifiClient_xPath(xPath, wifiClient, path, 3, resultBuffer, 30);
-        _uuid = resultBuffer;
-        wifiClient.stop();
+        _uuid = getUID(_speakerIP);
     }
     return _uuid;
 }
@@ -676,7 +709,7 @@ const SonosTrackInfo SonosApi::getTrackInfo()
 SonosApi* SonosApi::findGroupCoordinator()
 {
     auto trackInfo = getTrackInfo();
-    if (!trackInfo.uri.startsWith("x-rincon:"))
+    if (!trackInfo.uri.startsWith(sonosSchemaMaster))
     {
         return this;
     }
@@ -703,7 +736,7 @@ SonosApi* SonosApi::findNextPlayingGroupCoordinator()
     {
         auto sonosApi = *iter;
         auto trackInfo = sonosApi->getTrackInfo();
-        bool isCoordinator = !trackInfo.uri.startsWith("x-rincon:");
+        bool isCoordinator = !trackInfo.uri.startsWith(sonosSchemaMaster);
         if (isCoordinator)
         {
             allGroupCoordinators.push_back(sonosApi);
