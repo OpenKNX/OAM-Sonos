@@ -102,6 +102,31 @@ void SonosChannel::processInputKo(GroupObject& ko)
             _sonosApi.setGroupMute(mute);
             break;
         }
+        case SON_KoCHPlay:
+        {
+            boolean play = ko.value(DPT_Switch);
+            logDebugP("Set play %d", play);
+            if (play)
+                _sonosApi.play();
+            else
+                _sonosApi.pause();
+            break;
+        }
+        case SON_KoCHPreviousNext:
+        {
+            boolean next = ko.value(DPT_UpDown);
+            if (next)
+            {
+                logDebugP("Set Next");
+                _sonosApi.next();
+            }
+            else
+            {
+                logDebugP("Set Previous");
+                _sonosApi.previous();
+            }
+            break;
+        }
     }
 }
 
