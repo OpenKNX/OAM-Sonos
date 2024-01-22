@@ -3,6 +3,7 @@
 #include "SonosApi.h"
 #include "VolumeController.h"
 
+
 class SonosChannel : public OpenKNX::Channel, protected SonosApiNotificationHandler
 {
     private:

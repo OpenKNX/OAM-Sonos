@@ -1,7 +1,8 @@
 #pragma once
 #include "OpenKNX.h"
-#include "SonosUPnP.h"
 #include "WiFi.h"
+#include <MicroXPath.h>
+#include <MicroXPath_P.h>
 #include <ESPAsyncWebServer.h>
 
 enum SonosApiPlayState : byte

@@ -99,14 +99,18 @@ void SonosChannel::processInputKo(GroupObject& ko)
             bool increase = ko.value(DPT_Step);
             auto volume = increase ? (int8_t) ParamSON_CHGroupRelativVolumeStep : -(int8_t) ParamSON_CHGroupRelativVolumeStep;
             logDebugP("Set volume relative %d", volume);
-            _sonosApi.setGroupVolumeRelative(volume);
+            auto groupCoordinator = _sonosApi.findGroupCoordinator();
+            if (groupCoordinator != nullptr)
+                groupCoordinator->setGroupVolumeRelative(volume);
             break;
         }
         case SON_KoCHGroupMute:
         {
             boolean mute = ko.value(DPT_Switch);
             logDebugP("Set group mute %d", mute);
-            _sonosApi.setGroupMute(mute);
+            auto groupCoordinator = _sonosApi.findGroupCoordinator();
+            if (groupCoordinator != nullptr)
+                groupCoordinator->setGroupMute(mute);
             break;
         }
         case SON_KoCHPlay:

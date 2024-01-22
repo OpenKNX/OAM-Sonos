@@ -10,9 +10,9 @@
                                              
 #define MAIN_OpenKnxId 0xAE
 #define MAIN_ApplicationNumber 43
-#define MAIN_ApplicationVersion 7
+#define MAIN_ApplicationVersion 8
 #define MAIN_ParameterSize 2111
-#define MAIN_MaxKoNumber 820
+#define MAIN_MaxKoNumber 819
 #define MAIN_OrderNumber "MGKnxSON"
 #define BASE_ModuleVersion 16
 #define NET_ModuleVersion 2
@@ -226,20 +226,20 @@
 #define SON_KoCalcNumber(index) (index + SON_KoBlockOffset + _channelIndex * SON_KoBlockSize)
 #define SON_KoCalcIndex(number) ((number >= SON_KoCalcNumber(0) && number < SON_KoCalcNumber(SON_KoBlockSize)) ? (number - SON_KoOffset) % SON_KoBlockSize : -1)
 
-#define SON_KoCHVolume 1
-#define SON_KoCHVolumeState 2
-#define SON_KoCHVolumeRelativ 3
-#define SON_KoCHMute 4
-#define SON_KoCHMuteState 5
-#define SON_KoCHPlay 6
-#define SON_KoCHPlayFeedback 7
-#define SON_KoCHPreviousNext 8
-#define SON_KoCHGroupVolume 9
-#define SON_KoCHGroupVolumeState 10
-#define SON_KoCHGroupVolumeRelativ 11
-#define SON_KoCHGroupMute 12
-#define SON_KoCHGroupMuteState 13
-#define SON_KoCHJoinNextActiveGroup 14
+#define SON_KoCHVolume 0
+#define SON_KoCHVolumeState 1
+#define SON_KoCHVolumeRelativ 2
+#define SON_KoCHMute 3
+#define SON_KoCHMuteState 4
+#define SON_KoCHPlay 5
+#define SON_KoCHPlayFeedback 6
+#define SON_KoCHPreviousNext 7
+#define SON_KoCHGroupVolume 8
+#define SON_KoCHGroupVolumeState 9
+#define SON_KoCHGroupVolumeRelativ 10
+#define SON_KoCHGroupMute 11
+#define SON_KoCHGroupMuteState 12
+#define SON_KoCHJoinNextActiveGroup 13
 
 // %C% Lautstärke
 #define KoSON_CHVolume                            (knx.getGroupObject(SON_KoCalcNumber(SON_KoCHVolume)))
@@ -267,7 +267,7 @@
 #define KoSON_CHGroupMute                         (knx.getGroupObject(SON_KoCalcNumber(SON_KoCHGroupMute)))
 // %C% Gruppe Mute Status
 #define KoSON_CHGroupMuteState                    (knx.getGroupObject(SON_KoCalcNumber(SON_KoCHGroupMuteState)))
-// %C% Nächste aktiven Gruppe beitreten
+// %C% Nächster aktiven Gruppe beitreten
 #define KoSON_CHJoinNextActiveGroup               (knx.getGroupObject(SON_KoCalcNumber(SON_KoCHJoinNextActiveGroup)))
 
 #define LOG_BuzzerInstalled                     378      // 1 Bit, Bit 7

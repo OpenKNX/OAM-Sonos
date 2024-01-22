@@ -13,7 +13,11 @@ void VolumeController::loop1(SonosApi& sonosApi, IPAddress speakerIP, uint8_t _c
         auto volume = _targetVolume;
         _targetVolume = 255;
         if (_groupVolume)
-            sonosApi.setGroupVolume(volume);
+        {
+            auto groupCoordinator = sonosApi.findGroupCoordinator();
+            if (groupCoordinator != nullptr)
+                groupCoordinator->setGroupVolume(volume);
+        }
         else
             sonosApi.setVolume(volume);
     }
