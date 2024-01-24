@@ -77,7 +77,7 @@ void SonosChannel::notificationGroupMuteChanged(SonosApi& caller, boolean mute)
             auto channel = (SonosChannel*)_sonosModule.getChannel(channelIndex);
             if (channel != nullptr && channel->_sonosApi.findGroupCoordinator(true) == &caller)
             {
-                channel->notificationMuteChanged(caller, mute);
+                channel->notificationGroupMuteChanged(caller, mute);
             }
         }
     }
