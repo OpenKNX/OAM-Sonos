@@ -52,6 +52,8 @@ void SonosChannel::notificationGroupVolumeChanged(SonosApi& caller, uint8_t volu
         // this channel is group coordinator, notify all participants
         for (int channelIndex = 0; channelIndex < _sonosModule.getNumberOfChannels(); channelIndex++)
         {
+            if (channelIndex == _channelIndex)
+                continue;
             auto channel = (SonosChannel*)_sonosModule.getChannel(channelIndex);
             if (channel != nullptr && channel->_sonosApi.findGroupCoordinator(true) == &caller)
             {
@@ -70,6 +72,8 @@ void SonosChannel::notificationGroupMuteChanged(SonosApi& caller, boolean mute)
         // this channel is group coordinator, notify all participants
         for (int channelIndex = 0; channelIndex < _sonosModule.getNumberOfChannels(); channelIndex++)
         {
+            if (channelIndex == _channelIndex)
+                continue;
             auto channel = (SonosChannel*)_sonosModule.getChannel(channelIndex);
             if (channel != nullptr && channel->_sonosApi.findGroupCoordinator(true) == &caller)
             {
@@ -91,6 +95,8 @@ void SonosChannel::notificationPlayStateChanged(SonosApi& caller, SonosApiPlaySt
         // notify all participants
         for (int channelIndex = 0; channelIndex < _sonosModule.getNumberOfChannels(); channelIndex++)
         {
+            if (channelIndex == _channelIndex)
+                continue;
             auto channel = (SonosChannel*)_sonosModule.getChannel(channelIndex);
             if (channel != nullptr && channel->_sonosApi.findGroupCoordinator(true) == &caller)
             {
@@ -180,10 +186,13 @@ void SonosChannel::processInputKo(GroupObject& ko)
         {
             boolean play = ko.value(DPT_Switch);
             logDebugP("Set play %d", play);
+            auto groupCoordinator = _sonosApi.findGroupCoordinator();
+            if (groupCoordinator == nullptr)
+                return;
             if (play)
-                _sonosApi.play();
+                groupCoordinator->play();
             else
-                _sonosApi.pause();
+                groupCoordinator->pause();
             break;
         }
         case SON_KoCHPreviousNext:
@@ -347,6 +356,31 @@ bool SonosChannel::processCommand(const std::string cmd, bool diagnoseKo)
        Serial.println();
        joinNextPlayingGroup();
     }
+    else if (cmd.rfind("dele ", 0) == 0)
+    {
+        Serial.println();
+        auto targetChannel = atoi(cmd.substr(5).c_str());
+        if (targetChannel < 1 || targetChannel > _sonosModule.getNumberOfChannels())
+        {
+            Serial.print("Invalid channel ");
+            Serial.println(targetChannel);
+            return true;
+        }
+        if (targetChannel -1 == _channelIndex)
+        {
+            Serial.println("Target channel must be a differnt channel");
+            return true;
+        }
+        auto channel = (SonosChannel*) _sonosModule.getChannel(targetChannel - 1);
+        if (channel == nullptr)
+        {
+            Serial.print("Channel ");
+            Serial.print(targetChannel);
+            Serial.println("is deactivated");
+            return true;
+        }       
+        _sonosApi.delegateGroupCoordinationTo(&(channel->_sonosApi), true);
+    }
     else
         return false;
     return true;
@@ -354,6 +388,15 @@ bool SonosChannel::processCommand(const std::string cmd, bool diagnoseKo)
 
 void SonosChannel::joinNextPlayingGroup()
 {
+    auto currentGroupCoordinator = _sonosApi.findGroupCoordinator(true);
+    if (currentGroupCoordinator == &_sonosApi)
+    {
+        // delegate to other participant of the group
+        auto firstParticpant = _sonosApi.findFirstParticipant(true);
+        if (firstParticpant != nullptr)
+            _sonosApi.delegateGroupCoordinationTo(firstParticpant, true);
+    }
+
     auto groupCoordinator = _sonosApi.findNextPlayingGroupCoordinator();
     if (groupCoordinator != nullptr)
     {

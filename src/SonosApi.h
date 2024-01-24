@@ -120,4 +120,7 @@ class SonosApi : private AsyncWebHandler
     void setAVTransportURI(const char* schema, const char* currentURI, const char* currentURIMetaData = nullptr);
     void joinToGroupCoordinator(SonosApi* coordinator);
     void joinToGroupCoordinator(const char* uid);
+    SonosApi* findFirstParticipant(bool cached = false);
+    void delegateGroupCoordinationTo(SonosApi* sonosApi, bool rejoinGroup);
+    void delegateGroupCoordinationTo(const char* uid, bool rejoinGroup);
 };

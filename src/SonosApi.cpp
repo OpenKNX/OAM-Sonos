@@ -548,6 +548,8 @@ void SonosApi::setAVTransportURI(const char* schema, const char* currentURI, con
 
 void SonosApi::joinToGroupCoordinator(SonosApi* coordinator)
 {
+    if (coordinator == nullptr)
+        return;
     joinToGroupCoordinator(coordinator->getUID().c_str());
 }
 
@@ -884,7 +886,7 @@ SonosApi* SonosApi::findNextPlayingGroupCoordinator()
             }
         }
     }
-    // Searh playing coordinator befor own coordinator
+    // Searh playing coordinator before own coordinator
     for(auto iter = allGroupCoordinators.begin(); iter < allGroupCoordinators.end(); iter++)
     {
         auto sonosApi = *iter;
@@ -895,4 +897,39 @@ SonosApi* SonosApi::findNextPlayingGroupCoordinator()
             return sonosApi; // Next coordinator found    
     }
     return nullptr; // no other playing coordinator found
+}
+
+SonosApi* SonosApi::findFirstParticipant(bool cached)
+{
+    auto uid = getUID();
+    for(auto iter = AllSonosApis.begin(); iter < AllSonosApis.end(); iter++)
+    {
+        auto sonosApi = *iter;
+        if (sonosApi != this)
+        {
+            if (findGroupCoordinator(cached) == this)
+                return sonosApi;
+        }
+    }
+    return nullptr;
+}
+
+void SonosApi::delegateGroupCoordinationTo(SonosApi* sonosApi, bool rejoinGroup)
+{
+    if (sonosApi == nullptr)
+        return;
+    delegateGroupCoordinationTo(sonosApi->getUID().c_str(), rejoinGroup);
+}
+
+void SonosApi::delegateGroupCoordinationTo(const char* uid, bool rejoinGroup)
+{
+    String parameter;
+    parameter += F("<NewCoordinator>");
+    parameter += uid;
+    parameter += F("</NewCoordinator>");
+    parameter += F("<RejoinGroup>");
+    parameter += rejoinGroup ? "1" : "0";
+    parameter += F("</RejoinGroup>");
+    postAction(renderingAVTransportUrl, renderingAVTransportSoapAction, "DelegateGroupCoordinationTo", parameter);
+
 }
