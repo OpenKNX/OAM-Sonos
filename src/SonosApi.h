@@ -22,6 +22,21 @@ enum SonosApiPlayMode : byte
   Shuffle = 4 // SHUFFLE_NOREPEAT || SHUFFLE_NOREPEAT || SHUFFLE || SHUFFLE_REPEAT_ONE
 };
 
+class SonosTrackInfo
+{
+  public:
+    uint16_t trackNumber;
+	  uint32_t duration;
+	  String uri;
+    String metadata;
+};
+
+class CurrentSonsTrackInfo : public SonosTrackInfo
+{
+  public:
+	  uint32_t position;
+};
+
 class SonosApi;
 
 class SonosApiNotificationHandler
@@ -33,16 +48,8 @@ class SonosApiNotificationHandler
     virtual void notificationGroupMuteChanged(SonosApi& caller, boolean mute) {};
     virtual void notificationPlayStateChanged(SonosApi& caller, SonosApiPlayState playState) {};
     virtual void notificationPlayModeChanged(SonosApi& caller, SonosApiPlayMode playMode) {};
-};
-
-class SonosTrackInfo
-{
-  public:
-    uint16_t queueIndex;
-	  uint32_t duration;
-	  uint32_t position;
-	  String uri;
-    String metadata;
+    virtual void notificationTrackChanged(SonosApi& caller, SonosTrackInfo* trackInfo) {};
+    virtual void notificationGroupCoordinatorChanged(SonosApi& caller) {};
 };
 
 class SonosApi : private AsyncWebHandler
@@ -50,6 +57,8 @@ class SonosApi : private AsyncWebHandler
     static std::vector<SonosApi*> AllSonosApis;
     const static uint32_t _subscriptionTimeInSeconds = 600;
     String _uuid;
+    String _groupCoordinatorUuid;
+    SonosApi* _groupCoordinatorCached = nullptr;
     IPAddress _speakerIP;
     uint16_t _channelIndex;
     uint32_t _renderControlSeq = 0;
@@ -60,7 +69,7 @@ class SonosApi : private AsyncWebHandler
     {
       return "Sonos.API";
     }
-
+    static uint32_t formatedTimestampToSeconds(char* durationAsString);
     static void wifiClient_xPath(MicroXPath_P& xPath, WiFiClient& wifiClient, PGM_P* path, uint8_t pathSize, char* resultBuffer, size_t resultBufferSize);
 
     void writeSoapHttpCall(Stream& stream, const char* soapUrl, const char* soapAction, const char* action, String parameterXml);
@@ -105,8 +114,8 @@ class SonosApi : private AsyncWebHandler
     void previous();
     SonosApiPlayMode getPlayMode();
     void setPlayMode(SonosApiPlayMode playMode);
-    const SonosTrackInfo getTrackInfo();
-    SonosApi* findGroupCoordinator();
+    const CurrentSonsTrackInfo getTrackInfo();
+    SonosApi* findGroupCoordinator(bool cached = false);
     SonosApi* findNextPlayingGroupCoordinator();
     void setAVTransportURI(const char* schema, const char* currentURI, const char* currentURIMetaData = nullptr);
     void joinToGroupCoordinator(SonosApi* coordinator);

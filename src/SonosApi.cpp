@@ -4,6 +4,7 @@
 
 const char p_SoapEnvelope[] PROGMEM = "s:Envelope";
 const char p_SoapBody[] PROGMEM = "s:Body";
+const char sonosSchemaMaster[] PROGMEM = "x-rincon:";
 
 std::vector<SonosApi*> SonosApi::AllSonosApis;
 
@@ -180,17 +181,24 @@ const char masterVolume[] PROGMEM = "&lt;Volume channel=&quot;Master&quot; val=&
 const char masterMute[] PROGMEM = "&lt;Mute channel=&quot;Master&quot; val=&quot;";
 const char transportState[] PROGMEM = "&lt;TransportState val=&quot;";
 const char playMode[] PROGMEM = "&lt;CurrentPlayMode val=&quot;";
+const char trackURI[] PROGMEM = "&lt;CurrentTrackURI val=&quot;";
+const char trackMetaData[] PROGMEM = "&lt;CurrentTrackMetaData val=&quot;";
+const char trackDuration[] PROGMEM = "&lt;CurrentTrackDuration val=&quot;";
+const char trackNumber[] PROGMEM = "&lt;CurrentTrack val=&quot;";
+
+
+
 // const char numberOfTracks[] PROGMEM = "&lt;NumberOfTracks val=&quot;";
 // const char currentTrack[] PROGMEM = "&lt;CurrentTrack val=&quot;";
-// const char trackURI[] PROGMEM = "&lt;CurrentTrackURI val=&quot;";
 
 void SonosApi::handleBody(AsyncWebServerRequest* request, uint8_t* data, size_t len, size_t index, size_t total)
 {
     Serial.print("Notification received ");
     Serial.println(millis());
-   // Serial.println(String(data, len));
+    //Serial.println(String(data, len));
     if (_notificationHandler != nullptr)
     {
+        bool groupCoordinatorChanged = false;
         MicroXPath_P xPath;
         const int bufferSize = 2000;
         char* buffer = new char[bufferSize + 1];
@@ -198,35 +206,100 @@ void SonosApi::handleBody(AsyncWebServerRequest* request, uint8_t* data, size_t 
         buffer[0] = 0;
         PGM_P pathLastChange[] = {p_PropertySet, p_Property, p_LastChange};
         charBuffer_xPath(xPath, (const char*)data, len, pathLastChange, 3, buffer, bufferSize);
-        char valueBuffer[20];
-        if (readFromEncodeXML(buffer, masterVolume, valueBuffer, sizeof(valueBuffer)))
+        const static int valueBufferSize = 1000;
+        SonosTrackInfo* sonosTrackInfo = nullptr;
+        char* valueBuffer = new char[1000];
+        try
         {
-            auto currentVolume = constrain(atoi(valueBuffer), 0, 100);
-            Serial.print("Volume: ");
-            Serial.println(currentVolume);
-            _notificationHandler->notificationVolumeChanged(*this, currentVolume);
+            if (readFromEncodeXML(buffer, masterVolume, valueBuffer, valueBufferSize))
+            {
+                auto currentVolume = constrain(atoi(valueBuffer), 0, 100);
+                Serial.print("Volume: ");
+                Serial.println(currentVolume);
+                _notificationHandler->notificationVolumeChanged(*this, currentVolume);
+            }
+            if (readFromEncodeXML(buffer, masterMute, valueBuffer, valueBufferSize))
+            {
+                auto currentMute = valueBuffer[0] == '1';
+                Serial.print("Mute: ");
+                Serial.println(currentMute);
+                _notificationHandler->notificationMuteChanged(*this, currentMute);
+            }
+            if (readFromEncodeXML(buffer, transportState, valueBuffer, valueBufferSize))
+            {
+                auto playState = getPlayStateFromString(valueBuffer);
+                Serial.print("Play State: ");
+                Serial.println(playState);
+                _notificationHandler->notificationPlayStateChanged(*this, playState);
+            }
+            if (readFromEncodeXML(buffer, playMode, valueBuffer, valueBufferSize))
+            {
+                auto playMode = getPlayModeFromString(valueBuffer);
+                Serial.print("Play Mode: ");
+                Serial.println(playMode);
+                _notificationHandler->notificationPlayModeChanged(*this, playMode);
+            }
+            if (readFromEncodeXML(buffer, trackURI, valueBuffer, valueBufferSize))
+            {
+                Serial.print("Track URI: ");
+                Serial.println(valueBuffer);
+                if (sonosTrackInfo == nullptr)
+                    sonosTrackInfo = new SonosTrackInfo();
+                sonosTrackInfo->uri = valueBuffer;
+            }
+            if (readFromEncodeXML(buffer, trackMetaData, valueBuffer, valueBufferSize))
+            {
+                Serial.print("Track Metadata: ");
+                Serial.println(valueBuffer);
+                if (sonosTrackInfo == nullptr)
+                    sonosTrackInfo = new SonosTrackInfo();
+                sonosTrackInfo->metadata = valueBuffer;
+            }
+            if (readFromEncodeXML(buffer, trackDuration, valueBuffer, valueBufferSize))
+            {
+                Serial.print("Track Duration: ");
+                Serial.println(valueBuffer);
+                if (sonosTrackInfo == nullptr)
+                    sonosTrackInfo = new SonosTrackInfo();
+            }
+            if (readFromEncodeXML(buffer, trackNumber, valueBuffer, valueBufferSize))
+            {
+                Serial.print("Track Number: ");
+                Serial.println(valueBuffer);
+                if (sonosTrackInfo == nullptr)
+                    sonosTrackInfo = new SonosTrackInfo();
+                sonosTrackInfo->trackNumber = atoi(valueBuffer);
+            }
+            if (sonosTrackInfo != nullptr)
+            {
+                _notificationHandler->notificationTrackChanged(*this, sonosTrackInfo);
+                if (sonosTrackInfo->uri.startsWith(sonosSchemaMaster))
+                {
+                    auto newGroupCoordinator= sonosTrackInfo->uri.substring(strlen(sonosSchemaMaster));
+                    if (newGroupCoordinator !=  _groupCoordinatorUuid)
+                    {
+                        _groupCoordinatorUuid = newGroupCoordinator;
+                        groupCoordinatorChanged = true;
+                    }
+                }
+                else
+                {
+                    if (!_groupCoordinatorUuid.isEmpty())
+                    {
+                        _groupCoordinatorUuid.clear();
+                        groupCoordinatorChanged = true;
+                    }
+                }
+            }
         }
-        if (readFromEncodeXML(buffer, masterMute, valueBuffer, sizeof(valueBuffer)))
+        catch (...)
         {
-            auto currentMute = valueBuffer[0] == '1';
-            Serial.print("Mute: ");
-            Serial.println(currentMute);
-            _notificationHandler->notificationMuteChanged(*this, currentMute);
+            delete sonosTrackInfo;
+            delete valueBuffer;
+            throw;
         }
-        if (readFromEncodeXML(buffer, transportState, valueBuffer, sizeof(valueBuffer)))
-        {
-            auto playState = getPlayStateFromString(valueBuffer);
-            Serial.print("Play State: ");
-            Serial.println(playState);
-            _notificationHandler->notificationPlayStateChanged(*this, playState);
-        }
-        if (readFromEncodeXML(buffer, playMode, valueBuffer, sizeof(valueBuffer)))
-        {
-            auto playMode = getPlayModeFromString(valueBuffer);
-            Serial.print("Play Mode: ");
-            Serial.println(playMode);
-            _notificationHandler->notificationPlayModeChanged(*this, playMode);
-        }
+        delete sonosTrackInfo;
+        delete valueBuffer;
         xPath.reset();
         buffer[0] = 0;
         PGM_P pathGroupVolume[] = {p_PropertySet, p_Property, "GroupVolume"};
@@ -236,7 +309,7 @@ void SonosApi::handleBody(AsyncWebServerRequest* request, uint8_t* data, size_t 
             auto currentGroupVolume = constrain(atoi(buffer), 0, 100);
             Serial.print("Group Volume: ");
             Serial.println(currentGroupVolume);
-            _notificationHandler->notificationGroupVolumeChanged(*this, currentGroupVolume);
+            _notificationHandler->notificationGroupVolumeChanged(*this, currentGroupVolume);           
         }
         xPath.reset();
         buffer[0] = 0;
@@ -250,6 +323,8 @@ void SonosApi::handleBody(AsyncWebServerRequest* request, uint8_t* data, size_t 
             _notificationHandler->notificationGroupMuteChanged(*this, currentGroupMute);
         }
         delete buffer;
+        if (groupCoordinatorChanged)
+            _notificationHandler->notificationGroupCoordinatorChanged(*this);
     }
     // Serial.println(String(data, len));
     request->send(200);
@@ -470,7 +545,6 @@ void SonosApi::setAVTransportURI(const char* schema, const char* currentURI, con
     postAction(renderingAVTransportUrl, renderingAVTransportSoapAction, "SetAVTransportURI", parameter);
 }
 
-const char sonosSchemaMaster[] PROGMEM = "x-rincon:";
 
 void SonosApi::joinToGroupCoordinator(SonosApi* coordinator)
 {
@@ -647,7 +721,8 @@ String& SonosApi::getUID()
     return _uuid;
 }
 
- uint32_t formatedTimestampToSeconds(char* durationAsString) {
+uint32_t SonosApi::formatedTimestampToSeconds(char* durationAsString) 
+{
         const char* begin = durationAsString;
         int multiplicator = 3600;
         uint32_t result = 0;
@@ -667,22 +742,22 @@ String& SonosApi::getUID()
         return result;
 	}
 
-const SonosTrackInfo SonosApi::getTrackInfo()
+const CurrentSonsTrackInfo SonosApi::getTrackInfo()
 {
-    SonosTrackInfo sonosTrackInfo;
+    CurrentSonsTrackInfo sonosTrackInfo;
     String parameter;
     postAction(renderingAVTransportUrl, renderingAVTransportSoapAction, "GetPositionInfo", parameter, [=, &sonosTrackInfo](WiFiClient& wifiClient) {
         MicroXPath_P xPath;
         const int bufferSize = 2000;
         auto resultBuffer = new char[bufferSize];
-        uint16_t queueIndex;
+        uint16_t trackNumber;
         uint32_t duration;
         uint32_t position;
         String uri;
         String metadata;
         PGM_P pathTrack[] = {p_SoapEnvelope, p_SoapBody, "u:GetPositionInfoResponse", "Track"};
         wifiClient_xPath(xPath, wifiClient, pathTrack, 4, resultBuffer, bufferSize);
-        queueIndex = atoi(resultBuffer);
+        trackNumber = atoi(resultBuffer);
         PGM_P pathDuration[] = {p_SoapEnvelope, p_SoapBody, "u:GetPositionInfoResponse", "TrackDuration"};   
         wifiClient_xPath(xPath, wifiClient, pathDuration, 4, resultBuffer, bufferSize);
         duration = formatedTimestampToSeconds(resultBuffer);
@@ -697,7 +772,7 @@ const SonosTrackInfo SonosApi::getTrackInfo()
         position = formatedTimestampToSeconds(resultBuffer);
 
         delete resultBuffer;
-        sonosTrackInfo.queueIndex = queueIndex;
+        sonosTrackInfo.trackNumber = trackNumber;
         sonosTrackInfo.duration = duration;
         sonosTrackInfo.position = position;
         sonosTrackInfo.uri = uri;
@@ -706,20 +781,47 @@ const SonosTrackInfo SonosApi::getTrackInfo()
     return sonosTrackInfo;
 }
 
-SonosApi* SonosApi::findGroupCoordinator()
+SonosApi* SonosApi::findGroupCoordinator(bool cached)
 {
-    auto trackInfo = getTrackInfo();
-    if (!trackInfo.uri.startsWith(sonosSchemaMaster))
+    if (cached)
     {
-        return this;
+        if (_groupCoordinatorCached != nullptr)
+            return _groupCoordinatorCached;
+        if (_groupCoordinatorUuid.isEmpty())
+        {
+            _groupCoordinatorCached = this;
+            return this;
+        }
     }
-    auto uidCoordinator = trackInfo.uri.substring(9);
- 
+    else
+    {
+        auto trackInfo = getTrackInfo();
+        if (!trackInfo.uri.startsWith(sonosSchemaMaster))
+        {
+            if (!_groupCoordinatorUuid.isEmpty())
+            {
+                _groupCoordinatorUuid.clear();
+                _groupCoordinatorCached = this;
+                if (_notificationHandler != nullptr)
+                    _notificationHandler->notificationGroupCoordinatorChanged(*this);
+            }
+            return this;
+        }
+        auto uidCoordinator = trackInfo.uri.substring(9);
+        if (uidCoordinator != _groupCoordinatorUuid)
+        {
+            _groupCoordinatorUuid = uidCoordinator;
+            _groupCoordinatorCached = nullptr;
+            if (_notificationHandler != nullptr)
+                _notificationHandler->notificationGroupCoordinatorChanged(*this);
+        }
+    }
     for(auto iter = AllSonosApis.begin(); iter < AllSonosApis.end(); iter++)
     {
         auto sonosApi = *iter;
-        if (sonosApi != this && sonosApi->getUID() == uidCoordinator)
+        if (sonosApi != this && sonosApi->getUID() == _groupCoordinatorUuid)
         {
+            _groupCoordinatorCached = sonosApi;
             return sonosApi;
         }
     }

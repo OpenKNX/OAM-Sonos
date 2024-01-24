@@ -1,7 +1,8 @@
 #include "SonosChannel.h"
+#include "SonosModule.h"
 
-SonosChannel::SonosChannel(uint8_t _channelIndex /* this parameter is used in macros, do not rename */, SonosApi& sonosApi)
-    : _sonosApi(sonosApi), _groupVolumeController(true), _speakerIP(), _name()
+SonosChannel::SonosChannel(SonosModule& sonosModule, uint8_t _channelIndex /* this parameter is used in macros, do not rename */, SonosApi& sonosApi)
+    : _sonosModule(sonosModule), _sonosApi(sonosApi), _groupVolumeController(true), _speakerIP(), _name()
 {
     this->_channelIndex = _channelIndex;
     auto parameterIP = (uint32_t)ParamSON_CHSonosIPAddress;
@@ -46,19 +47,81 @@ void SonosChannel::notificationGroupVolumeChanged(SonosApi& caller, uint8_t volu
 {
     if (volume != (uint8_t)KoSON_CHGroupVolumeState.value(DPT_Scaling))
         KoSON_CHGroupVolumeState.value(volume, DPT_Scaling);
+    if (&_sonosApi == &caller)
+    {
+        // this channel is group coordinator, notify all participants
+        for (int channelIndex = 0; channelIndex < _sonosModule.getNumberOfChannels(); channelIndex++)
+        {
+            auto channel = (SonosChannel*)_sonosModule.getChannel(channelIndex);
+            if (channel != nullptr && channel->_sonosApi.findGroupCoordinator(true) == &caller)
+            {
+                channel->notificationGroupVolumeChanged(caller, volume);
+            }
+        }
+    }
 }
 
 void SonosChannel::notificationGroupMuteChanged(SonosApi& caller, boolean mute)
 {
     if (mute != (boolean)KoSON_CHGroupMuteState.value(DPT_Switch))
         KoSON_CHGroupMuteState.value(mute, DPT_Switch);
+    if (&_sonosApi == &caller)
+    {
+        // this channel is group coordinator, notify all participants
+        for (int channelIndex = 0; channelIndex < _sonosModule.getNumberOfChannels(); channelIndex++)
+        {
+            auto channel = (SonosChannel*)_sonosModule.getChannel(channelIndex);
+            if (channel != nullptr && channel->_sonosApi.findGroupCoordinator(true) == &caller)
+            {
+                channel->notificationMuteChanged(caller, mute);
+            }
+        }
+    }
 }
 
 void SonosChannel::notificationPlayStateChanged(SonosApi& caller, SonosApiPlayState playState)
 {
+    if (_sonosApi.findGroupCoordinator() == &_sonosApi)
+    {
+        // this channel is group coordinator
+        bool playing = playState == SonosApiPlayState::Playing || playState == SonosApiPlayState::Transitioning;
+        if (playing != (boolean)KoSON_CHPlayFeedback.value(DPT_Start))
+            KoSON_CHPlayFeedback.value(playing, DPT_Start);  
+
+        // notify all participants
+        for (int channelIndex = 0; channelIndex < _sonosModule.getNumberOfChannels(); channelIndex++)
+        {
+            auto channel = (SonosChannel*)_sonosModule.getChannel(channelIndex);
+            if (channel != nullptr && channel->_sonosApi.findGroupCoordinator(true) == &caller)
+            {
+                channel->notificationPlayStateChanged(caller, playState);
+            }
+        }
+    }
+    else if (&caller != &_sonosApi)
+    {   
+        // called from master, take over play state
+        bool playing = playState == SonosApiPlayState::Playing || playState == SonosApiPlayState::Transitioning;
+        if (playing != (boolean)KoSON_CHPlayFeedback.value(DPT_Start))
+            KoSON_CHPlayFeedback.value(playing, DPT_Start); 
+    }
+}
+
+void SonosChannel::notificationGroupCoordinatorChanged(SonosApi& caller)
+{
+    auto groupCoordinator = _sonosApi.findGroupCoordinator();
+    if (groupCoordinator == nullptr)
+        return;
+    auto playState = groupCoordinator->getPlayState();
     bool playing = playState == SonosApiPlayState::Playing || playState == SonosApiPlayState::Transitioning;
     if (playing != (boolean)KoSON_CHPlayFeedback.value(DPT_Start))
-        KoSON_CHPlayFeedback.value(playing, DPT_Start);
+        KoSON_CHPlayFeedback.value(playing, DPT_Start); 
+    auto groupVolume = groupCoordinator->getGroupVolume();
+    if (groupVolume != (uint8_t)KoSON_CHGroupVolumeState.value(DPT_Scaling))
+        KoSON_CHGroupVolumeState.value(groupVolume, DPT_Scaling);
+    auto groupMute = groupCoordinator->getGroupMute();
+    if (groupMute != (boolean)KoSON_CHGroupMuteState.value(DPT_Switch))
+        KoSON_CHGroupMuteState.value(groupMute, DPT_Switch);
 }
 
 void SonosChannel::processInputKo(GroupObject& ko)
@@ -162,7 +225,7 @@ bool SonosChannel::processCommand(const std::string cmd, bool diagnoseKo)
     {
         Serial.println();
         auto trackInfo = _sonosApi.getTrackInfo();
-        Serial.println(trackInfo.queueIndex);
+        Serial.println(trackInfo.trackNumber);
         Serial.println(trackInfo.duration);
         Serial.println(trackInfo.position);
         Serial.println(trackInfo.uri);

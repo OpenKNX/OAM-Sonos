@@ -3,10 +3,12 @@
 #include "SonosApi.h"
 #include "VolumeController.h"
 
+class SonosModule;
 
 class SonosChannel : public OpenKNX::Channel, protected SonosApiNotificationHandler
 {
     private:
+        SonosModule& _sonosModule;
         SonosApi& _sonosApi;
         VolumeController _volumeController;
         VolumeController _groupVolumeController;
@@ -17,11 +19,12 @@ class SonosChannel : public OpenKNX::Channel, protected SonosApiNotificationHand
         void notificationGroupVolumeChanged(SonosApi& caller, uint8_t volume) override;
         void notificationGroupMuteChanged(SonosApi& caller, boolean mute) override;
         void notificationPlayStateChanged(SonosApi& caller, SonosApiPlayState playState) override;
+        void notificationGroupCoordinatorChanged(SonosApi& caller) override;
     protected:
         void loop1() override;
         void processInputKo(GroupObject &ko) override;
     public:
-        SonosChannel(uint8_t _channelIndex /* this parameter is used in macros, do not rename */, SonosApi& sonosApi);
+        SonosChannel(SonosModule& sonosModule, uint8_t _channelIndex /* this parameter is used in macros, do not rename */, SonosApi& sonosApi);
         const IPAddress& speakerIP();
         const std::string name() override;
         const std::string logPrefix() override;
