@@ -52,6 +52,26 @@ class SonosApiNotificationHandler
     virtual void notificationGroupCoordinatorChanged(SonosApi& caller) {};
 };
 
+class NotificationRestoreData
+{
+  public:
+    CurrentSonsTrackInfo trackInfo;
+    SonosApiPlayState playState;
+    unsigned long lastChecked = millis();
+};
+
+
+class ParameterBuilder
+{
+    Stream* _stream;
+    size_t _length;
+  public:
+    size_t length();
+    ParameterBuilder(Stream* stream);
+    void AddParameter(const char* name, const char* value1, const char* value2 = nullptr);
+    void AddParameter(const char* name, int32_t value);
+};
+
 class SonosApi : private AsyncWebHandler
 {
     static std::vector<SonosApi*> AllSonosApis;
@@ -64,6 +84,7 @@ class SonosApi : private AsyncWebHandler
     uint32_t _renderControlSeq = 0;
     unsigned long _subscriptionTime = 0;
     SonosApiNotificationHandler* _notificationHandler = nullptr;
+    NotificationRestoreData* _notificationRestoreData = nullptr;
   
     const std::string logPrefix()
     {
@@ -72,7 +93,10 @@ class SonosApi : private AsyncWebHandler
     static uint32_t formatedTimestampToSeconds(char* durationAsString);
     static void wifiClient_xPath(MicroXPath_P& xPath, WiFiClient& wifiClient, PGM_P* path, uint8_t pathSize, char* resultBuffer, size_t resultBufferSize);
 
-    void writeSoapHttpCall(Stream& stream, const char* soapUrl, const char* soapAction, const char* action, String parameterXml);
+    void restorePlayState();
+
+    typedef std::function<void(ParameterBuilder&)> TParameterBuilderFunction;
+    void writeSoapHttpCall(Stream& stream, const char* soapUrl, const char* soapAction, const char* action, TParameterBuilderFunction parameterFunction);
     void writeSubscribeHttpCall(Stream& stream, const char* soapUrl);
     
     SonosApiPlayState getPlayStateFromString(const char* value);
@@ -80,7 +104,7 @@ class SonosApi : private AsyncWebHandler
     const char* getPlayModeString(SonosApiPlayMode playMode);
 
     typedef std::function<void(WiFiClient&)> THandlerWifiResultFunction;
-    int postAction(const char* soapUrl, const char* soapAction, const char* action, String parameterXml, THandlerWifiResultFunction wifiResultFunction = nullptr);
+    int postAction(const char* soapUrl, const char* soapAction, const char* action, TParameterBuilderFunction parameterFunction = nullptr, THandlerWifiResultFunction wifiResultFunction = nullptr);
     int subscribeEvents(const char* soapUrl);
     void subscribeAll();
 
@@ -112,15 +136,19 @@ class SonosApi : private AsyncWebHandler
     void pause();
     void next();
     void previous();
+    void gotTrack(uint32_t trackNumber);
     SonosApiPlayMode getPlayMode();
     void setPlayMode(SonosApiPlayMode playMode);
     const CurrentSonsTrackInfo getTrackInfo();
     SonosApi* findGroupCoordinator(bool cached = false);
     SonosApi* findNextPlayingGroupCoordinator();
-    void setAVTransportURI(const char* schema, const char* currentURI, const char* currentURIMetaData = nullptr);
+    void setAVTransportURI(const char* schema, const char* uri, const char* metadata = nullptr);
     void joinToGroupCoordinator(SonosApi* coordinator);
     void joinToGroupCoordinator(const char* uid);
     SonosApi* findFirstParticipant(bool cached = false);
     void delegateGroupCoordinationTo(SonosApi* sonosApi, bool rejoinGroup);
     void delegateGroupCoordinationTo(const char* uid, bool rejoinGroup);
+    void playNotification(const char* schema, const char* uri, const char* metadata = nullptr);
+    void gotoTrack(uint32_t trackNumber);
+    void playSound();
 };

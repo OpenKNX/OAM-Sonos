@@ -6,6 +6,48 @@ const char p_SoapEnvelope[] PROGMEM = "s:Envelope";
 const char p_SoapBody[] PROGMEM = "s:Body";
 const char sonosSchemaMaster[] PROGMEM = "x-rincon:";
 
+ParameterBuilder::ParameterBuilder(Stream* stream)
+: _stream(stream)
+{
+}
+
+void ParameterBuilder::AddParameter(const char* name, int32_t value)
+{
+    char buffer[12];
+    itoa(value, buffer, 10);
+    AddParameter(name, buffer);
+}
+void ParameterBuilder::AddParameter(const char* name, const char* value1, const char* value2)
+{
+    if (_stream == nullptr)
+    {
+         _length += strlen(name) * 2 + 5;
+         if (value1 != nullptr)
+            _length += strlen(value1);
+         if (value2 != nullptr)
+            _length += strlen(value2);    
+    }
+    else
+    {
+        _stream->write('<');
+        _stream->write(name);
+        _stream->write('>');
+        if (value1 != nullptr)
+            _stream->write(value1);
+        if (value2 != nullptr)
+            _stream->write(value2);
+        _stream->write("</");
+        _stream->write(name);
+        _stream->write('>');
+    }
+}
+
+size_t ParameterBuilder::length()
+{
+    return _length;
+}
+
+
 std::vector<SonosApi*> SonosApi::AllSonosApis;
 
 SonosApi::~SonosApi()
@@ -61,6 +103,14 @@ void SonosApi::loop()
         if (millis() - _subscriptionTime > _subscriptionTimeInSeconds * 1000)
         {
             subscribeAll();
+        }
+    }
+    if (_notificationRestoreData != nullptr && millis() - _notificationRestoreData->lastChecked > 500)
+    {
+        _notificationRestoreData->lastChecked = millis();
+        if (getPlayState() == SonosApiPlayState::Stopped)
+        {
+            restorePlayState();
         }
     }
 }
@@ -330,9 +380,16 @@ void SonosApi::handleBody(AsyncWebServerRequest* request, uint8_t* data, size_t 
     request->send(200);
 }
 
-void SonosApi::writeSoapHttpCall(Stream& stream, const char* soapUrl, const char* soapAction, const char* action, String parameterXml)
+void SonosApi::writeSoapHttpCall(Stream& stream, const char* soapUrl, const char* soapAction, const char* action, TParameterBuilderFunction parameterFunction)
 {
-    uint16_t contentLength = 200 + strlen(action) * 2 + strlen(soapAction) + parameterXml.length();
+    uint16_t contentLength = 200 + strlen(action) * 2 + strlen(soapAction);
+    if (parameterFunction != nullptr)
+    {
+        ParameterBuilder countCharParameterBuilder(nullptr);
+        parameterFunction(countCharParameterBuilder);
+        contentLength += countCharParameterBuilder.length();
+
+    }
     // HTTP Method, URL, version
     stream.print("POST ");
     stream.print(soapUrl);
@@ -356,14 +413,17 @@ void SonosApi::writeSoapHttpCall(Stream& stream, const char* soapUrl, const char
     stream.print(" xmlns:u='");
     stream.print(soapAction);
     stream.print(F("'><InstanceID>0</InstanceID>"));
-    stream.print(parameterXml);
-
+    if (parameterFunction != nullptr)
+    {
+        ParameterBuilder context(&stream);
+        parameterFunction(context);
+    }
     stream.print("</u:");
     stream.print(action);
     stream.print(F("></s:Body></s:Envelope>"));
 }
 
-int SonosApi::postAction(const char* soapUrl, const char* soapAction, const char* action, String parameterXml, THandlerWifiResultFunction wifiResultFunction)
+int SonosApi::postAction(const char* soapUrl, const char* soapAction, const char* action, TParameterBuilderFunction parameterFunction, THandlerWifiResultFunction wifiResultFunction)
 {
     WiFiClient wifiClient;
     if (wifiClient.connect(_speakerIP, 1400) != true)
@@ -372,8 +432,8 @@ int SonosApi::postAction(const char* soapUrl, const char* soapAction, const char
         return -1;
     }
 
-    writeSoapHttpCall(Serial, soapUrl, soapAction, action, parameterXml);
-    writeSoapHttpCall(wifiClient, soapUrl, soapAction, action, parameterXml);
+    writeSoapHttpCall(Serial, soapUrl, soapAction, action, parameterFunction);
+    writeSoapHttpCall(wifiClient, soapUrl, soapAction, action, parameterFunction);
 
     auto start = millis();
     while (!wifiClient.available())
@@ -412,25 +472,29 @@ void SonosApi::setVolume(uint8_t volume)
     parameter += F("<DesiredVolume>");
     parameter += volume;
     parameter += F("</DesiredVolume>");
-    postAction(renderingControlUrl, renderingControlSoapAction, "SetVolume", parameter);
+    postAction(renderingControlUrl, renderingControlSoapAction, "SetVolume", [volume] (ParameterBuilder b)  
+    { 
+        b.AddParameter("Channel", "Master");
+        b.AddParameter("DesiredVolume", volume);
+    });
 }
 
 void SonosApi::setVolumeRelative(int8_t volume)
 {
-    String parameter;
-    parameter += F("<Channel>Master</Channel>");
-    parameter += F("<Adjustment>");
-    parameter += volume;
-    parameter += F("</Adjustment>");
-    postAction(renderingControlUrl, renderingControlSoapAction, "SetRelativeVolume", parameter);
+    postAction(renderingControlUrl, renderingControlSoapAction, "SetRelativeVolume", [volume] (ParameterBuilder b)  
+    { 
+        b.AddParameter("Channel", "Master");
+        b.AddParameter("Adjustment", volume);
+    });
 }
 
 uint8_t SonosApi::getVolume()
 {
     uint8_t currentVolume = 0;
-    String parameter;
-    parameter += F("<Channel>Master</Channel>");
-    postAction(renderingControlUrl, renderingControlSoapAction, "GetVolume", parameter, [=, &currentVolume](WiFiClient& wifiClient) {
+    postAction(renderingControlUrl, renderingControlSoapAction, "GetVolume", [] (ParameterBuilder b)  
+    { 
+      b.AddParameter("Channel", "Master");  
+    }, [=, &currentVolume](WiFiClient& wifiClient) {
         MicroXPath_P xPath;
         PGM_P path[] = {p_SoapEnvelope, p_SoapBody, "u:GetVolumeResponse", "CurrentVolume"};
         char resultBuffer[10];
@@ -442,21 +506,21 @@ uint8_t SonosApi::getVolume()
 
 void SonosApi::setMute(boolean mute)
 {
-    String parameter;
-    parameter += F("<Channel>Master</Channel>");
-    parameter += F("<DesiredMute>");
-    parameter += mute ? "1" : "0";
-    parameter += F("</DesiredMute>");
-    postAction(renderingControlUrl, renderingControlSoapAction, "SetMute", parameter);
+    postAction(renderingControlUrl, renderingControlSoapAction, "SetMute", [mute] (ParameterBuilder b)  
+    { 
+        b.AddParameter("Channel", "Master");
+        b.AddParameter("DesiredMute", mute);
+    });
 
 }
 
 boolean SonosApi::getMute()
 {
     boolean currentMute = 0;
-    String parameter;
-    parameter += F("<Channel>Master</Channel>");
-    postAction(renderingControlUrl, renderingControlSoapAction, "GetMute", parameter, [=, &currentMute](WiFiClient& wifiClient) {
+    postAction(renderingControlUrl, renderingControlSoapAction, "GetMute", [] (ParameterBuilder b)  
+    { 
+        b.AddParameter("Channel", "Master");
+    }, [=, &currentMute](WiFiClient& wifiClient) {
         MicroXPath_P xPath;
         PGM_P path[] = {p_SoapEnvelope, p_SoapBody, "u:GetMuteResponse", "CurrentMute"};
         char resultBuffer[10];
@@ -473,27 +537,24 @@ const char* renderingGroupRenderingControlSoapAction PROGMEM = "urn:schemas-upnp
 
 void SonosApi::setGroupVolume(uint8_t volume)
 {
-    String parameter;
-    parameter += F("<DesiredVolume>");
-    parameter += volume;
-    parameter += F("</DesiredVolume>");
-    postAction(renderingGroupRenderingControlUrl, renderingGroupRenderingControlSoapAction, "SetGroupVolume", parameter);
+    postAction(renderingGroupRenderingControlUrl, renderingGroupRenderingControlSoapAction, "SetGroupVolume", [volume] (ParameterBuilder b)  
+    { 
+        b.AddParameter("DesiredVolume", volume);
+    });
 }
 
 void SonosApi::setGroupVolumeRelative(int8_t volume)
 {
-    String parameter;
-    parameter += F("<Adjustment>");
-    parameter += volume;
-    parameter += F("</Adjustment>");
-    postAction(renderingGroupRenderingControlUrl, renderingGroupRenderingControlSoapAction, "SetRelativeGroupVolume", parameter);
+    postAction(renderingGroupRenderingControlUrl, renderingGroupRenderingControlSoapAction, "SetRelativeGroupVolume", [volume] (ParameterBuilder b)  
+    { 
+        b.AddParameter("Adjustment", volume);
+    });
 }
 
 uint8_t SonosApi::getGroupVolume()
 {
     uint8_t currentGroupVolume = 0;
-    String parameter;
-    postAction(renderingGroupRenderingControlUrl, renderingGroupRenderingControlSoapAction, "GetGroupVolume", parameter, [=, &currentGroupVolume](WiFiClient& wifiClient) {
+    postAction(renderingGroupRenderingControlUrl, renderingGroupRenderingControlSoapAction, "GetGroupVolume", nullptr, [=, &currentGroupVolume](WiFiClient& wifiClient) {
         MicroXPath_P xPath;
         PGM_P path[] = {p_SoapEnvelope, p_SoapBody, "u:GetGroupVolumeResponse", "CurrentVolume"};
         char resultBuffer[10];
@@ -505,19 +566,17 @@ uint8_t SonosApi::getGroupVolume()
 
 void SonosApi::setGroupMute(boolean mute)
 {
-    String parameter;
-    parameter += F("<DesiredMute>");
-    parameter += mute ? "1" : "0";
-    parameter += F("</DesiredMute>");
-    postAction(renderingGroupRenderingControlUrl, renderingGroupRenderingControlSoapAction, "SetGroupMute", parameter);
+    postAction(renderingGroupRenderingControlUrl, renderingGroupRenderingControlSoapAction, "SetGroupMute", [mute] (ParameterBuilder b)  
+    { 
+      b.AddParameter("DesiredMute", mute);
+    });
 
 }
 
 boolean SonosApi::getGroupMute()
 {
     boolean currentGroupMute = false;
-    String parameter;
-    postAction(renderingGroupRenderingControlUrl, renderingGroupRenderingControlSoapAction, "GetGroupMute", parameter, [=, &currentGroupMute](WiFiClient& wifiClient) {
+    postAction(renderingGroupRenderingControlUrl, renderingGroupRenderingControlSoapAction, "GetGroupMute", nullptr, [=, &currentGroupMute](WiFiClient& wifiClient) {
         MicroXPath_P xPath;
         PGM_P path[] = {p_SoapEnvelope, p_SoapBody, "u:GetGroupMuteResponse", "CurrentMute"};
         char resultBuffer[10];
@@ -532,17 +591,11 @@ const char* renderingAVTransportSoapAction PROGMEM = "urn:schemas-upnp-org:servi
 
 void SonosApi::setAVTransportURI(const char* schema, const char* currentURI, const char* currentURIMetaData)
 {
-    String parameter;
-    parameter += F("<CurrentURI>");
-    if (schema != nullptr)
-        parameter += schema;
-    parameter += currentURI;
-    parameter +=  F("</CurrentURI>");
-    parameter += F("<CurrentURIMetaData>");
-    if (currentURIMetaData != nullptr)
-        parameter += currentURIMetaData;
-    parameter +=  F("</CurrentURIMetaData>");
-    postAction(renderingAVTransportUrl, renderingAVTransportSoapAction, "SetAVTransportURI", parameter);
+    postAction(renderingAVTransportUrl, renderingAVTransportSoapAction, "SetAVTransportURI", [schema, currentURI, currentURIMetaData] (ParameterBuilder b)  
+    { 
+        b.AddParameter("CurrentURI", schema, currentURI);
+        b.AddParameter("CurrentUriMetaData", currentURIMetaData);
+    });
 }
 
 
@@ -562,8 +615,7 @@ void SonosApi::joinToGroupCoordinator(const char* uid)
 SonosApiPlayState SonosApi::getPlayState()
 {
     SonosApiPlayState currentPlayState = SonosApiPlayState::Unkown;
-    String parameter;
-    postAction(renderingAVTransportUrl, renderingAVTransportSoapAction, "GetTransportInfo", parameter, [=, &currentPlayState](WiFiClient& wifiClient) {
+    postAction(renderingAVTransportUrl, renderingAVTransportSoapAction, "GetTransportInfo", nullptr, [=, &currentPlayState](WiFiClient& wifiClient) {
         MicroXPath_P xPath;
         PGM_P path[] = {p_SoapEnvelope, p_SoapBody, "u:GetTransportInfoResponse", "CurrentTransportState"};
         char resultBuffer[20];
@@ -575,34 +627,31 @@ SonosApiPlayState SonosApi::getPlayState()
 
 void SonosApi::play()
 {
-    String parameter;
-    parameter += F("<Speed>1</Speed>");
-    postAction(renderingAVTransportUrl, renderingAVTransportSoapAction, "Play", parameter);
+    postAction(renderingAVTransportUrl, renderingAVTransportSoapAction, "Play", [] (ParameterBuilder b)  
+    { 
+        b.AddParameter("Speed", 1);
+    });
 }
 
 void SonosApi::pause()
 {
-    String parameter;
-    postAction(renderingAVTransportUrl, renderingAVTransportSoapAction, "Pause", parameter);
+    postAction(renderingAVTransportUrl, renderingAVTransportSoapAction, "Pause");
 }
 
 void SonosApi::next()
 {
-    String parameter;
-    postAction(renderingAVTransportUrl, renderingAVTransportSoapAction, "Next", parameter);
+    postAction(renderingAVTransportUrl, renderingAVTransportSoapAction, "Next");
 }
 
 void SonosApi::previous()
 {
-    String parameter;
-    postAction(renderingAVTransportUrl, renderingAVTransportSoapAction, "Previous", parameter);
+    postAction(renderingAVTransportUrl, renderingAVTransportSoapAction, "Previous");
 }
 
 SonosApiPlayMode SonosApi::getPlayMode()
 {
     SonosApiPlayMode currentPlayMode = SonosApiPlayMode::Normal;
-    String parameter;
-    postAction(renderingAVTransportUrl, renderingAVTransportSoapAction, "GetTransportSettings", parameter, [=, &currentPlayMode](WiFiClient& wifiClient) {
+    postAction(renderingAVTransportUrl, renderingAVTransportSoapAction, "GetTransportSettings", nullptr, [=, &currentPlayMode](WiFiClient& wifiClient) {
         MicroXPath_P xPath;
         PGM_P path[] = {p_SoapEnvelope, p_SoapBody, "u:GetTransportSettingsResponse", "PlayMode"};
         char resultBuffer[20];
@@ -614,11 +663,10 @@ SonosApiPlayMode SonosApi::getPlayMode()
 
 void SonosApi::setPlayMode(SonosApiPlayMode playMode)
 {
-    String parameter;
-    parameter += F("<NewPlayMode>");
-    parameter += getPlayModeString(playMode);
-    parameter += F("</NewPlayMode>");
-    postAction(renderingAVTransportUrl, renderingAVTransportSoapAction, "SetPlayMode", parameter);
+    postAction(renderingAVTransportUrl, renderingAVTransportSoapAction, "SetPlayMode", [this, playMode] (ParameterBuilder b)  
+    { 
+        b.AddParameter("NewPlayMode", this->getPlayModeString(playMode));
+    });
 }
 
 
@@ -747,8 +795,7 @@ uint32_t SonosApi::formatedTimestampToSeconds(char* durationAsString)
 const CurrentSonsTrackInfo SonosApi::getTrackInfo()
 {
     CurrentSonsTrackInfo sonosTrackInfo;
-    String parameter;
-    postAction(renderingAVTransportUrl, renderingAVTransportSoapAction, "GetPositionInfo", parameter, [=, &sonosTrackInfo](WiFiClient& wifiClient) {
+    postAction(renderingAVTransportUrl, renderingAVTransportSoapAction, "GetPositionInfo", nullptr, [=, &sonosTrackInfo](WiFiClient& wifiClient) {
         MicroXPath_P xPath;
         const int bufferSize = 2000;
         auto resultBuffer = new char[bufferSize];
@@ -923,13 +970,68 @@ void SonosApi::delegateGroupCoordinationTo(SonosApi* sonosApi, bool rejoinGroup)
 
 void SonosApi::delegateGroupCoordinationTo(const char* uid, bool rejoinGroup)
 {
-    String parameter;
-    parameter += F("<NewCoordinator>");
-    parameter += uid;
-    parameter += F("</NewCoordinator>");
-    parameter += F("<RejoinGroup>");
-    parameter += rejoinGroup ? "1" : "0";
-    parameter += F("</RejoinGroup>");
-    postAction(renderingAVTransportUrl, renderingAVTransportSoapAction, "DelegateGroupCoordinationTo", parameter);
+    postAction(renderingAVTransportUrl, renderingAVTransportSoapAction, "DelegateGroupCoordinationTo", [uid, rejoinGroup] (ParameterBuilder b)  
+    { 
+        b.AddParameter("NewCoordinator", uid);
+        b.AddParameter("RejoinGroup", rejoinGroup);
+    });
+}
+
+void SonosApi::playNotification(const char* schema, const char* uri, const char* metadata)
+{
+    if (_notificationRestoreData == nullptr)
+    {
+        auto notificationRestoreData = new NotificationRestoreData();
+        notificationRestoreData->playState = getPlayState();
+        notificationRestoreData->trackInfo = getTrackInfo();
+        _notificationRestoreData = notificationRestoreData;
+    }
+    setAVTransportURI(schema, uri, metadata);
+}
+
+void SonosApi::restorePlayState()
+{
+    if (_notificationRestoreData == nullptr)
+        return;
+ //   if (!this.getQueue(0,1).isEmpty()) 
+    {
+        String queue = getUID() + "#0";
+        setAVTransportURI("x-rincon-queue:", queue.c_str());
+        gotoTrack(_notificationRestoreData->trackInfo.trackNumber);
+        if (_notificationRestoreData->playState == SonosApiPlayState::Playing) 
+        {
+            play();
+        } 
+        else 
+        {
+            pause();
+        }
+	}
+}
+
+void SonosApi::gotoTrack(uint32_t trackNumber)
+{
+    postAction(renderingAVTransportUrl, renderingAVTransportSoapAction, "Seek", [trackNumber] (ParameterBuilder b)  
+    { 
+        b.AddParameter("Unit", "TRACK_NR");
+        b.AddParameter("Target", trackNumber);
+    });
+}
+
+
+void SonosApi::playSound()
+{
+//webSocket.onEvent()
+
+//   ws.on('open', () => {
+//         ws.send(`[{"namespace":"audioClip:1","command":"loadAudioClip","playerId":"${this.uuid}","sessionId":null,"cmdId":null},{"name": "Sonos TS Notification", "appId": "io.svrooij.sonos-ts", "streamUrl": "${options.trackUri}", "volume": ${options.volume ?? this.volume ?? 25} }]`, (err) => {
+//           ws.close();
+//           if (err) {
+//             reject(err);
+//             return;
+//           }
+//           resolve(true);
+//         });
 
 }
+

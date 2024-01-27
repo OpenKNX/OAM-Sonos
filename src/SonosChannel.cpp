@@ -1,6 +1,9 @@
 #include "SonosChannel.h"
 #include "SonosModule.h"
 
+#include "WiFiClientSecure.h"
+#include "WebSocketsClient.h"
+
 SonosChannel::SonosChannel(SonosModule& sonosModule, uint8_t _channelIndex /* this parameter is used in macros, do not rename */, SonosApi& sonosApi)
     : _sonosModule(sonosModule), _sonosApi(sonosApi), _groupVolumeController(true), _speakerIP(), _name()
 {
@@ -10,6 +13,9 @@ SonosChannel::SonosChannel(SonosModule& sonosModule, uint8_t _channelIndex /* th
     _speakerIP = arduinoIP;
     _name = _speakerIP.toString();
     _sonosApi.setCallback(this);
+
+ 
+
  }
 
 const IPAddress& SonosChannel::speakerIP()
@@ -25,8 +31,26 @@ const std::string SonosChannel::logPrefix()
 {
     return "Sonos.Channel";
 }
+
+
 void SonosChannel::loop1()
 {
+    if (_webSocket != nullptr)
+    {
+        _webSocket->loop();
+        if (_webSocket->isConnected())
+        {
+            String text;
+            text += "[{\"namespace\":\"audioClip:1\",\"command\":\"loadAudioClip\",\"playerId\":\"";
+            text += _sonosApi.getUID();
+            text += "\",\"sessionId\":null,\"cmdId\":null},{\"name\": \"Sonos TS Notification\", \"appId\": \"openknx\", \"streamUrl\": \"https://cdn.smartersoft-group.com/various/pull-bell-short.mp3\", \"volume\": 25 }]";
+            Serial.println(text);
+            _webSocket->sendTXT(text);
+            delete _webSocket;
+            _webSocket = nullptr;
+
+        }
+    }
     _sonosApi.loop();
     _volumeController.loop1(_sonosApi, _speakerIP, _channelIndex);
 }
@@ -380,6 +404,13 @@ bool SonosChannel::processCommand(const std::string cmd, bool diagnoseKo)
             return true;
         }       
         _sonosApi.delegateGroupCoordinationTo(&(channel->_sonosApi), true);
+    }
+    else if (cmd == "test")
+    {
+        auto webSocket = new WebSocketsClient();
+        webSocket->setExtraHeaders("X-Sonos-Api-Key: 123e4567-e89b-12d3-a456-426655440000");
+        webSocket->beginSSL(_speakerIP.toString().c_str(), 1443, "/websocket/api", "", "v1.api.smartspeaker.audio");
+        _webSocket = webSocket;
     }
     else
         return false;
