@@ -2,12 +2,17 @@
 #include "OpenKNX.h"
 #include "SonosApi.h"
 #include "VolumeController.h"
+#include "WiFi.h"
+#include "WiFiClientSecure.h"
+#include "WebSocketsClient.h"
 
 class SonosModule;
 
 class SonosChannel : public OpenKNX::Channel, protected SonosApiNotificationHandler
 {
     private:
+        WebSocketsClient* _webSocket;
+
         SonosModule& _sonosModule;
         SonosApi& _sonosApi;
         VolumeController _volumeController;

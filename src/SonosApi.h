@@ -150,4 +150,5 @@ class SonosApi : private AsyncWebHandler
     void delegateGroupCoordinationTo(const char* uid, bool rejoinGroup);
     void playNotification(const char* schema, const char* uri, const char* metadata = nullptr);
     void gotoTrack(uint32_t trackNumber);
+    void playSound();
 };

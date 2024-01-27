@@ -1017,3 +1017,21 @@ void SonosApi::gotoTrack(uint32_t trackNumber)
         b.AddParameter("Target", trackNumber);
     });
 }
+
+
+void SonosApi::playSound()
+{
+//webSocket.onEvent()
+
+//   ws.on('open', () => {
+//         ws.send(`[{"namespace":"audioClip:1","command":"loadAudioClip","playerId":"${this.uuid}","sessionId":null,"cmdId":null},{"name": "Sonos TS Notification", "appId": "io.svrooij.sonos-ts", "streamUrl": "${options.trackUri}", "volume": ${options.volume ?? this.volume ?? 25} }]`, (err) => {
+//           ws.close();
+//           if (err) {
+//             reject(err);
+//             return;
+//           }
+//           resolve(true);
+//         });
+
+}
+
