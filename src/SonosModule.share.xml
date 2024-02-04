@@ -46,38 +46,60 @@
               </ParameterType>
             </ParameterTypes>
             <Parameters>
+            <!-- Notification sound url -->
             <Union SizeInBit="2216">
                 <Memory CodeSegment="%MID%" Offset="0" BitOffset="0" />
+                <Parameter Id="%AID%_UP-%TT%10001" Name="NotificationUrl1" ParameterType="%AID%_PT-SourceUri" Offset="0" BitOffset="0" Text="URL" Value="" />
+                <Parameter Id="%AID%_UP-%TT%10002" Name="NotificationUrl2" ParameterType="%AID%_PT-SourceUri" Offset="256" BitOffset="0" Text="URL" Value="" />
+                <Parameter Id="%AID%_UP-%TT%10003" Name="NotificationUrl3" ParameterType="%AID%_PT-SourceUri" Offset="512" BitOffset="0" Text="URL" Value="" />
+                <Parameter Id="%AID%_UP-%TT%10004" Name="NotificationUrl4" ParameterType="%AID%_PT-SourceUri" Offset="768" BitOffset="0" Text="URL" Value="" />
+            </Union>
+            <!-- Sound source 1 -->
+            <Union SizeInBit="2216">
+                <Memory CodeSegment="%MID%" Offset="1024" BitOffset="0" />
                 <Parameter Id="%AID%_UP-%TT%00011" Name="SourceType1" ParameterType="%AID%_PT-SourceType" Offset="0" BitOffset="0" Text="Quellenart" Value="0" />
                 <Parameter Id="%AID%_UP-%TT%00012" Name="SourceTitle1" ParameterType="%AID%_PT-SourceTitle" Offset="1" BitOffset="0" Text="Name" Value="" />
-                <Parameter Id="%AID%_UP-%TT%00013" Name="SourceUri1" ParameterType="%AID%_PT-SourceUri" Offset="2" BitOffset="0" Text="URL" Value="" />
+                <Parameter Id="%AID%_UP-%TT%00013" Name="SourceUri1" ParameterType="%AID%_PT-SourceUri" Offset="21" BitOffset="0" Text="URL" Value="" />
             </Union>
+            <!-- Sound source 2 -->
             <Union SizeInBit="2216">
-                <Memory CodeSegment="%MID%" Offset="277" BitOffset="0" />
+                <Memory CodeSegment="%MID%" Offset="1301" BitOffset="0" />
                 <Parameter Id="%AID%_UP-%TT%00021" Name="SourceType2" ParameterType="%AID%_PT-SourceType" Offset="0" BitOffset="0" Text="Quellenart" Value="0" />
                 <Parameter Id="%AID%_UP-%TT%00022" Name="SourceTitle2" ParameterType="%AID%_PT-SourceTitle" Offset="1" BitOffset="0" Text="Name" Value="" />
-                <Parameter Id="%AID%_UP-%TT%00023" Name="SourceUri2" ParameterType="%AID%_PT-SourceUri" Offset="2" BitOffset="0" Text="URL" Value="" />
+                <Parameter Id="%AID%_UP-%TT%00023" Name="SourceUri2" ParameterType="%AID%_PT-SourceUri" Offset="21" BitOffset="0" Text="URL" Value="" />
             </Union>
+            <!-- Sound source 3 -->   
             <Union SizeInBit="2216">
-                <Memory CodeSegment="%MID%" Offset="554" BitOffset="0" />
+                <Memory CodeSegment="%MID%" Offset="1578" BitOffset="0" />
                 <Parameter Id="%AID%_UP-%TT%00031" Name="SourceType3" ParameterType="%AID%_PT-SourceType" Offset="0" BitOffset="0" Text="Quellenart" Value="0" />
                 <Parameter Id="%AID%_UP-%TT%00032" Name="SourceTitle3" ParameterType="%AID%_PT-SourceTitle" Offset="1" BitOffset="0" Text="Name" Value="" />
-                <Parameter Id="%AID%_UP-%TT%00033" Name="SourceUri3" ParameterType="%AID%_PT-SourceUri" Offset="2" BitOffset="0" Text="URL" Value="" />
+                <Parameter Id="%AID%_UP-%TT%00033" Name="SourceUri3" ParameterType="%AID%_PT-SourceUri" Offset="21" BitOffset="0" Text="URL" Value="" />
             </Union>
+            <!-- Sound source 4 -->   
             <Union SizeInBit="2216">
-                <Memory CodeSegment="%MID%" Offset="831" BitOffset="0" />
+                <Memory CodeSegment="%MID%" Offset="1855" BitOffset="0" />
                 <Parameter Id="%AID%_UP-%TT%00041" Name="SourceType4" ParameterType="%AID%_PT-SourceType" Offset="0" BitOffset="0" Text="Quellenart" Value="0" />
                 <Parameter Id="%AID%_UP-%TT%00042" Name="SourceTitle4" ParameterType="%AID%_PT-SourceTitle" Offset="1" BitOffset="0" Text="Name" Value="" />
-                <Parameter Id="%AID%_UP-%TT%00043" Name="SourceUri4" ParameterType="%AID%_PT-SourceUri" Offset="2" BitOffset="0" Text="URL" Value="" />
+                <Parameter Id="%AID%_UP-%TT%00043" Name="SourceUri4" ParameterType="%AID%_PT-SourceUri" Offset="21" BitOffset="0" Text="URL" Value="" />
             </Union>
+            <!-- Sound source 5 -->   
             <Union SizeInBit="2216">
-                <Memory CodeSegment="%MID%" Offset="1108" BitOffset="0" />
+                <Memory CodeSegment="%MID%" Offset="2132" BitOffset="0" />
                 <Parameter Id="%AID%_UP-%TT%00051" Name="SourceType5" ParameterType="%AID%_PT-SourceType" Offset="0" BitOffset="0" Text="Quellenart" Value="0" />
                 <Parameter Id="%AID%_UP-%TT%00052" Name="SourceTitle5" ParameterType="%AID%_PT-SourceTitle" Offset="1" BitOffset="0" Text="Name" Value="" />
-                <Parameter Id="%AID%_UP-%TT%00053" Name="SourceUri5" ParameterType="%AID%_PT-SourceUri" Offset="2" BitOffset="0" Text="URL" Value="" />
+                <Parameter Id="%AID%_UP-%TT%00053" Name="SourceUri5" ParameterType="%AID%_PT-SourceUri" Offset="21" BitOffset="0" Text="URL" Value="" />
             </Union>
             </Parameters>
             <ParameterRefs>
+              <!--Notification Url 1 -->
+              <ParameterRef Id="%AID%_UP-%TT%10001_R-%TT%1000101" RefId="%AID%_UP-%TT%10001" />
+              <!--Notification Url 2 -->
+              <ParameterRef Id="%AID%_UP-%TT%10002_R-%TT%1000201" RefId="%AID%_UP-%TT%10002" />
+              <!--Notification Url 3 -->
+              <ParameterRef Id="%AID%_UP-%TT%10003_R-%TT%1000301" RefId="%AID%_UP-%TT%10003" />
+              <!--Notification Url 4 -->
+              <ParameterRef Id="%AID%_UP-%TT%10004_R-%TT%1000401" RefId="%AID%_UP-%TT%10004" />
+   
               <!--Source Type 1 -->
               <ParameterRef Id="%AID%_UP-%TT%00011_R-%TT%0001101" RefId="%AID%_UP-%TT%00011" />
               <!--Source Ttile 1 -->
@@ -170,7 +192,9 @@
                 <ParameterSeparator Id="%AID%_PS-nnn" Text="Unten im Hilfefenster findest du eine allgemeine Dokumentation zur Sonos Steuerung" />
                 <ParameterSeparator Id="%AID%_PS-nnn" Text="Darüber hinaus sind so weit alle Parameter mit eigenen Hilfetexten versehen, um so die Einrichtung so einfach wie möglich zu gestalten." />
               </ParameterBlock>
-              <ParameterBlock Id="%AID%_PB-nnn" Name="Settings" Text="Tonquellen" Icon="waveform" HelpContext="Empty">
+
+              <!-- Tonquellen -->             
+              <ParameterBlock Id="%AID%_PB-nnn" Name="Sources" Text="Tonquellen" Icon="waveform" HelpContext="Empty">
                 
                 <!-- Tonquelle 1 -->
                 <ParameterSeparator Id="%AID%_PS-nnn" Text="Tonquelle 1" UIHint="Headline" />
@@ -347,7 +371,31 @@
                   </when>  <!-- Sonos URI -->
                 </choose> <!-- Source Type -->
 
-               </ParameterBlock>  
+              </ParameterBlock>  
+
+              <!-- Benachrichtungstöne -->
+              <ParameterBlock Id="%AID%_PB-nnn" Name="Notifications" Text="Benachrichtigungstöne" Icon="waveform" HelpContext="Empty">
+                <!-- Benachrichtigung 1 -->
+                <ParameterSeparator Id="%AID%_PS-nnn" Text="Benachrichtgung 1" UIHint="Headline" />
+                <!-- URL -->
+                <ParameterRefRef RefId="%AID%_UP-%TT%10001_R-%TT%1000101" HelpContext="Empty" IndentLevel="1" />
+
+                <!-- Benachrichtigung 2 -->
+                <ParameterSeparator Id="%AID%_PS-nnn" Text="Benachrichtgung 3" UIHint="Headline" />
+                <!-- URL -->
+                <ParameterRefRef RefId="%AID%_UP-%TT%10002_R-%TT%1000201" HelpContext="Empty" IndentLevel="1" />
+
+                <!-- Benachrichtigung 3 -->
+                <ParameterSeparator Id="%AID%_PS-nnn" Text="Benachrichtgung 3" UIHint="Headline" />
+                <!-- URL -->
+                <ParameterRefRef RefId="%AID%_UP-%TT%10003_R-%TT%1000301" HelpContext="Empty" IndentLevel="1" />
+
+                <!-- Benachrichtigung 4 -->
+                <ParameterSeparator Id="%AID%_PS-nnn" Text="Benachrichtgung 4" UIHint="Headline" />
+                <!-- URL -->
+                <ParameterRefRef RefId="%AID%_UP-%TT%10004_R-%TT%1000401" HelpContext="Empty" IndentLevel="1" />
+              </ParameterBlock>
+   
 
               <op:include href="SonosModule.templ.xml" xpath="//Dynamic/ChannelIndependentBlock/*" type="template" prefix="SON" IsInner="true" />
             </Channel>

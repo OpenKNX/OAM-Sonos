@@ -25,7 +25,7 @@
                 <Memory CodeSegment="%AID%_RS-04-00000" Offset="5" BitOffset="0" />
               </Parameter>
               
-             <!-- Relativ Group Volume Step -->
+              <!-- Relativ Group Volume Step -->
               <Parameter Id="%AID%_P-%TT%%CC%005" Name="CH%C%GroupRelativVolumeStep" ParameterType="%AID%_PT-RelativVolumeStep" Text="Relative Gruppen Lautstärkeänderung" Value="1">
                 <Memory CodeSegment="%AID%_RS-04-00000" Offset="6" BitOffset="0" />
               </Parameter>
@@ -78,9 +78,18 @@
               <ComObject Id="%AID%_O-%TT%%CC%014" Number="%K14%" Name="CH%C%JoinChannelNumber"   Text="%C% Kanal Nr beitreten"                    FunctionText="{{0:-}} Kanal Nr beitreten"                ObjectSize="1 Byte" DatapointType="DPST-5-10" TransmitFlag="Disabled" ReadFlag="Disabled" WriteFlag="Enabled"  UpdateFlag="Disabled" CommunicationFlag="Enabled" ReadOnInitFlag="Disabled" />         
 
               <!-- Source Selection -->
-              <ComObject Id="%AID%_O-%TT%%CC%015" Number="%K15%" Name="CH%C%SourceNumber"        Text="%C% Tonquellen Nr aktivieren"              FunctionText="{{0:-}} Tonquellen Nr aktivieren"               ObjectSize="1 Byte" DatapointType="DPST-5-10" TransmitFlag="Disabled" ReadFlag="Disabled" WriteFlag="Enabled"  UpdateFlag="Disabled" CommunicationFlag="Enabled" ReadOnInitFlag="Disabled" />         
+              <ComObject Id="%AID%_O-%TT%%CC%015" Number="%K15%" Name="CH%C%SourceNumber"        Text="%C% Tonquellen Nr aktivieren"              FunctionText="{{0:-}} Tonquellen Nr aktivieren"           ObjectSize="1 Byte" DatapointType="DPST-5-10" TransmitFlag="Disabled" ReadFlag="Disabled" WriteFlag="Enabled"  UpdateFlag="Disabled" CommunicationFlag="Enabled" ReadOnInitFlag="Disabled" />         
               <!-- Source Selection State-->    
-              <ComObject Id="%AID%_O-%TT%%CC%016" Number="%K16%" Name="CH%C%SourceState"         Text="%C% Tonquellen Nr Status"                  FunctionText="{{0:-}} Tonquellen Nr Status"                   ObjectSize="1 Byte" DatapointType="DPST-5-10" TransmitFlag="Enabled"  ReadFlag="Enabled"  UpdateFlag="Disabled" WriteFlag="Disabled" CommunicationFlag="Enabled" ReadOnInitFlag="Disabled" />  
+              <ComObject Id="%AID%_O-%TT%%CC%016" Number="%K16%" Name="CH%C%SourceState"         Text="%C% Tonquellen Nr Status"                  FunctionText="{{0:-}} Tonquellen Nr Status"               ObjectSize="1 Byte" DatapointType="DPST-5-10" TransmitFlag="Enabled"  ReadFlag="Enabled"  UpdateFlag="Disabled" WriteFlag="Disabled" CommunicationFlag="Enabled" ReadOnInitFlag="Disabled" />  
+
+              <!-- Notification Sound 1 -->
+              <ComObject Id="%AID%_O-%TT%%CC%017" Number="%K17%" Name="CH%C%NotificationSound1"   Text="%C% Benachrichtung 1 starten"            FunctionText="{{0:-}} Benachrichtung 1 starten"         ObjectSize="1 Bit" DatapointType="DPST-1-17" TransmitFlag="Disabled" ReadFlag="Disabled" WriteFlag="Enabled"  UpdateFlag="Disabled" CommunicationFlag="Enabled" ReadOnInitFlag="Disabled" />         
+              <!-- Notification Sound 2 -->
+              <ComObject Id="%AID%_O-%TT%%CC%018" Number="%K18%" Name="CH%C%NotificationSound2"   Text="%C% Benachrichtung 2 starten"            FunctionText="{{0:-}} Benachrichtung 2 starten"         ObjectSize="1 Bit" DatapointType="DPST-1-17" TransmitFlag="Disabled" ReadFlag="Disabled" WriteFlag="Enabled"  UpdateFlag="Disabled" CommunicationFlag="Enabled" ReadOnInitFlag="Disabled" />         
+             <!-- Notification Sound 3 -->
+              <ComObject Id="%AID%_O-%TT%%CC%019" Number="%K19%" Name="CH%C%NotificationSound3"   Text="%C% Benachrichtung 3 starten"            FunctionText="{{0:-}} Benachrichtung 3 starten"         ObjectSize="1 Bit" DatapointType="DPST-1-17" TransmitFlag="Disabled" ReadFlag="Disabled" WriteFlag="Enabled"  UpdateFlag="Disabled" CommunicationFlag="Enabled" ReadOnInitFlag="Disabled" />         
+              <!-- Notification Sound 4 -->
+              <ComObject Id="%AID%_O-%TT%%CC%020" Number="%K20%" Name="CH%C%NotificationSound4"   Text="%C% Benachrichtung 4 starten"            FunctionText="{{0:-}} Benachrichtung 4 starten"         ObjectSize="1 Bit" DatapointType="DPST-1-17" TransmitFlag="Disabled" ReadFlag="Disabled" WriteFlag="Enabled"  UpdateFlag="Disabled" CommunicationFlag="Enabled" ReadOnInitFlag="Disabled" />         
 
             </ComObjectTable>
             <ComObjectRefs>
@@ -119,6 +128,15 @@
               <ComObjectRef Id="%AID%_O-%TT%%CC%015_R-%TT%%CC%01501" RefId="%AID%_O-%TT%%CC%015" Text="%C%: Quelle auswählen"                    FunctionText="{{0:-}} Quelle auswählen"                    TextParameterRefId="%AID%_P-%TT%%CC%002_R-%TT%%CC%00201" />
               <!-- Source Selection State -->
               <ComObjectRef Id="%AID%_O-%TT%%CC%016_R-%TT%%CC%01601" RefId="%AID%_O-%TT%%CC%016" Text="%C%: Quelle Auswahl Status"               FunctionText="{{0:-}} Quelle Auswahl Status"               TextParameterRefId="%AID%_P-%TT%%CC%002_R-%TT%%CC%00201" />
+
+              <!-- Notification 1 -->
+              <ComObjectRef Id="%AID%_O-%TT%%CC%017_R-%TT%%CC%01701" RefId="%AID%_O-%TT%%CC%017" Text="%C%: Benachrichtung 1 starten"            FunctionText="{{0:-}} Benachrichtung 1 starten"            TextParameterRefId="%AID%_P-%TT%%CC%002_R-%TT%%CC%00201" />
+              <!-- Notification 2 -->
+              <ComObjectRef Id="%AID%_O-%TT%%CC%018_R-%TT%%CC%01801" RefId="%AID%_O-%TT%%CC%018" Text="%C%: Benachrichtung 2 starten"            FunctionText="{{0:-}} Benachrichtung 2 starten"            TextParameterRefId="%AID%_P-%TT%%CC%002_R-%TT%%CC%00201" />
+              <!-- Notification 3 -->
+              <ComObjectRef Id="%AID%_O-%TT%%CC%019_R-%TT%%CC%01901" RefId="%AID%_O-%TT%%CC%019" Text="%C%: Benachrichtung 3 starten"            FunctionText="{{0:-}} Benachrichtung 3 starten"            TextParameterRefId="%AID%_P-%TT%%CC%002_R-%TT%%CC%00201" />
+              <!-- Notification 4 -->
+              <ComObjectRef Id="%AID%_O-%TT%%CC%020_R-%TT%%CC%02001" RefId="%AID%_O-%TT%%CC%020" Text="%C%: Benachrichtung 4 starten"            FunctionText="{{0:-}} Benachrichtung 4 starten"            TextParameterRefId="%AID%_P-%TT%%CC%002_R-%TT%%CC%00201" />
 
             </ComObjectRefs>
           </Static>
@@ -193,6 +211,15 @@
                           <ComObjectRefRef RefId="%AID%_O-%TT%%CC%015_R-%TT%%CC%01501" />
                           <!-- Source Selection State -->
                           <ComObjectRefRef RefId="%AID%_O-%TT%%CC%016_R-%TT%%CC%01601" />
+
+                          <!-- Notification 1 -->
+                          <ComObjectRefRef RefId="%AID%_O-%TT%%CC%017_R-%TT%%CC%01701" />
+                          <!-- Notification 2 -->
+                          <ComObjectRefRef RefId="%AID%_O-%TT%%CC%018_R-%TT%%CC%01801" />
+                          <!-- Notification 3 -->
+                          <ComObjectRefRef RefId="%AID%_O-%TT%%CC%019_R-%TT%%CC%01901" />
+                          <!-- Notification 4 -->
+                          <ComObjectRefRef RefId="%AID%_O-%TT%%CC%020_R-%TT%%CC%02001" />
 
                         </when>
                       </choose> <!--Sonos Channel Usage  -->
