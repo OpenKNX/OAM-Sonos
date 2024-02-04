@@ -25,6 +25,9 @@ class SonosChannel : public OpenKNX::Channel, protected SonosApiNotificationHand
         void notificationGroupMuteChanged(SonosApi& caller, boolean mute) override;
         void notificationPlayStateChanged(SonosApi& caller, SonosApiPlayState playState) override;
         void notificationGroupCoordinatorChanged(SonosApi& caller) override;
+        void joinChannel(uint8_t channelNumber);
+        void joinNextPlayingGroup();
+        bool delegateCoordination(bool rejoinGroup);
     protected:
         void loop1() override;
         void processInputKo(GroupObject &ko) override;
@@ -33,7 +36,5 @@ class SonosChannel : public OpenKNX::Channel, protected SonosApiNotificationHand
         const IPAddress& speakerIP();
         const std::string name() override;
         const std::string logPrefix() override;
-        bool processCommand(const std::string cmd, bool diagnoseKo);
-        void joinNextPlayingGroup();
-        
+        bool processCommand(const std::string cmd, bool diagnoseKo);        
 };

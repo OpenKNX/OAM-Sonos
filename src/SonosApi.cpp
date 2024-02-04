@@ -611,6 +611,10 @@ void SonosApi::joinToGroupCoordinator(const char* uid)
     setAVTransportURI(sonosSchemaMaster, uid);
 }
 
+void SonosApi::unjoin()
+{
+    postAction(renderingAVTransportUrl, renderingAVTransportSoapAction, "BecomeCoordinatorOfStandaloneGroup");
+}
 
 SonosApiPlayState SonosApi::getPlayState()
 {

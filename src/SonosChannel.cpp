@@ -244,7 +244,38 @@ void SonosChannel::processInputKo(GroupObject& ko)
             }
             break;
         }
+        case SON_KoCHJoinChannelNumber:
+        {
+            uint8_t channelNumber = ko.value(DPT_Value_1_Ucount);
+            logDebugP("Join channel %d", channelNumber);
+            joinChannel(channelNumber); 
+        }
     }
+}
+
+void SonosChannel::joinChannel(uint8_t channelNumber)
+{
+    if (channelNumber > 0 && channelNumber <= _sonosModule.getNumberOfChannels())
+    {
+        auto sonosChannel = (SonosChannel*) _sonosModule.getChannel(channelNumber - 1);
+        if (sonosChannel != nullptr)
+        {
+            if (sonosChannel == this)
+            {
+                channelNumber = 0;
+            }
+            else
+            {
+                auto groupCoordinator = sonosChannel->_sonosApi.findGroupCoordinator();
+                _sonosApi.joinToGroupCoordinator(groupCoordinator);                     
+            }
+        }
+    }
+    if (channelNumber == 0)
+    {
+        if (!delegateCoordination(false))
+            _sonosApi.unjoin();
+    }    
 }
 
 bool SonosChannel::processCommand(const std::string cmd, bool diagnoseKo)
@@ -405,6 +436,12 @@ bool SonosChannel::processCommand(const std::string cmd, bool diagnoseKo)
         }       
         _sonosApi.delegateGroupCoordinationTo(&(channel->_sonosApi), true);
     }
+    else if (cmd.rfind("join ", 0) == 0)
+    {
+        Serial.println();
+        auto targetChannel = atoi(cmd.substr(5).c_str());
+        joinChannel(targetChannel);
+    }
     else if (cmd == "test")
     {
         auto webSocket = new WebSocketsClient();
@@ -419,14 +456,7 @@ bool SonosChannel::processCommand(const std::string cmd, bool diagnoseKo)
 
 void SonosChannel::joinNextPlayingGroup()
 {
-    auto currentGroupCoordinator = _sonosApi.findGroupCoordinator(true);
-    if (currentGroupCoordinator == &_sonosApi)
-    {
-        // delegate to other participant of the group
-        auto firstParticpant = _sonosApi.findFirstParticipant(true);
-        if (firstParticpant != nullptr)
-            _sonosApi.delegateGroupCoordinationTo(firstParticpant, true);
-    }
+    delegateCoordination(true);
 
     auto groupCoordinator = _sonosApi.findNextPlayingGroupCoordinator();
     if (groupCoordinator != nullptr)
@@ -436,4 +466,20 @@ void SonosChannel::joinNextPlayingGroup()
     }
     else
         logDebugP("No next playing group found");
+}
+
+bool SonosChannel::delegateCoordination(bool rejoinGroup)
+{
+    auto currentGroupCoordinator = _sonosApi.findGroupCoordinator(true);
+    if (currentGroupCoordinator == &_sonosApi)
+    {
+        // delegate to other participant of the group
+        auto firstParticpant = _sonosApi.findFirstParticipant(true);
+        if (firstParticpant != nullptr)
+        {
+            _sonosApi.delegateGroupCoordinationTo(firstParticpant, rejoinGroup);
+            return true;
+        }
+    }
+    return false;
 }
