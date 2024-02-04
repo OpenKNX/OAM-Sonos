@@ -45,67 +45,81 @@
             </ParameterRefs>
             <ComObjectTable>
               <!-- Volume Percentage -->
-              <ComObject Id="%AID%_O-%TT%%CC%001" Number="%K0%" Name="CH%C%Volume"               Text="%C% Lautstärke"                           FunctionText="{{0:-}} Lautstärke setzen"             ObjectSize="1 Byte" DatapointType="DPST-5-1" TransmitFlag="Disabled" ReadFlag="Disabled" WriteFlag="Enabled"  UpdateFlag="Disabled" CommunicationFlag="Enabled" ReadOnInitFlag="Disabled" />         
+              <ComObject Id="%AID%_O-%TT%%CC%000" Number="%K0%" Name="CH%C%Volume"               Text="%C% Lautstärke"                           FunctionText="{{0:-}} Lautstärke setzen"             ObjectSize="1 Byte" DatapointType="DPST-5-1" TransmitFlag="Disabled" ReadFlag="Disabled" WriteFlag="Enabled"  UpdateFlag="Disabled" CommunicationFlag="Enabled" ReadOnInitFlag="Disabled" />         
               <!-- Volume Percentage State -->
-              <ComObject Id="%AID%_O-%TT%%CC%002" Number="%K1%" Name="CH%C%VolumeState"          Text="%C% Lautstärke Status"                    FunctionText="{{0:-}} Lautstärke Status"             ObjectSize="1 Byte" DatapointType="DPST-5-1" TransmitFlag="Enabled"  ReadFlag="Enabled"  UpdateFlag="Disabled" WriteFlag="Disabled" CommunicationFlag="Enabled" ReadOnInitFlag="Disabled" />  
+              <ComObject Id="%AID%_O-%TT%%CC%001" Number="%K1%" Name="CH%C%VolumeState"          Text="%C% Lautstärke Status"                    FunctionText="{{0:-}} Lautstärke Status"             ObjectSize="1 Byte" DatapointType="DPST-5-1" TransmitFlag="Enabled"  ReadFlag="Enabled"  UpdateFlag="Disabled" WriteFlag="Disabled" CommunicationFlag="Enabled" ReadOnInitFlag="Disabled" />  
               <!-- Volume Relative -->
-              <ComObject Id="%AID%_O-%TT%%CC%003" Number="%K2%" Name="CH%C%VolumeRelativ"        Text="%C% Lautstärke Verringen/Erhöhen"         FunctionText="{{0:-}} Lautstärke verringern/erhöhen" ObjectSize="1 Bit" DatapointType="DPST-1-7" TransmitFlag="Disabled" ReadFlag="Disabled" WriteFlag="Enabled"  UpdateFlag="Disabled" CommunicationFlag="Enabled" ReadOnInitFlag="Disabled" />         
+              <ComObject Id="%AID%_O-%TT%%CC%002" Number="%K2%" Name="CH%C%VolumeRelativ"        Text="%C% Lautstärke Verringen/Erhöhen"         FunctionText="{{0:-}} Lautstärke verringern/erhöhen" ObjectSize="1 Bit" DatapointType="DPST-1-7" TransmitFlag="Disabled" ReadFlag="Disabled" WriteFlag="Enabled"  UpdateFlag="Disabled" CommunicationFlag="Enabled" ReadOnInitFlag="Disabled" />         
               <!-- Mute -->
-              <ComObject Id="%AID%_O-%TT%%CC%004" Number="%K3%" Name="CH%C%Mute"                 Text="%C% Mute Aktivieren"                      FunctionText="{{0:-}} Mute aktivieren"               ObjectSize="1 Bit" DatapointType="DPST-1-1" TransmitFlag="Disabled" ReadFlag="Disabled" WriteFlag="Enabled"  UpdateFlag="Disabled" CommunicationFlag="Enabled" ReadOnInitFlag="Disabled" />         
+              <ComObject Id="%AID%_O-%TT%%CC%003" Number="%K3%" Name="CH%C%Mute"                 Text="%C% Mute aktivieren"                      FunctionText="{{0:-}} Mute aktivieren"               ObjectSize="1 Bit" DatapointType="DPST-1-1" TransmitFlag="Disabled" ReadFlag="Disabled" WriteFlag="Enabled"  UpdateFlag="Disabled" CommunicationFlag="Enabled" ReadOnInitFlag="Disabled" />         
               <!-- Mute State -->    
-              <ComObject Id="%AID%_O-%TT%%CC%005" Number="%K4%" Name="CH%C%MuteState"            Text="%C% Mute Status"                          FunctionText="{{0:-}} Mute Status"                   ObjectSize="1 Bit" DatapointType="DPST-1-1" TransmitFlag="Enabled"  ReadFlag="Enabled"  UpdateFlag="Disabled" WriteFlag="Disabled" CommunicationFlag="Enabled" ReadOnInitFlag="Disabled" />  
+              <ComObject Id="%AID%_O-%TT%%CC%004" Number="%K4%" Name="CH%C%MuteState"            Text="%C% Mute Status"                          FunctionText="{{0:-}} Mute Status"                   ObjectSize="1 Bit" DatapointType="DPST-1-1" TransmitFlag="Enabled"  ReadFlag="Enabled"  UpdateFlag="Disabled" WriteFlag="Disabled" CommunicationFlag="Enabled" ReadOnInitFlag="Disabled" />  
               <!-- Play -->        
-              <ComObject Id="%AID%_O-%TT%%CC%006" Number="%K5%" Name="CH%C%Play"                 Text="%C% Spielen"                              FunctionText="{{0:-}} Spielen"                       ObjectSize="1 Bit" DatapointType="DPST-1-10" TransmitFlag="Disabled" ReadFlag="Disabled" WriteFlag="Enabled"  UpdateFlag="Disabled" CommunicationFlag="Enabled" ReadOnInitFlag="Disabled" />         
+              <ComObject Id="%AID%_O-%TT%%CC%005" Number="%K5%" Name="CH%C%Play"                 Text="%C% Spielen"                              FunctionText="{{0:-}} Spielen"                       ObjectSize="1 Bit" DatapointType="DPST-1-10" TransmitFlag="Disabled" ReadFlag="Disabled" WriteFlag="Enabled"  UpdateFlag="Disabled" CommunicationFlag="Enabled" ReadOnInitFlag="Disabled" />         
               <!-- Play State -->        
-              <ComObject Id="%AID%_O-%TT%%CC%007" Number="%K6%" Name="CH%C%PlayFeedback"         Text="%C% Spielt Status"                        FunctionText="{{0:-}} Spielt Status"                 ObjectSize="1 Bit" DatapointType="DPST-1-10" TransmitFlag="Enabled"  ReadFlag="Enabled"  UpdateFlag="Disabled" WriteFlag="Disabled" CommunicationFlag="Enabled" ReadOnInitFlag="Disabled" />  
+              <ComObject Id="%AID%_O-%TT%%CC%006" Number="%K6%" Name="CH%C%PlayFeedback"         Text="%C% Spielt Status"                        FunctionText="{{0:-}} Spielt Status"                 ObjectSize="1 Bit" DatapointType="DPST-1-10" TransmitFlag="Enabled"  ReadFlag="Enabled"  UpdateFlag="Disabled" WriteFlag="Disabled" CommunicationFlag="Enabled" ReadOnInitFlag="Disabled" />  
               <!-- Previous / Next -->        
-              <ComObject Id="%AID%_O-%TT%%CC%008" Number="%K7%" Name="CH%C%PreviousNext"         Text="%C% Vorheriger/Nächster Titel"            FunctionText="{{0:-}} Vorheriger/Nächster Titel"     ObjectSize="1 Bit" DatapointType="DPST-1-8"  TransmitFlag="Disabled" ReadFlag="Disabled" WriteFlag="Enabled"  UpdateFlag="Disabled" CommunicationFlag="Enabled" ReadOnInitFlag="Disabled" />         
+              <ComObject Id="%AID%_O-%TT%%CC%007" Number="%K7%" Name="CH%C%PreviousNext"         Text="%C% Vorheriger/Nächster Titel"            FunctionText="{{0:-}} Vorheriger/Nächster Titel"     ObjectSize="1 Bit" DatapointType="DPST-1-8"  TransmitFlag="Disabled" ReadFlag="Disabled" WriteFlag="Enabled"  UpdateFlag="Disabled" CommunicationFlag="Enabled" ReadOnInitFlag="Disabled" />         
 
               <!-- Group Volume Percentage -->    
-              <ComObject Id="%AID%_O-%TT%%CC%009" Number="%K8%" Name="CH%C%GroupVolume"          Text="%C% Gruppenlautstärke"                    FunctionText="{{0:-}} Gruppenlautstärke setzen"      ObjectSize="1 Byte" DatapointType="DPST-5-1" TransmitFlag="Disabled" ReadFlag="Disabled" WriteFlag="Enabled"  UpdateFlag="Disabled" CommunicationFlag="Enabled" ReadOnInitFlag="Disabled" />         
+              <ComObject Id="%AID%_O-%TT%%CC%008" Number="%K8%" Name="CH%C%GroupVolume"          Text="%C% Gruppenlautstärke"                    FunctionText="{{0:-}} Gruppenlautstärke setzen"      ObjectSize="1 Byte" DatapointType="DPST-5-1" TransmitFlag="Disabled" ReadFlag="Disabled" WriteFlag="Enabled"  UpdateFlag="Disabled" CommunicationFlag="Enabled" ReadOnInitFlag="Disabled" />         
               <!-- Group Volume Percentage State -->        
-              <ComObject Id="%AID%_O-%TT%%CC%010" Number="%K9%" Name="CH%C%GroupVolumeState"    Text="%C% Gruppenlautstärke Status"             FunctionText="{{0:-}} Gruppenlautstärke Status"      ObjectSize="1 Byte" DatapointType="DPST-5-1" TransmitFlag="Enabled"  ReadFlag="Enabled"  UpdateFlag="Disabled" WriteFlag="Disabled" CommunicationFlag="Enabled" ReadOnInitFlag="Disabled" />  
+              <ComObject Id="%AID%_O-%TT%%CC%009" Number="%K9%" Name="CH%C%GroupVolumeState"    Text="%C% Gruppenlautstärke Status"             FunctionText="{{0:-}} Gruppenlautstärke Status"      ObjectSize="1 Byte" DatapointType="DPST-5-1" TransmitFlag="Enabled"  ReadFlag="Enabled"  UpdateFlag="Disabled" WriteFlag="Disabled" CommunicationFlag="Enabled" ReadOnInitFlag="Disabled" />  
               <!-- Group Volume Relative -->
-              <ComObject Id="%AID%_O-%TT%%CC%011" Number="%K10%" Name="CH%C%GroupVolumeRelativ"  Text="%C% Lautstärke Verringen/Erhöhen"         FunctionText="{{0:-}} Lautstärke verringern/erhöhen" ObjectSize="1 Bit" DatapointType="DPST-1-7" TransmitFlag="Disabled" ReadFlag="Disabled" WriteFlag="Enabled"  UpdateFlag="Disabled" CommunicationFlag="Enabled" ReadOnInitFlag="Disabled" />         
+              <ComObject Id="%AID%_O-%TT%%CC%010" Number="%K10%" Name="CH%C%GroupVolumeRelativ"  Text="%C% Lautstärke Verringen/Erhöhen"         FunctionText="{{0:-}} Lautstärke verringern/erhöhen" ObjectSize="1 Bit" DatapointType="DPST-1-7" TransmitFlag="Disabled" ReadFlag="Disabled" WriteFlag="Enabled"  UpdateFlag="Disabled" CommunicationFlag="Enabled" ReadOnInitFlag="Disabled" />         
               <!-- Group Mute -->
-              <ComObject Id="%AID%_O-%TT%%CC%012" Number="%K11%" Name="CH%C%GroupMute"           Text="%C% Gruppe Mute Aktivieren"               FunctionText="{{0:-}} Gruppe Mute aktivieren"               ObjectSize="1 Bit" DatapointType="DPST-1-1" TransmitFlag="Disabled" ReadFlag="Disabled" WriteFlag="Enabled"  UpdateFlag="Disabled" CommunicationFlag="Enabled" ReadOnInitFlag="Disabled" />         
+              <ComObject Id="%AID%_O-%TT%%CC%011" Number="%K11%" Name="CH%C%GroupMute"           Text="%C% Gruppe Mute aktivieren"               FunctionText="{{0:-}} Gruppe Mute aktivieren"               ObjectSize="1 Bit" DatapointType="DPST-1-1" TransmitFlag="Disabled" ReadFlag="Disabled" WriteFlag="Enabled"  UpdateFlag="Disabled" CommunicationFlag="Enabled" ReadOnInitFlag="Disabled" />         
               <!-- Group Mute State -->    
-              <ComObject Id="%AID%_O-%TT%%CC%013" Number="%K12%" Name="CH%C%GroupMuteState"      Text="%C% Gruppe Mute Status"                   FunctionText="{{0:-}} Gruppe Mute Status"                   ObjectSize="1 Bit" DatapointType="DPST-1-1" TransmitFlag="Enabled"  ReadFlag="Enabled"  UpdateFlag="Disabled" WriteFlag="Disabled" CommunicationFlag="Enabled" ReadOnInitFlag="Disabled" />  
+              <ComObject Id="%AID%_O-%TT%%CC%012" Number="%K12%" Name="CH%C%GroupMuteState"      Text="%C% Gruppe Mute Status"                   FunctionText="{{0:-}} Gruppe Mute Status"                   ObjectSize="1 Bit" DatapointType="DPST-1-1" TransmitFlag="Enabled"  ReadFlag="Enabled"  UpdateFlag="Disabled" WriteFlag="Disabled" CommunicationFlag="Enabled" ReadOnInitFlag="Disabled" />  
 
               <!-- Join next active group -->
-              <ComObject Id="%AID%_O-%TT%%CC%014" Number="%K13%" Name="CH%C%JoinNextActiveGroup" Text="%C% Nächster aktiven Gruppe beitreten"     FunctionText="{{0:-}} Nächster aktiven Gruppe beitreten" ObjectSize="1 Bit" DatapointType="DPST-1-17" TransmitFlag="Disabled" ReadFlag="Disabled" WriteFlag="Enabled"  UpdateFlag="Disabled" CommunicationFlag="Enabled" ReadOnInitFlag="Disabled" />         
-    
+              <ComObject Id="%AID%_O-%TT%%CC%013" Number="%K13%" Name="CH%C%JoinNextActiveGroup" Text="%C% Nächster aktiven Gruppe beitreten"     FunctionText="{{0:-}} Nächster aktiven Gruppe beitreten" ObjectSize="1 Bit"  DatapointType="DPST-1-17" TransmitFlag="Disabled" ReadFlag="Disabled" WriteFlag="Enabled"  UpdateFlag="Disabled" CommunicationFlag="Enabled" ReadOnInitFlag="Disabled" />         
+              <!-- Join channel number -->
+              <ComObject Id="%AID%_O-%TT%%CC%014" Number="%K14%" Name="CH%C%JoinChannelNumber"   Text="%C% Kanal Nr beitreten"                    FunctionText="{{0:-}} Kanal Nr beitreten"                ObjectSize="1 Byte" DatapointType="DPST-5-10" TransmitFlag="Disabled" ReadFlag="Disabled" WriteFlag="Enabled"  UpdateFlag="Disabled" CommunicationFlag="Enabled" ReadOnInitFlag="Disabled" />         
+
+              <!-- Source Selection -->
+              <ComObject Id="%AID%_O-%TT%%CC%015" Number="%K15%" Name="CH%C%SourceNumber"        Text="%C% Tonquellen Nr aktivieren"              FunctionText="{{0:-}} Tonquellen Nr aktivieren"               ObjectSize="1 Byte" DatapointType="DPST-5-10" TransmitFlag="Disabled" ReadFlag="Disabled" WriteFlag="Enabled"  UpdateFlag="Disabled" CommunicationFlag="Enabled" ReadOnInitFlag="Disabled" />         
+              <!-- Source Selection State-->    
+              <ComObject Id="%AID%_O-%TT%%CC%016" Number="%K16%" Name="CH%C%SourceState"         Text="%C% Tonquellen Nr Status"                  FunctionText="{{0:-}} Tonquellen Nr Status"                   ObjectSize="1 Byte" DatapointType="DPST-5-10" TransmitFlag="Enabled"  ReadFlag="Enabled"  UpdateFlag="Disabled" WriteFlag="Disabled" CommunicationFlag="Enabled" ReadOnInitFlag="Disabled" />  
+
             </ComObjectTable>
             <ComObjectRefs>
               <!-- Volume Percentage -->
-              <ComObjectRef Id="%AID%_O-%TT%%CC%001_R-%TT%%CC%00101" RefId="%AID%_O-%TT%%CC%001" Text="%C%: Lautstärke"                          FunctionText="{{0:-}} Lautstärke Setzten"                  TextParameterRefId="%AID%_P-%TT%%CC%002_R-%TT%%CC%00201" />
+              <ComObjectRef Id="%AID%_O-%TT%%CC%000_R-%TT%%CC%00001" RefId="%AID%_O-%TT%%CC%000" Text="%C%: Lautstärke"                          FunctionText="{{0:-}} Lautstärke Setzten"                  TextParameterRefId="%AID%_P-%TT%%CC%002_R-%TT%%CC%00201" />
               <!-- Volume Percentage State -->       
-              <ComObjectRef Id="%AID%_O-%TT%%CC%002_R-%TT%%CC%00201" RefId="%AID%_O-%TT%%CC%002" Text="%C%: Lautstärke Status"                   FunctionText="{{0:-}} Lautstärke Status"                   TextParameterRefId="%AID%_P-%TT%%CC%002_R-%TT%%CC%00201" />
+              <ComObjectRef Id="%AID%_O-%TT%%CC%001_R-%TT%%CC%00101" RefId="%AID%_O-%TT%%CC%001" Text="%C%: Lautstärke Status"                   FunctionText="{{0:-}} Lautstärke Status"                   TextParameterRefId="%AID%_P-%TT%%CC%002_R-%TT%%CC%00201" />
               <!-- Volume Relative -->       
-              <ComObjectRef Id="%AID%_O-%TT%%CC%003_R-%TT%%CC%00301" RefId="%AID%_O-%TT%%CC%003" Text="%C%: Lautstärke Verringen/Erhöhen"        FunctionText="{{0:-}} Lautstärke Verringen/Erhöhen"        TextParameterRefId="%AID%_P-%TT%%CC%002_R-%TT%%CC%00201" />
+              <ComObjectRef Id="%AID%_O-%TT%%CC%002_R-%TT%%CC%00201" RefId="%AID%_O-%TT%%CC%002" Text="%C%: Lautstärke Verringen/Erhöhen"        FunctionText="{{0:-}} Lautstärke Verringen/Erhöhen"        TextParameterRefId="%AID%_P-%TT%%CC%002_R-%TT%%CC%00201" />
               <!-- Mute -->       
-              <ComObjectRef Id="%AID%_O-%TT%%CC%004_R-%TT%%CC%00401" RefId="%AID%_O-%TT%%CC%004" Text="%C%: Mute Aktivieren"                     FunctionText="{{0:-}} Mute Aktivieren"                     TextParameterRefId="%AID%_P-%TT%%CC%002_R-%TT%%CC%00201" />
+              <ComObjectRef Id="%AID%_O-%TT%%CC%003_R-%TT%%CC%00301" RefId="%AID%_O-%TT%%CC%003" Text="%C%: Mute aktivieren"                     FunctionText="{{0:-}} Mute aktivieren"                     TextParameterRefId="%AID%_P-%TT%%CC%002_R-%TT%%CC%00201" />
               <!-- Mute State Relative -->       
-              <ComObjectRef Id="%AID%_O-%TT%%CC%005_R-%TT%%CC%00501" RefId="%AID%_O-%TT%%CC%005" Text="%C%: Mute Status"                         FunctionText="{{0:-}} Mute Status"                         TextParameterRefId="%AID%_P-%TT%%CC%002_R-%TT%%CC%00201" />
+              <ComObjectRef Id="%AID%_O-%TT%%CC%004_R-%TT%%CC%00401" RefId="%AID%_O-%TT%%CC%004" Text="%C%: Mute Status"                         FunctionText="{{0:-}} Mute Status"                         TextParameterRefId="%AID%_P-%TT%%CC%002_R-%TT%%CC%00201" />
               <!-- Play -->       
-              <ComObjectRef Id="%AID%_O-%TT%%CC%006_R-%TT%%CC%00601" RefId="%AID%_O-%TT%%CC%006" Text="%C%: Spielen"                             FunctionText="{{0:-}} Spielen"                             TextParameterRefId="%AID%_P-%TT%%CC%002_R-%TT%%CC%00201" />
+              <ComObjectRef Id="%AID%_O-%TT%%CC%005_R-%TT%%CC%00501" RefId="%AID%_O-%TT%%CC%005" Text="%C%: Spielen"                             FunctionText="{{0:-}} Spielen"                             TextParameterRefId="%AID%_P-%TT%%CC%002_R-%TT%%CC%00201" />
               <!-- Play State -->       
-              <ComObjectRef Id="%AID%_O-%TT%%CC%007_R-%TT%%CC%00701" RefId="%AID%_O-%TT%%CC%007" Text="%C%: Spielt Status"                       FunctionText="{{0:-}} Spielt Status"                       TextParameterRefId="%AID%_P-%TT%%CC%002_R-%TT%%CC%00201" />
+              <ComObjectRef Id="%AID%_O-%TT%%CC%006_R-%TT%%CC%00601" RefId="%AID%_O-%TT%%CC%006" Text="%C%: Spielt Status"                       FunctionText="{{0:-}} Spielt Status"                       TextParameterRefId="%AID%_P-%TT%%CC%002_R-%TT%%CC%00201" />
               <!-- Previous/Next -->       
-              <ComObjectRef Id="%AID%_O-%TT%%CC%008_R-%TT%%CC%00801" RefId="%AID%_O-%TT%%CC%008" Text="%C%: Vorheriger/Nächster Titel"           FunctionText="{{0:-}} Vorheriger/Nächster Titel"           TextParameterRefId="%AID%_P-%TT%%CC%002_R-%TT%%CC%00201" />
+              <ComObjectRef Id="%AID%_O-%TT%%CC%007_R-%TT%%CC%00701" RefId="%AID%_O-%TT%%CC%007" Text="%C%: Vorheriger/Nächster Titel"           FunctionText="{{0:-}} Vorheriger/Nächster Titel"           TextParameterRefId="%AID%_P-%TT%%CC%002_R-%TT%%CC%00201" />
               <!-- Group Volume Percentage -->       
-              <ComObjectRef Id="%AID%_O-%TT%%CC%009_R-%TT%%CC%00901" RefId="%AID%_O-%TT%%CC%009" Text="%C%: Gruppenlautstärke"                   FunctionText="{{0:-}} Gruppenlautstärke Setzten"           TextParameterRefId="%AID%_P-%TT%%CC%002_R-%TT%%CC%00201" />
+              <ComObjectRef Id="%AID%_O-%TT%%CC%008_R-%TT%%CC%00801" RefId="%AID%_O-%TT%%CC%008" Text="%C%: Gruppenlautstärke"                   FunctionText="{{0:-}} Gruppenlautstärke Setzten"           TextParameterRefId="%AID%_P-%TT%%CC%002_R-%TT%%CC%00201" />
               <!-- Group Volume Percentage State -->       
-              <ComObjectRef Id="%AID%_O-%TT%%CC%010_R-%TT%%CC%01001" RefId="%AID%_O-%TT%%CC%010" Text="%C%: Gruppenlautstärke Status"            FunctionText="{{0:-}} Gruppenlautstärke Status"            TextParameterRefId="%AID%_P-%TT%%CC%002_R-%TT%%CC%00201" />
+              <ComObjectRef Id="%AID%_O-%TT%%CC%009_R-%TT%%CC%00901" RefId="%AID%_O-%TT%%CC%009" Text="%C%: Gruppenlautstärke Status"            FunctionText="{{0:-}} Gruppenlautstärke Status"            TextParameterRefId="%AID%_P-%TT%%CC%002_R-%TT%%CC%00201" />
               <!-- Group Volume Relative -->
-              <ComObjectRef Id="%AID%_O-%TT%%CC%011_R-%TT%%CC%01101" RefId="%AID%_O-%TT%%CC%011" Text="%C%: Gruppenlautstärke Verringen/Erhöhen" FunctionText="{{0:-}} Gruppenlautstärke Verringen/Erhöhen" TextParameterRefId="%AID%_P-%TT%%CC%002_R-%TT%%CC%00201" />
+              <ComObjectRef Id="%AID%_O-%TT%%CC%010_R-%TT%%CC%01001" RefId="%AID%_O-%TT%%CC%010" Text="%C%: Gruppenlautstärke Verringen/Erhöhen" FunctionText="{{0:-}} Gruppenlautstärke Verringen/Erhöhen" TextParameterRefId="%AID%_P-%TT%%CC%002_R-%TT%%CC%00201" />
               <!-- Group Mute -->
-              <ComObjectRef Id="%AID%_O-%TT%%CC%012_R-%TT%%CC%01201" RefId="%AID%_O-%TT%%CC%012" Text="%C%: Gruppe Mute Aktivieren"              FunctionText="{{0:-}} Gruppe Mute Aktivieren"              TextParameterRefId="%AID%_P-%TT%%CC%002_R-%TT%%CC%00201" />
+              <ComObjectRef Id="%AID%_O-%TT%%CC%011_R-%TT%%CC%01101" RefId="%AID%_O-%TT%%CC%011" Text="%C%: Gruppe Mute aktivieren"              FunctionText="{{0:-}} Gruppe Mute aktivieren"              TextParameterRefId="%AID%_P-%TT%%CC%002_R-%TT%%CC%00201" />
               <!-- Group Mute State-->
-              <ComObjectRef Id="%AID%_O-%TT%%CC%013_R-%TT%%CC%01301" RefId="%AID%_O-%TT%%CC%013" Text="%C%: Gruppe Mute Status"                  FunctionText="{{0:-}} Gruppe Mute Status"                  TextParameterRefId="%AID%_P-%TT%%CC%002_R-%TT%%CC%00201" />
+              <ComObjectRef Id="%AID%_O-%TT%%CC%012_R-%TT%%CC%01201" RefId="%AID%_O-%TT%%CC%012" Text="%C%: Gruppe Mute Status"                  FunctionText="{{0:-}} Gruppe Mute Status"                  TextParameterRefId="%AID%_P-%TT%%CC%002_R-%TT%%CC%00201" />
               <!-- Join next active group -->
-              <ComObjectRef Id="%AID%_O-%TT%%CC%014_R-%TT%%CC%01401" RefId="%AID%_O-%TT%%CC%014" Text="%C%: Nächster aktiven Gruppe beitreten"    FunctionText="{{0:-}} Nächster aktiven Gruppe beitreten"    TextParameterRefId="%AID%_P-%TT%%CC%002_R-%TT%%CC%00201" />
-    
+              <ComObjectRef Id="%AID%_O-%TT%%CC%013_R-%TT%%CC%01301" RefId="%AID%_O-%TT%%CC%013" Text="%C%: Nächster aktiven Gruppe beitreten"   FunctionText="{{0:-}} Nächster aktiven Gruppe beitreten"   TextParameterRefId="%AID%_P-%TT%%CC%002_R-%TT%%CC%00201" />
+              <!-- Join channel number -->
+              <ComObjectRef Id="%AID%_O-%TT%%CC%014_R-%TT%%CC%01401" RefId="%AID%_O-%TT%%CC%014" Text="%C%: Kanal Nr beitreten"                  FunctionText="{{0:-}} Kanal Nr beitreten"                  TextParameterRefId="%AID%_P-%TT%%CC%002_R-%TT%%CC%00201" />
+
+              <!-- Source Selection -->
+              <ComObjectRef Id="%AID%_O-%TT%%CC%015_R-%TT%%CC%01501" RefId="%AID%_O-%TT%%CC%015" Text="%C%: Quelle auswählen"                    FunctionText="{{0:-}} Quelle auswählen"                    TextParameterRefId="%AID%_P-%TT%%CC%002_R-%TT%%CC%00201" />
+              <!-- Source Selection State -->
+              <ComObjectRef Id="%AID%_O-%TT%%CC%016_R-%TT%%CC%01601" RefId="%AID%_O-%TT%%CC%016" Text="%C%: Quelle Auswahl Status"               FunctionText="{{0:-}} Quelle Auswahl Status"               TextParameterRefId="%AID%_P-%TT%%CC%002_R-%TT%%CC%00201" />
+
             </ComObjectRefs>
           </Static>
           <Dynamic>
@@ -131,21 +145,21 @@
                           <ParameterRefRef RefId="%AID%_P-%TT%%CC%004_R-%TT%%CC%00401" /> 
 
                           <!-- KO Volume Percentage -->
-                          <ComObjectRefRef RefId="%AID%_O-%TT%%CC%001_R-%TT%%CC%00101" />
+                          <ComObjectRefRef RefId="%AID%_O-%TT%%CC%000_R-%TT%%CC%00001" />
                           <!-- KO Volume Percentage State -->
-                          <ComObjectRefRef RefId="%AID%_O-%TT%%CC%002_R-%TT%%CC%00201" />
+                          <ComObjectRefRef RefId="%AID%_O-%TT%%CC%001_R-%TT%%CC%00101" />
                           <!-- Volume Relative -->       
-                          <ComObjectRefRef RefId="%AID%_O-%TT%%CC%003_R-%TT%%CC%00301" />
+                          <ComObjectRefRef RefId="%AID%_O-%TT%%CC%002_R-%TT%%CC%00201" />
                           <!-- Mute -->       
-                          <ComObjectRefRef RefId="%AID%_O-%TT%%CC%004_R-%TT%%CC%00401" />
+                          <ComObjectRefRef RefId="%AID%_O-%TT%%CC%003_R-%TT%%CC%00301" />
                           <!-- Mute State Relative -->       
-                          <ComObjectRefRef RefId="%AID%_O-%TT%%CC%005_R-%TT%%CC%00501" />
+                          <ComObjectRefRef RefId="%AID%_O-%TT%%CC%004_R-%TT%%CC%00401" />
                           <!-- Play -->       
-                          <ComObjectRefRef RefId="%AID%_O-%TT%%CC%006_R-%TT%%CC%00601" />
+                          <ComObjectRefRef RefId="%AID%_O-%TT%%CC%005_R-%TT%%CC%00501" />
                           <!-- Play State -->       
-                          <ComObjectRefRef RefId="%AID%_O-%TT%%CC%007_R-%TT%%CC%00701" />
+                          <ComObjectRefRef RefId="%AID%_O-%TT%%CC%006_R-%TT%%CC%00601" />
                           <!-- Previous/Next -->       
-                          <ComObjectRefRef RefId="%AID%_O-%TT%%CC%008_R-%TT%%CC%00801" />
+                          <ComObjectRefRef RefId="%AID%_O-%TT%%CC%007_R-%TT%%CC%00701" />
                         
                         </when> <!-- Einzelsteuerung -->
                         <when test="0 3 4" >  <!-- Gruppensteuerung -->
@@ -157,21 +171,29 @@
                           <ParameterRefRef RefId="%AID%_P-%TT%%CC%005_R-%TT%%CC%00501" /> 
             
                           <!-- Group Volume Percentage -->       
-                          <ComObjectRefRef RefId="%AID%_O-%TT%%CC%009_R-%TT%%CC%00901" />
+                          <ComObjectRefRef RefId="%AID%_O-%TT%%CC%008_R-%TT%%CC%00801" />
                           <!-- Group Volume Percentage State -->       
-                          <ComObjectRefRef RefId="%AID%_O-%TT%%CC%010_R-%TT%%CC%01001" />
+                          <ComObjectRefRef RefId="%AID%_O-%TT%%CC%009_R-%TT%%CC%00901" />
                           <!-- Group Volume Relative -->
-                          <ComObjectRefRef RefId="%AID%_O-%TT%%CC%011_R-%TT%%CC%01101" />
+                          <ComObjectRefRef RefId="%AID%_O-%TT%%CC%010_R-%TT%%CC%01001" />
                           <!-- Group Mute -->
-                          <ComObjectRefRef RefId="%AID%_O-%TT%%CC%012_R-%TT%%CC%01201" />
+                          <ComObjectRefRef RefId="%AID%_O-%TT%%CC%011_R-%TT%%CC%01101" />
                           <!-- Group Mute State-->
-                          <ComObjectRefRef RefId="%AID%_O-%TT%%CC%013_R-%TT%%CC%01301" />
+                          <ComObjectRefRef RefId="%AID%_O-%TT%%CC%012_R-%TT%%CC%01201" />
     
                         </when> <!-- Gruppensteuerung -->
 
                         <when test="0 2 3 4" >  <!-- active with control -->           
                           <!-- Join next active group -->
+                          <ComObjectRefRef RefId="%AID%_O-%TT%%CC%013_R-%TT%%CC%01301" />
+                          <!-- Join channel number -->
                           <ComObjectRefRef RefId="%AID%_O-%TT%%CC%014_R-%TT%%CC%01401" />
+
+                          <!-- Source Selection -->
+                          <ComObjectRefRef RefId="%AID%_O-%TT%%CC%015_R-%TT%%CC%01501" />
+                          <!-- Source Selection State -->
+                          <ComObjectRefRef RefId="%AID%_O-%TT%%CC%016_R-%TT%%CC%01601" />
+
                         </when>
                       </choose> <!--Sonos Channel Usage  -->
                   </ParameterBlock>
