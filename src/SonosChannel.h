@@ -1,18 +1,16 @@
 #pragma once
 #include "OpenKNX.h"
 #include "SonosApi.h"
+#include "SonosApiPlayNotification.h"
 #include "VolumeController.h"
 #include "WiFi.h"
-#include "WiFiClientSecure.h"
-#include "WebSocketsClient.h"
 
 class SonosModule;
 
 class SonosChannel : public OpenKNX::Channel, protected SonosApiNotificationHandler
 {
     private:
-        WebSocketsClient* _webSocket;
-
+        SonosApiPlayNotification* _playNotification = nullptr;
         SonosModule& _sonosModule;
         SonosApi& _sonosApi;
         VolumeController _volumeController;
@@ -28,6 +26,7 @@ class SonosChannel : public OpenKNX::Channel, protected SonosApiNotificationHand
         void joinChannel(uint8_t channelNumber);
         void joinNextPlayingGroup();
         bool delegateCoordination(bool rejoinGroup);
+        void playNotification(byte notificationNumber);
     protected:
         void loop1() override;
         void processInputKo(GroupObject &ko) override;

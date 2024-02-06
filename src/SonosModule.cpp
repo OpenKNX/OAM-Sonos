@@ -121,6 +121,7 @@ void SonosModule::showHelp()
     openknx.console.printHelpLine("son<CC> joinnext", "Join the Channel CC to the next playing group. i.e. son01 joinnext");
     openknx.console.printHelpLine("son<CC> dele <TT>", "The Channel CC delegates the coordination to channel TT. i.e. son01 dele 02");
     openknx.console.printHelpLine("son<CC> join <TT>", "The Channel CC join group of channel TT. i.e. son01 join 02");
+    openknx.console.printHelpLine("son<CC> noti <N>", "The Channel CC plays the notification N. i.e. son01 noti 1");
 }
 
 void SonosModule::showInformations()

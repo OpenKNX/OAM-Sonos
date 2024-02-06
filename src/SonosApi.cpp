@@ -25,7 +25,7 @@ void ParameterBuilder::AddParameter(const char* name, const char* value1, const 
          if (value1 != nullptr)
             _length += strlen(value1);
          if (value2 != nullptr)
-            _length += strlen(value2);    
+            _length += strlen(value2);  
     }
     else
     {
@@ -91,9 +91,9 @@ void SonosApi::subscribeAll()
     if (_subscriptionTime == 0)
         _subscriptionTime = 1;
     _renderControlSeq = 0;
-    subscribeEvents("/MediaRenderer/RenderingControl/Event");
-    subscribeEvents("/MediaRenderer/GroupRenderingControl/Event");
-    subscribeEvents("/MediaRenderer/AVTransport/Event");
+   subscribeEvents("/MediaRenderer/RenderingControl/Event");
+   subscribeEvents("/MediaRenderer/GroupRenderingControl/Event");
+   subscribeEvents("/MediaRenderer/AVTransport/Event");
 }
 
 void SonosApi::loop()
@@ -388,7 +388,6 @@ void SonosApi::writeSoapHttpCall(Stream& stream, const char* soapUrl, const char
         ParameterBuilder countCharParameterBuilder(nullptr);
         parameterFunction(countCharParameterBuilder);
         contentLength += countCharParameterBuilder.length();
-
     }
     // HTTP Method, URL, version
     stream.print("POST ");
@@ -472,7 +471,7 @@ void SonosApi::setVolume(uint8_t volume)
     parameter += F("<DesiredVolume>");
     parameter += volume;
     parameter += F("</DesiredVolume>");
-    postAction(renderingControlUrl, renderingControlSoapAction, "SetVolume", [volume] (ParameterBuilder b)  
+    postAction(renderingControlUrl, renderingControlSoapAction, "SetVolume", [volume] (ParameterBuilder& b)  
     { 
         b.AddParameter("Channel", "Master");
         b.AddParameter("DesiredVolume", volume);
@@ -481,7 +480,7 @@ void SonosApi::setVolume(uint8_t volume)
 
 void SonosApi::setVolumeRelative(int8_t volume)
 {
-    postAction(renderingControlUrl, renderingControlSoapAction, "SetRelativeVolume", [volume] (ParameterBuilder b)  
+    postAction(renderingControlUrl, renderingControlSoapAction, "SetRelativeVolume", [volume] (ParameterBuilder& b)  
     { 
         b.AddParameter("Channel", "Master");
         b.AddParameter("Adjustment", volume);
@@ -491,7 +490,7 @@ void SonosApi::setVolumeRelative(int8_t volume)
 uint8_t SonosApi::getVolume()
 {
     uint8_t currentVolume = 0;
-    postAction(renderingControlUrl, renderingControlSoapAction, "GetVolume", [] (ParameterBuilder b)  
+    postAction(renderingControlUrl, renderingControlSoapAction, "GetVolume", [] (ParameterBuilder& b)  
     { 
       b.AddParameter("Channel", "Master");  
     }, [=, &currentVolume](WiFiClient& wifiClient) {
@@ -506,7 +505,7 @@ uint8_t SonosApi::getVolume()
 
 void SonosApi::setMute(boolean mute)
 {
-    postAction(renderingControlUrl, renderingControlSoapAction, "SetMute", [mute] (ParameterBuilder b)  
+    postAction(renderingControlUrl, renderingControlSoapAction, "SetMute", [mute] (ParameterBuilder& b)  
     { 
         b.AddParameter("Channel", "Master");
         b.AddParameter("DesiredMute", mute);
@@ -517,7 +516,7 @@ void SonosApi::setMute(boolean mute)
 boolean SonosApi::getMute()
 {
     boolean currentMute = 0;
-    postAction(renderingControlUrl, renderingControlSoapAction, "GetMute", [] (ParameterBuilder b)  
+    postAction(renderingControlUrl, renderingControlSoapAction, "GetMute", [] (ParameterBuilder& b)  
     { 
         b.AddParameter("Channel", "Master");
     }, [=, &currentMute](WiFiClient& wifiClient) {
@@ -537,7 +536,7 @@ const char* renderingGroupRenderingControlSoapAction PROGMEM = "urn:schemas-upnp
 
 void SonosApi::setGroupVolume(uint8_t volume)
 {
-    postAction(renderingGroupRenderingControlUrl, renderingGroupRenderingControlSoapAction, "SetGroupVolume", [volume] (ParameterBuilder b)  
+    postAction(renderingGroupRenderingControlUrl, renderingGroupRenderingControlSoapAction, "SetGroupVolume", [volume] (ParameterBuilder& b)  
     { 
         b.AddParameter("DesiredVolume", volume);
     });
@@ -545,7 +544,7 @@ void SonosApi::setGroupVolume(uint8_t volume)
 
 void SonosApi::setGroupVolumeRelative(int8_t volume)
 {
-    postAction(renderingGroupRenderingControlUrl, renderingGroupRenderingControlSoapAction, "SetRelativeGroupVolume", [volume] (ParameterBuilder b)  
+    postAction(renderingGroupRenderingControlUrl, renderingGroupRenderingControlSoapAction, "SetRelativeGroupVolume", [volume] (ParameterBuilder& b)  
     { 
         b.AddParameter("Adjustment", volume);
     });
@@ -566,7 +565,7 @@ uint8_t SonosApi::getGroupVolume()
 
 void SonosApi::setGroupMute(boolean mute)
 {
-    postAction(renderingGroupRenderingControlUrl, renderingGroupRenderingControlSoapAction, "SetGroupMute", [mute] (ParameterBuilder b)  
+    postAction(renderingGroupRenderingControlUrl, renderingGroupRenderingControlSoapAction, "SetGroupMute", [mute] (ParameterBuilder& b)  
     { 
       b.AddParameter("DesiredMute", mute);
     });
@@ -591,10 +590,10 @@ const char* renderingAVTransportSoapAction PROGMEM = "urn:schemas-upnp-org:servi
 
 void SonosApi::setAVTransportURI(const char* schema, const char* currentURI, const char* currentURIMetaData)
 {
-    postAction(renderingAVTransportUrl, renderingAVTransportSoapAction, "SetAVTransportURI", [schema, currentURI, currentURIMetaData] (ParameterBuilder b)  
+    postAction(renderingAVTransportUrl, renderingAVTransportSoapAction, "SetAVTransportURI", [schema, currentURI, currentURIMetaData] (ParameterBuilder& b)  
     { 
         b.AddParameter("CurrentURI", schema, currentURI);
-        b.AddParameter("CurrentUriMetaData", currentURIMetaData);
+        b.AddParameter("CurrentURIMetaData", currentURIMetaData);
     });
 }
 
@@ -631,7 +630,7 @@ SonosApiPlayState SonosApi::getPlayState()
 
 void SonosApi::play()
 {
-    postAction(renderingAVTransportUrl, renderingAVTransportSoapAction, "Play", [] (ParameterBuilder b)  
+    postAction(renderingAVTransportUrl, renderingAVTransportSoapAction, "Play", [] (ParameterBuilder& b)  
     { 
         b.AddParameter("Speed", 1);
     });
@@ -667,7 +666,7 @@ SonosApiPlayMode SonosApi::getPlayMode()
 
 void SonosApi::setPlayMode(SonosApiPlayMode playMode)
 {
-    postAction(renderingAVTransportUrl, renderingAVTransportSoapAction, "SetPlayMode", [this, playMode] (ParameterBuilder b)  
+    postAction(renderingAVTransportUrl, renderingAVTransportSoapAction, "SetPlayMode", [this, playMode] (ParameterBuilder& b)  
     { 
         b.AddParameter("NewPlayMode", this->getPlayModeString(playMode));
     });
@@ -974,7 +973,7 @@ void SonosApi::delegateGroupCoordinationTo(SonosApi* sonosApi, bool rejoinGroup)
 
 void SonosApi::delegateGroupCoordinationTo(const char* uid, bool rejoinGroup)
 {
-    postAction(renderingAVTransportUrl, renderingAVTransportSoapAction, "DelegateGroupCoordinationTo", [uid, rejoinGroup] (ParameterBuilder b)  
+    postAction(renderingAVTransportUrl, renderingAVTransportSoapAction, "DelegateGroupCoordinationTo", [uid, rejoinGroup] (ParameterBuilder& b)  
     { 
         b.AddParameter("NewCoordinator", uid);
         b.AddParameter("RejoinGroup", rejoinGroup);
@@ -1015,27 +1014,10 @@ void SonosApi::restorePlayState()
 
 void SonosApi::gotoTrack(uint32_t trackNumber)
 {
-    postAction(renderingAVTransportUrl, renderingAVTransportSoapAction, "Seek", [trackNumber] (ParameterBuilder b)  
+    postAction(renderingAVTransportUrl, renderingAVTransportSoapAction, "Seek", [trackNumber] (ParameterBuilder& b)  
     { 
         b.AddParameter("Unit", "TRACK_NR");
         b.AddParameter("Target", trackNumber);
     });
-}
-
-
-void SonosApi::playSound()
-{
-//webSocket.onEvent()
-
-//   ws.on('open', () => {
-//         ws.send(`[{"namespace":"audioClip:1","command":"loadAudioClip","playerId":"${this.uuid}","sessionId":null,"cmdId":null},{"name": "Sonos TS Notification", "appId": "io.svrooij.sonos-ts", "streamUrl": "${options.trackUri}", "volume": ${options.volume ?? this.volume ?? 25} }]`, (err) => {
-//           ws.close();
-//           if (err) {
-//             reject(err);
-//             return;
-//           }
-//           resolve(true);
-//         });
-
 }
 
