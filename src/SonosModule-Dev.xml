@@ -4,8 +4,8 @@
   <op:ETS
     OpenKnxId="0xAE"
     ApplicationNumber="0x2B"
-    ApplicationVersion="11"
-    ReplacesVersions="1 2 3 4 5 6 7 8 9 10"
+    ApplicationVersion="12"
+    ReplacesVersions="1 2 3 4 5 6 7 8 9 10 11"
     ApplicationRevision="0"
     ProductName="Sonos Steuerung"
     BusCurrent="30"

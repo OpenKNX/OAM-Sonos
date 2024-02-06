@@ -469,16 +469,16 @@ void SonosChannel::playNotification(byte notificationNumber)
     switch (notificationNumber)
     {
         case 1:
-            _playNotification = new SonosApiPlayNotification(_sonosApi.getSpeakerIP(), (const char*) ParamSON_NotificationUrl1, 25, _sonosApi.getUID());
+            _playNotification = new SonosApiPlayNotification(_sonosApi.getSpeakerIP(), (const char*) ParamSON_NotificationUrl1, ParamSON_NotificationVolume1, _sonosApi.getUID());
             break;
         case 2:
-            _playNotification = new SonosApiPlayNotification(_sonosApi.getSpeakerIP(), (const char*) ParamSON_NotificationUrl2, 25, _sonosApi.getUID());
+            _playNotification = new SonosApiPlayNotification(_sonosApi.getSpeakerIP(), (const char*) ParamSON_NotificationUrl2, ParamSON_NotificationVolume2, _sonosApi.getUID());
             break;
         case 3:
-            _playNotification = new SonosApiPlayNotification(_sonosApi.getSpeakerIP(), (const char*) ParamSON_NotificationUrl3, 25, _sonosApi.getUID());
+            _playNotification = new SonosApiPlayNotification(_sonosApi.getSpeakerIP(), (const char*) ParamSON_NotificationUrl3, ParamSON_NotificationVolume3, _sonosApi.getUID());
             break;
         case 4:
-            _playNotification = new SonosApiPlayNotification(_sonosApi.getSpeakerIP(), (const char*) ParamSON_NotificationUrl4, 25, _sonosApi.getUID());
+            _playNotification = new SonosApiPlayNotification(_sonosApi.getSpeakerIP(), (const char*) ParamSON_NotificationUrl4, ParamSON_NotificationVolume4, _sonosApi.getUID());
             break;
     }
 }
