@@ -26,10 +26,155 @@
               <ParameterType Id="%AID%_PT-RelativVolumeStep" Name="RelativVolumeStep">
                 <TypeNumber SizeInBit="8" Type="unsignedInt" minInclusive="1" maxInclusive="10" />
               </ParameterType>   
+              <ParameterType Id="%AID%_PT-SourceType" Name="SourceType">
+                <TypeRestriction Base="Value" SizeInBit="8">
+                  <Enumeration Text="Inaktiv" Value="0" Id="%AID%_PT-SourceType_EN-0" />
+                  <Enumeration Text="Radio" Value="1" Id="%AID%_PT-SourceType_EN-1" />
+                  <Enumeration Text="Http"  Value="2" Id="%AID%_PT-SourceType_EN-2" />
+                  <Enumeration Text="Musikbibliothek Datei"  Value="3" Id="%AID%_PT-SourceType_EN-3" />
+                  <Enumeration Text="Musikbibliothek Verzeichnis"  Value="4" Id="%AID%_PT-SourceType_EN-4" />
+                  <Enumeration Text="Line In"  Value="5" Id="%AID%_PT-SourceType_EN-5" />
+                  <Enumeration Text="TV In (Nur mit Playbar)"  Value="6" Id="%AID%_PT-SourceType_EN-6" />
+                  <Enumeration Text="Sonos Uri"  Value="7" Id="%AID%_PT-SourceType_EN-7" />
+                </TypeRestriction>
+              </ParameterType>
+              <ParameterType Id="%AID%_PT-SourceUri" Name="SourceUri">
+                <TypeText SizeInBit="2048" /> <!-- 256 characters -->
+              </ParameterType>
+              <ParameterType Id="%AID%_PT-SourceTitle" Name="SourceTitle">
+                <TypeText SizeInBit="160" /> <!-- 20 characters -->
+              </ParameterType>
             </ParameterTypes>
             <Parameters>
+            <!-- Notification sound url -->
+            <Union SizeInBit="2216">
+                <Memory CodeSegment="%MID%" Offset="0" BitOffset="0" />
+                <Parameter Id="%AID%_UP-%TT%10001" Name="NotificationUrl1" ParameterType="%AID%_PT-SourceUri" Offset="0" BitOffset="0" Text="URL" Value="" />
+                <Parameter Id="%AID%_UP-%TT%10002" Name="NotificationUrl2" ParameterType="%AID%_PT-SourceUri" Offset="256" BitOffset="0" Text="URL" Value="" />
+                <Parameter Id="%AID%_UP-%TT%10003" Name="NotificationUrl3" ParameterType="%AID%_PT-SourceUri" Offset="512" BitOffset="0" Text="URL" Value="" />
+                <Parameter Id="%AID%_UP-%TT%10004" Name="NotificationUrl4" ParameterType="%AID%_PT-SourceUri" Offset="768" BitOffset="0" Text="URL" Value="" />
+            </Union>
+            <!-- Sound source 1 -->
+            <Union SizeInBit="2216">
+                <Memory CodeSegment="%MID%" Offset="1024" BitOffset="0" />
+                <Parameter Id="%AID%_UP-%TT%00011" Name="SourceType1" ParameterType="%AID%_PT-SourceType" Offset="0" BitOffset="0" Text="Quellenart" Value="0" />
+                <Parameter Id="%AID%_UP-%TT%00012" Name="SourceTitle1" ParameterType="%AID%_PT-SourceTitle" Offset="1" BitOffset="0" Text="Name" Value="" />
+                <Parameter Id="%AID%_UP-%TT%00013" Name="SourceUri1" ParameterType="%AID%_PT-SourceUri" Offset="21" BitOffset="0" Text="URL" Value="" />
+            </Union>
+            <!-- Sound source 2 -->
+            <Union SizeInBit="2216">
+                <Memory CodeSegment="%MID%" Offset="1301" BitOffset="0" />
+                <Parameter Id="%AID%_UP-%TT%00021" Name="SourceType2" ParameterType="%AID%_PT-SourceType" Offset="0" BitOffset="0" Text="Quellenart" Value="0" />
+                <Parameter Id="%AID%_UP-%TT%00022" Name="SourceTitle2" ParameterType="%AID%_PT-SourceTitle" Offset="1" BitOffset="0" Text="Name" Value="" />
+                <Parameter Id="%AID%_UP-%TT%00023" Name="SourceUri2" ParameterType="%AID%_PT-SourceUri" Offset="21" BitOffset="0" Text="URL" Value="" />
+            </Union>
+            <!-- Sound source 3 -->   
+            <Union SizeInBit="2216">
+                <Memory CodeSegment="%MID%" Offset="1578" BitOffset="0" />
+                <Parameter Id="%AID%_UP-%TT%00031" Name="SourceType3" ParameterType="%AID%_PT-SourceType" Offset="0" BitOffset="0" Text="Quellenart" Value="0" />
+                <Parameter Id="%AID%_UP-%TT%00032" Name="SourceTitle3" ParameterType="%AID%_PT-SourceTitle" Offset="1" BitOffset="0" Text="Name" Value="" />
+                <Parameter Id="%AID%_UP-%TT%00033" Name="SourceUri3" ParameterType="%AID%_PT-SourceUri" Offset="21" BitOffset="0" Text="URL" Value="" />
+            </Union>
+            <!-- Sound source 4 -->   
+            <Union SizeInBit="2216">
+                <Memory CodeSegment="%MID%" Offset="1855" BitOffset="0" />
+                <Parameter Id="%AID%_UP-%TT%00041" Name="SourceType4" ParameterType="%AID%_PT-SourceType" Offset="0" BitOffset="0" Text="Quellenart" Value="0" />
+                <Parameter Id="%AID%_UP-%TT%00042" Name="SourceTitle4" ParameterType="%AID%_PT-SourceTitle" Offset="1" BitOffset="0" Text="Name" Value="" />
+                <Parameter Id="%AID%_UP-%TT%00043" Name="SourceUri4" ParameterType="%AID%_PT-SourceUri" Offset="21" BitOffset="0" Text="URL" Value="" />
+            </Union>
+            <!-- Sound source 5 -->   
+            <Union SizeInBit="2216">
+                <Memory CodeSegment="%MID%" Offset="2132" BitOffset="0" />
+                <Parameter Id="%AID%_UP-%TT%00051" Name="SourceType5" ParameterType="%AID%_PT-SourceType" Offset="0" BitOffset="0" Text="Quellenart" Value="0" />
+                <Parameter Id="%AID%_UP-%TT%00052" Name="SourceTitle5" ParameterType="%AID%_PT-SourceTitle" Offset="1" BitOffset="0" Text="Name" Value="" />
+                <Parameter Id="%AID%_UP-%TT%00053" Name="SourceUri5" ParameterType="%AID%_PT-SourceUri" Offset="21" BitOffset="0" Text="URL" Value="" />
+            </Union>
             </Parameters>
             <ParameterRefs>
+              <!--Notification Url 1 -->
+              <ParameterRef Id="%AID%_UP-%TT%10001_R-%TT%1000101" RefId="%AID%_UP-%TT%10001" />
+              <!--Notification Url 2 -->
+              <ParameterRef Id="%AID%_UP-%TT%10002_R-%TT%1000201" RefId="%AID%_UP-%TT%10002" />
+              <!--Notification Url 3 -->
+              <ParameterRef Id="%AID%_UP-%TT%10003_R-%TT%1000301" RefId="%AID%_UP-%TT%10003" />
+              <!--Notification Url 4 -->
+              <ParameterRef Id="%AID%_UP-%TT%10004_R-%TT%1000401" RefId="%AID%_UP-%TT%10004" />
+   
+              <!--Source Type 1 -->
+              <ParameterRef Id="%AID%_UP-%TT%00011_R-%TT%0001101" RefId="%AID%_UP-%TT%00011" />
+              <!--Source Ttile 1 -->
+              <ParameterRef Id="%AID%_UP-%TT%00012_R-%TT%0001201" RefId="%AID%_UP-%TT%00012" />
+              <!--Source Radio 1 -->
+              <ParameterRef Id="%AID%_UP-%TT%00013_R-%TT%0001301" RefId="%AID%_UP-%TT%00013" Text="URL" />
+              <!--Source Url 1 -->
+              <ParameterRef Id="%AID%_UP-%TT%00013_R-%TT%0001302" RefId="%AID%_UP-%TT%00013" Text="URL" />
+              <!--Source Network File 1 -->
+              <ParameterRef Id="%AID%_UP-%TT%00013_R-%TT%0001303" RefId="%AID%_UP-%TT%00013" Text="Netzwerk Dateipfad" />
+              <!--Source Network Directory 1 -->
+              <ParameterRef Id="%AID%_UP-%TT%00013_R-%TT%0001304" RefId="%AID%_UP-%TT%00013" Text="Netzwerk Verzeichnis" />
+               <!--Source Sonos Uri 1 -->
+              <ParameterRef Id="%AID%_UP-%TT%00013_R-%TT%0001307" RefId="%AID%_UP-%TT%00013" Text="Sonos URI" />
+
+              <!--Source Type 2 -->
+              <ParameterRef Id="%AID%_UP-%TT%00021_R-%TT%0002101" RefId="%AID%_UP-%TT%00021" />
+              <!--Source Ttile 2 -->
+              <ParameterRef Id="%AID%_UP-%TT%00022_R-%TT%0002201" RefId="%AID%_UP-%TT%00022" />
+              <!--Source Radio 2 -->
+              <ParameterRef Id="%AID%_UP-%TT%00023_R-%TT%0002301" RefId="%AID%_UP-%TT%00023" Text="URL" />
+              <!--Source Url 2 -->
+              <ParameterRef Id="%AID%_UP-%TT%00023_R-%TT%0002302" RefId="%AID%_UP-%TT%00023" Text="URL" />
+              <!--Source Network File 2 -->
+              <ParameterRef Id="%AID%_UP-%TT%00023_R-%TT%0002303" RefId="%AID%_UP-%TT%00023" Text="Netzwerk Dateipfad" />
+              <!--Source Network Directory 2 -->
+              <ParameterRef Id="%AID%_UP-%TT%00023_R-%TT%0002304" RefId="%AID%_UP-%TT%00023" Text="Netzwerk Verzeichnis" />
+               <!--Source Sonos Uri 2 -->
+              <ParameterRef Id="%AID%_UP-%TT%00023_R-%TT%0002307" RefId="%AID%_UP-%TT%00023" Text="Sonos URI" />
+
+              <!--Source Type 3 -->
+              <ParameterRef Id="%AID%_UP-%TT%00031_R-%TT%0003101" RefId="%AID%_UP-%TT%00031" />
+              <!--Source Ttile 3 -->
+              <ParameterRef Id="%AID%_UP-%TT%00032_R-%TT%0003201" RefId="%AID%_UP-%TT%00032" />
+              <!--Source Radio 3 -->
+              <ParameterRef Id="%AID%_UP-%TT%00033_R-%TT%0003301" RefId="%AID%_UP-%TT%00033" Text="URL" />
+              <!--Source Url 3 -->
+              <ParameterRef Id="%AID%_UP-%TT%00033_R-%TT%0003302" RefId="%AID%_UP-%TT%00033" Text="URL" />
+              <!--Source Network File 3 -->
+              <ParameterRef Id="%AID%_UP-%TT%00033_R-%TT%0003303" RefId="%AID%_UP-%TT%00033" Text="Netzwerk Dateipfad" />
+              <!--Source Network Directory 3 -->
+              <ParameterRef Id="%AID%_UP-%TT%00033_R-%TT%0003304" RefId="%AID%_UP-%TT%00033" Text="Netzwerk Verzeichnis" />
+               <!--Source Sonos Uri 3 -->
+              <ParameterRef Id="%AID%_UP-%TT%00033_R-%TT%0003307" RefId="%AID%_UP-%TT%00033" Text="Sonos URI" />
+
+              <!--Source Type 4 -->
+              <ParameterRef Id="%AID%_UP-%TT%00041_R-%TT%0004101" RefId="%AID%_UP-%TT%00041" />
+              <!--Source Ttile 4 -->
+              <ParameterRef Id="%AID%_UP-%TT%00042_R-%TT%0004201" RefId="%AID%_UP-%TT%00042" />
+              <!--Source Radio 4 -->
+              <ParameterRef Id="%AID%_UP-%TT%00043_R-%TT%0004301" RefId="%AID%_UP-%TT%00043" Text="URL" />
+              <!--Source Url 4 -->
+              <ParameterRef Id="%AID%_UP-%TT%00043_R-%TT%0004302" RefId="%AID%_UP-%TT%00043" Text="URL" />
+               <!--Source Network File 4 -->
+              <ParameterRef Id="%AID%_UP-%TT%00043_R-%TT%0004303" RefId="%AID%_UP-%TT%00043" Text="Netzwerk Dateipfad" />
+              <!--Source Network Directory 4 -->
+              <ParameterRef Id="%AID%_UP-%TT%00043_R-%TT%0004304" RefId="%AID%_UP-%TT%00043" Text="Netzwerk Verzeichnis" />
+               <!--Source Sonos Uri 4 -->
+              <ParameterRef Id="%AID%_UP-%TT%00043_R-%TT%0004307" RefId="%AID%_UP-%TT%00043" Text="Sonos URI" />
+
+              <!--Source Type 5 -->
+              <ParameterRef Id="%AID%_UP-%TT%00051_R-%TT%0005101" RefId="%AID%_UP-%TT%00051" />
+              <!--Source Ttile 5 -->
+              <ParameterRef Id="%AID%_UP-%TT%00052_R-%TT%0005201" RefId="%AID%_UP-%TT%00052" />
+              <!--Source Radio 5 -->
+              <ParameterRef Id="%AID%_UP-%TT%00053_R-%TT%0005301" RefId="%AID%_UP-%TT%00053" Text="URL" />
+              <!--Source Url 5 -->
+              <ParameterRef Id="%AID%_UP-%TT%00053_R-%TT%0005302" RefId="%AID%_UP-%TT%00053" Text="URL" />
+              <!--Source Network File 5 -->
+              <ParameterRef Id="%AID%_UP-%TT%00053_R-%TT%0005303" RefId="%AID%_UP-%TT%00053" Text="Netzwerk Dateipfad" />
+              <!--Source Network Directory 5 -->
+              <ParameterRef Id="%AID%_UP-%TT%00053_R-%TT%0005304" RefId="%AID%_UP-%TT%00053" Text="Netzwerk Verzeichnis" />
+               <!--Source Sonos Uri 5 -->
+              <ParameterRef Id="%AID%_UP-%TT%00053_R-%TT%0005307" RefId="%AID%_UP-%TT%00053" Text="Sonos URI" />
+           
             </ParameterRefs>
             <ComObjectTable>
             </ComObjectTable>
@@ -47,7 +192,211 @@
                 <ParameterSeparator Id="%AID%_PS-nnn" Text="Unten im Hilfefenster findest du eine allgemeine Dokumentation zur Sonos Steuerung" />
                 <ParameterSeparator Id="%AID%_PS-nnn" Text="Darüber hinaus sind so weit alle Parameter mit eigenen Hilfetexten versehen, um so die Einrichtung so einfach wie möglich zu gestalten." />
               </ParameterBlock>
-              
+
+              <!-- Tonquellen -->             
+              <ParameterBlock Id="%AID%_PB-nnn" Name="Sources" Text="Tonquellen" Icon="waveform" HelpContext="Empty">
+                
+                <!-- Tonquelle 1 -->
+                <ParameterSeparator Id="%AID%_PS-nnn" Text="Tonquelle 1" UIHint="Headline" />
+                <!-- Source Type -->
+                <ParameterRefRef RefId="%AID%_UP-%TT%00011_R-%TT%0001101" HelpContext="Empty" IndentLevel="1" />
+                <choose ParamRefId="%AID%_UP-%TT%00011_R-%TT%0001101">  <!-- Source Type -->
+                  <when test="1" >  <!-- Radio -->
+                    <!-- Stream Url-->
+                    <ParameterRefRef RefId="%AID%_UP-%TT%00013_R-%TT%0001301" HelpContext="Empty" IndentLevel="1" />
+                    <!-- Title-->
+                    <ParameterRefRef RefId="%AID%_UP-%TT%00012_R-%TT%0001201" HelpContext="Empty" IndentLevel="1" />
+                  </when>  <!-- Radio -->
+                  <when test="2" >  <!-- http -->
+                    <!-- Url-->
+                    <ParameterRefRef RefId="%AID%_UP-%TT%00013_R-%TT%0001302" HelpContext="Empty" IndentLevel="1" />
+                  </when>  <!-- http -->
+                  <when test="3" >  <!-- Network File -->
+                    <!-- Network file-->
+                    <ParameterRefRef RefId="%AID%_UP-%TT%00013_R-%TT%0001303" HelpContext="Empty" IndentLevel="1" />
+                  </when>  <!-- Network File -->
+                  <when test="4" >  <!-- Network Directory -->
+                    <!-- Network directory-->
+                    <ParameterRefRef RefId="%AID%_UP-%TT%00013_R-%TT%0001303" HelpContext="Empty" IndentLevel="1" />
+                  </when>  <!-- Network Directory -->
+                  <when test="5" >  <!-- Line In -->
+                  </when>  <!-- Line In -->
+                  <when test="6" >  <!-- TV In -->
+                  </when>  <!-- Line In -->
+                  <when test="7" >  <!-- Sonos URI -->
+                    <!-- Uri-->
+                    <ParameterRefRef RefId="%AID%_UP-%TT%00013_R-%TT%0001307" HelpContext="Empty" IndentLevel="1" />
+                    <!-- Title-->
+                    <ParameterRefRef RefId="%AID%_UP-%TT%00012_R-%TT%0001201" HelpContext="Empty" IndentLevel="1" />
+                  </when>  <!-- Sonos URI -->
+                </choose> <!-- Source Type -->
+
+                <!-- Tonquelle 2 -->
+                <ParameterSeparator Id="%AID%_PS-nnn" Text="Tonquelle 2" UIHint="Headline" />
+                <!-- Source Type -->
+                <ParameterRefRef RefId="%AID%_UP-%TT%00021_R-%TT%0002101" HelpContext="Empty" IndentLevel="1" />
+                <choose ParamRefId="%AID%_UP-%TT%00021_R-%TT%0002101">  <!-- Source Type -->
+                  <when test="1" >  <!-- Radio -->
+                    <!-- Stream Url-->
+                    <ParameterRefRef RefId="%AID%_UP-%TT%00023_R-%TT%0002301" HelpContext="Empty" IndentLevel="1" />
+                    <!-- Title-->
+                    <ParameterRefRef RefId="%AID%_UP-%TT%00022_R-%TT%0002201" HelpContext="Empty" IndentLevel="1" />
+                  </when>  <!-- Radio -->
+                  <when test="2" >  <!-- http -->
+                    <!-- Url-->
+                    <ParameterRefRef RefId="%AID%_UP-%TT%00023_R-%TT%0002302" HelpContext="Empty" IndentLevel="1" />
+                  </when>  <!-- http -->
+                  <when test="3" >  <!-- Network File -->
+                    <!-- Network file-->
+                    <ParameterRefRef RefId="%AID%_UP-%TT%00023_R-%TT%0002303" HelpContext="Empty" IndentLevel="1" />
+                  </when>  <!-- Network File -->
+                  <when test="4" >  <!-- Network Directory -->
+                    <!-- Network directory-->
+                    <ParameterRefRef RefId="%AID%_UP-%TT%00023_R-%TT%0002303" HelpContext="Empty" IndentLevel="1" />
+                  </when>  <!-- Network Directory -->
+                  <when test="5" >  <!-- Line In -->
+                  </when>  <!-- Line In -->
+                  <when test="6" >  <!-- TV In -->
+                  </when>  <!-- Line In -->
+                  <when test="7" >  <!-- Sonos URI -->
+                    <!-- Uri-->
+                    <ParameterRefRef RefId="%AID%_UP-%TT%00023_R-%TT%0002307" HelpContext="Empty" IndentLevel="1" />
+                    <!-- Title-->
+                    <ParameterRefRef RefId="%AID%_UP-%TT%00022_R-%TT%0002201" HelpContext="Empty" IndentLevel="1" />
+                  </when>  <!-- Sonos URI -->
+                </choose> <!-- Source Type -->
+
+                <!-- Tonquelle 3 -->
+                <ParameterSeparator Id="%AID%_PS-nnn" Text="Tonquelle 3" UIHint="Headline" />
+                <!-- Source Type -->
+                <ParameterRefRef RefId="%AID%_UP-%TT%00031_R-%TT%0003101" HelpContext="Empty" IndentLevel="1" />
+                <choose ParamRefId="%AID%_UP-%TT%00031_R-%TT%0003101">  <!-- Source Type -->
+                  <when test="1" >  <!-- Radio -->
+                    <!-- Stream Url-->
+                    <ParameterRefRef RefId="%AID%_UP-%TT%00033_R-%TT%0003301" HelpContext="Empty" IndentLevel="1" />
+                    <!-- Title-->
+                    <ParameterRefRef RefId="%AID%_UP-%TT%00032_R-%TT%0003201" HelpContext="Empty" IndentLevel="1" />
+                  </when>  <!-- Radio -->
+                  <when test="2" >  <!-- http -->
+                    <!-- Url-->
+                    <ParameterRefRef RefId="%AID%_UP-%TT%00033_R-%TT%0003302" HelpContext="Empty" IndentLevel="1" />
+                  </when>  <!-- http -->
+                  <when test="3" >  <!-- Network File -->
+                    <!-- Network file-->
+                    <ParameterRefRef RefId="%AID%_UP-%TT%00033_R-%TT%0003303" HelpContext="Empty" IndentLevel="1" />
+                  </when>  <!-- Network File -->
+                  <when test="4" >  <!-- Network Directory -->
+                    <!-- Network directory-->
+                    <ParameterRefRef RefId="%AID%_UP-%TT%00033_R-%TT%0003303" HelpContext="Empty" IndentLevel="1" />
+                  </when>  <!-- Network Directory -->
+                  <when test="5" >  <!-- Line In -->
+                  </when>  <!-- Line In -->
+                  <when test="6" >  <!-- TV In -->
+                  </when>  <!-- Line In -->
+                  <when test="7" >  <!-- Sonos URI -->
+                    <!-- Uri-->
+                    <ParameterRefRef RefId="%AID%_UP-%TT%00033_R-%TT%0003307" HelpContext="Empty" IndentLevel="1" />
+                    <!-- Title-->
+                    <ParameterRefRef RefId="%AID%_UP-%TT%00032_R-%TT%0003201" HelpContext="Empty" IndentLevel="1" />
+                  </when>  <!-- Sonos URI -->
+                </choose> <!-- Source Type -->
+
+                <!-- Tonquelle 4 -->
+                <ParameterSeparator Id="%AID%_PS-nnn" Text="Tonquelle 4" UIHint="Headline" />
+                <!-- Source Type -->
+                <ParameterRefRef RefId="%AID%_UP-%TT%00041_R-%TT%0004101" HelpContext="Empty" IndentLevel="1" />
+                <choose ParamRefId="%AID%_UP-%TT%00041_R-%TT%0004101">  <!-- Source Type -->
+                  <when test="1" >  <!-- Radio -->
+                    <!-- Stream Url-->
+                    <ParameterRefRef RefId="%AID%_UP-%TT%00043_R-%TT%0004301" HelpContext="Empty" IndentLevel="1" />
+                    <!-- Title-->
+                    <ParameterRefRef RefId="%AID%_UP-%TT%00042_R-%TT%0004201" HelpContext="Empty" IndentLevel="1" />
+                  </when>  <!-- Radio -->
+                  <when test="2" >  <!-- http -->
+                    <!-- Url-->
+                    <ParameterRefRef RefId="%AID%_UP-%TT%00043_R-%TT%0004302" HelpContext="Empty" IndentLevel="1" />
+                  </when>  <!-- http -->
+                  <when test="3" >  <!-- Network File -->
+                    <!-- Network file-->
+                    <ParameterRefRef RefId="%AID%_UP-%TT%00043_R-%TT%0004303" HelpContext="Empty" IndentLevel="1" />
+                  </when>  <!-- Network File -->
+                  <when test="4" >  <!-- Network Directory -->
+                    <!-- Network directory-->
+                    <ParameterRefRef RefId="%AID%_UP-%TT%00043_R-%TT%0004303" HelpContext="Empty" IndentLevel="1" />
+                  </when>  <!-- Network Directory -->
+                  <when test="5" >  <!-- Line In -->
+                  </when>  <!-- Line In -->
+                  <when test="6" >  <!-- TV In -->
+                  </when>  <!-- Line In -->
+                  <when test="7" >  <!-- Sonos URI -->
+                    <!-- Uri-->
+                    <ParameterRefRef RefId="%AID%_UP-%TT%00043_R-%TT%0004307" HelpContext="Empty" IndentLevel="1" />
+                    <!-- Title-->
+                    <ParameterRefRef RefId="%AID%_UP-%TT%00042_R-%TT%0004201" HelpContext="Empty" IndentLevel="1" />
+                  </when>  <!-- Sonos URI -->
+                </choose> <!-- Source Type -->
+
+                <!-- Tonquelle 5 -->
+                <ParameterSeparator Id="%AID%_PS-nnn" Text="Tonquelle 5" UIHint="Headline" />
+                <!-- Source Type -->
+                <ParameterRefRef RefId="%AID%_UP-%TT%00051_R-%TT%0005101" HelpContext="Empty" IndentLevel="1" />
+                <choose ParamRefId="%AID%_UP-%TT%00051_R-%TT%0005101">  <!-- Source Type -->
+                  <when test="1" >  <!-- Radio -->
+                    <!-- Stream Url-->
+                    <ParameterRefRef RefId="%AID%_UP-%TT%00053_R-%TT%0005301" HelpContext="Empty" IndentLevel="1" />
+                    <!-- Title-->
+                    <ParameterRefRef RefId="%AID%_UP-%TT%00052_R-%TT%0005201" HelpContext="Empty" IndentLevel="1" />
+                  </when>  <!-- Radio -->
+                  <when test="2" >  <!-- http -->
+                    <!-- Url-->
+                    <ParameterRefRef RefId="%AID%_UP-%TT%00053_R-%TT%0005302" HelpContext="Empty" IndentLevel="1" />
+                  </when>  <!-- http -->
+                  <when test="3" >  <!-- Network File -->
+                    <!-- Network file-->
+                    <ParameterRefRef RefId="%AID%_UP-%TT%00053_R-%TT%0005303" HelpContext="Empty" IndentLevel="1" />
+                  </when>  <!-- Network File -->
+                  <when test="4" >  <!-- Network Directory -->
+                    <!-- Network directory-->
+                    <ParameterRefRef RefId="%AID%_UP-%TT%00053_R-%TT%0005303" HelpContext="Empty" IndentLevel="1" />
+                  </when>  <!-- Network Directory -->
+                  <when test="5" >  <!-- Line In -->
+                  </when>  <!-- Line In -->
+                  <when test="6" >  <!-- TV In -->
+                  </when>  <!-- Line In -->
+                  <when test="7" >  <!-- Sonos URI -->
+                    <!-- Uri-->
+                    <ParameterRefRef RefId="%AID%_UP-%TT%00053_R-%TT%0005307" HelpContext="Empty" IndentLevel="1" />
+                    <!-- Title-->
+                    <ParameterRefRef RefId="%AID%_UP-%TT%00052_R-%TT%0005201" HelpContext="Empty" IndentLevel="1" />
+                  </when>  <!-- Sonos URI -->
+                </choose> <!-- Source Type -->
+
+              </ParameterBlock>  
+
+              <!-- Benachrichtungstöne -->
+              <ParameterBlock Id="%AID%_PB-nnn" Name="Notifications" Text="Benachrichtigungstöne" Icon="waveform" HelpContext="Empty">
+                <!-- Benachrichtigung 1 -->
+                <ParameterSeparator Id="%AID%_PS-nnn" Text="Benachrichtgung 1" UIHint="Headline" />
+                <!-- URL -->
+                <ParameterRefRef RefId="%AID%_UP-%TT%10001_R-%TT%1000101" HelpContext="Empty" IndentLevel="1" />
+
+                <!-- Benachrichtigung 2 -->
+                <ParameterSeparator Id="%AID%_PS-nnn" Text="Benachrichtgung 3" UIHint="Headline" />
+                <!-- URL -->
+                <ParameterRefRef RefId="%AID%_UP-%TT%10002_R-%TT%1000201" HelpContext="Empty" IndentLevel="1" />
+
+                <!-- Benachrichtigung 3 -->
+                <ParameterSeparator Id="%AID%_PS-nnn" Text="Benachrichtgung 3" UIHint="Headline" />
+                <!-- URL -->
+                <ParameterRefRef RefId="%AID%_UP-%TT%10003_R-%TT%1000301" HelpContext="Empty" IndentLevel="1" />
+
+                <!-- Benachrichtigung 4 -->
+                <ParameterSeparator Id="%AID%_PS-nnn" Text="Benachrichtgung 4" UIHint="Headline" />
+                <!-- URL -->
+                <ParameterRefRef RefId="%AID%_UP-%TT%10004_R-%TT%1000401" HelpContext="Empty" IndentLevel="1" />
+              </ParameterBlock>
+   
+
               <op:include href="SonosModule.templ.xml" xpath="//Dynamic/ChannelIndependentBlock/*" type="template" prefix="SON" IsInner="true" />
             </Channel>
           </Dynamic>

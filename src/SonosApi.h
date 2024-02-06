@@ -64,7 +64,8 @@ class NotificationRestoreData
 class ParameterBuilder
 {
     Stream* _stream;
-    size_t _length;
+    size_t _length = 0;
+    ParameterBuilder(ParameterBuilder& b) {} // Prevent copy constructor usage
   public:
     size_t length();
     ParameterBuilder(Stream* stream);
@@ -145,10 +146,10 @@ class SonosApi : private AsyncWebHandler
     void setAVTransportURI(const char* schema, const char* uri, const char* metadata = nullptr);
     void joinToGroupCoordinator(SonosApi* coordinator);
     void joinToGroupCoordinator(const char* uid);
+    void unjoin();
     SonosApi* findFirstParticipant(bool cached = false);
     void delegateGroupCoordinationTo(SonosApi* sonosApi, bool rejoinGroup);
     void delegateGroupCoordinationTo(const char* uid, bool rejoinGroup);
     void playNotification(const char* schema, const char* uri, const char* metadata = nullptr);
     void gotoTrack(uint32_t trackNumber);
-    void playSound();
 };

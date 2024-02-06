@@ -35,20 +35,12 @@ const std::string SonosChannel::logPrefix()
 
 void SonosChannel::loop1()
 {
-    if (_webSocket != nullptr)
+    if (_playNotification != nullptr)
     {
-        _webSocket->loop();
-        if (_webSocket->isConnected())
+        if (_playNotification->checkFinished())
         {
-            String text;
-            text += "[{\"namespace\":\"audioClip:1\",\"command\":\"loadAudioClip\",\"playerId\":\"";
-            text += _sonosApi.getUID();
-            text += "\",\"sessionId\":null,\"cmdId\":null},{\"name\": \"Sonos TS Notification\", \"appId\": \"openknx\", \"streamUrl\": \"https://cdn.smartersoft-group.com/various/pull-bell-short.mp3\", \"volume\": 25 }]";
-            Serial.println(text);
-            _webSocket->sendTXT(text);
-            delete _webSocket;
-            _webSocket = nullptr;
-
+            delete _playNotification;
+            _playNotification = nullptr;
         }
     }
     _sonosApi.loop();
@@ -156,7 +148,8 @@ void SonosChannel::notificationGroupCoordinatorChanged(SonosApi& caller)
 
 void SonosChannel::processInputKo(GroupObject& ko)
 {
-    switch (SON_KoCalcIndex(ko.asap()))
+    auto index = SON_KoCalcIndex(ko.asap());
+    switch (index)
     {
         case SON_KoCHVolume:
         {
@@ -244,7 +237,51 @@ void SonosChannel::processInputKo(GroupObject& ko)
             }
             break;
         }
+        case SON_KoCHJoinChannelNumber:
+        {
+            uint8_t channelNumber = ko.value(DPT_Value_1_Ucount);
+            logDebugP("Join channel %d", channelNumber);
+            joinChannel(channelNumber); 
+        }
+        case SON_KoCHNotificationSound1:
+        case SON_KoCHNotificationSound2:
+        case SON_KoCHNotificationSound3:
+        case SON_KoCHNotificationSound4:
+        {
+            boolean trigger = ko.value(DPT_Trigger);
+            if (trigger)
+            {
+                byte notification = index - SON_KoCHNotificationSound1 + 1;
+                logDebugP("play notification %d", notification);
+                playNotification(notification);
+            }
+        }
     }
+}
+
+void SonosChannel::joinChannel(uint8_t channelNumber)
+{
+    if (channelNumber > 0 && channelNumber <= _sonosModule.getNumberOfChannels())
+    {
+        auto sonosChannel = (SonosChannel*) _sonosModule.getChannel(channelNumber - 1);
+        if (sonosChannel != nullptr)
+        {
+            if (sonosChannel == this)
+            {
+                channelNumber = 0;
+            }
+            else
+            {
+                auto groupCoordinator = sonosChannel->_sonosApi.findGroupCoordinator();
+                _sonosApi.joinToGroupCoordinator(groupCoordinator);                     
+            }
+        }
+    }
+    if (channelNumber == 0)
+    {
+        if (!delegateCoordination(false))
+            _sonosApi.unjoin();
+    }    
 }
 
 bool SonosChannel::processCommand(const std::string cmd, bool diagnoseKo)
@@ -405,28 +442,51 @@ bool SonosChannel::processCommand(const std::string cmd, bool diagnoseKo)
         }       
         _sonosApi.delegateGroupCoordinationTo(&(channel->_sonosApi), true);
     }
-    else if (cmd == "test")
+    else if (cmd.rfind("join ", 0) == 0)
     {
-        auto webSocket = new WebSocketsClient();
-        webSocket->setExtraHeaders("X-Sonos-Api-Key: 123e4567-e89b-12d3-a456-426655440000");
-        webSocket->beginSSL(_speakerIP.toString().c_str(), 1443, "/websocket/api", "", "v1.api.smartspeaker.audio");
-        _webSocket = webSocket;
+        Serial.println();
+        auto targetChannel = atoi(cmd.substr(5).c_str());
+        joinChannel(targetChannel);
+    }
+    else if (cmd.rfind("noti ", 0) == 0)
+    {
+        Serial.println();
+        auto notificationNr = atoi(cmd.substr(5).c_str());
+        playNotification(notificationNr);
     }
     else
         return false;
     return true;
 }
 
+void SonosChannel::playNotification(byte notificationNumber)
+{
+    if (_playNotification != nullptr)
+    {
+        delete _playNotification;
+        _playNotification = nullptr;
+    }
+    switch (notificationNumber)
+    {
+        case 1:
+            _playNotification = new SonosApiPlayNotification(_sonosApi.getSpeakerIP(), (const char*) ParamSON_NotificationUrl1, 25, _sonosApi.getUID());
+            break;
+        case 2:
+            _playNotification = new SonosApiPlayNotification(_sonosApi.getSpeakerIP(), (const char*) ParamSON_NotificationUrl2, 25, _sonosApi.getUID());
+            break;
+        case 3:
+            _playNotification = new SonosApiPlayNotification(_sonosApi.getSpeakerIP(), (const char*) ParamSON_NotificationUrl3, 25, _sonosApi.getUID());
+            break;
+        case 4:
+            _playNotification = new SonosApiPlayNotification(_sonosApi.getSpeakerIP(), (const char*) ParamSON_NotificationUrl4, 25, _sonosApi.getUID());
+            break;
+    }
+}
+
+
 void SonosChannel::joinNextPlayingGroup()
 {
-    auto currentGroupCoordinator = _sonosApi.findGroupCoordinator(true);
-    if (currentGroupCoordinator == &_sonosApi)
-    {
-        // delegate to other participant of the group
-        auto firstParticpant = _sonosApi.findFirstParticipant(true);
-        if (firstParticpant != nullptr)
-            _sonosApi.delegateGroupCoordinationTo(firstParticpant, true);
-    }
+    delegateCoordination(true);
 
     auto groupCoordinator = _sonosApi.findNextPlayingGroupCoordinator();
     if (groupCoordinator != nullptr)
@@ -436,4 +496,20 @@ void SonosChannel::joinNextPlayingGroup()
     }
     else
         logDebugP("No next playing group found");
+}
+
+bool SonosChannel::delegateCoordination(bool rejoinGroup)
+{
+    auto currentGroupCoordinator = _sonosApi.findGroupCoordinator(true);
+    if (currentGroupCoordinator == &_sonosApi)
+    {
+        // delegate to other participant of the group
+        auto firstParticpant = _sonosApi.findFirstParticipant(true);
+        if (firstParticpant != nullptr)
+        {
+            _sonosApi.delegateGroupCoordinationTo(firstParticpant, rejoinGroup);
+            return true;
+        }
+    }
+    return false;
 }
