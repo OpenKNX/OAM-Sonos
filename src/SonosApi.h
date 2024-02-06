@@ -64,7 +64,8 @@ class NotificationRestoreData
 class ParameterBuilder
 {
     Stream* _stream;
-    size_t _length;
+    size_t _length = 0;
+    ParameterBuilder(ParameterBuilder& b) {} // Prevent copy constructor usage
   public:
     size_t length();
     ParameterBuilder(Stream* stream);
