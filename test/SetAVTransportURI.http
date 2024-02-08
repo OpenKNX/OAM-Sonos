@@ -5,12 +5,15 @@ SOAPAction: urn:schemas-upnp-org:service:AVTransport:1#SetAVTransportURI
   <s:Body>
     <u:SetAVTransportURI xmlns:u="urn:schemas-upnp-org:service:AVTransport:1">
       <InstanceID>0</InstanceID>
-      <CurrentURI>x-rincon-mp3radio://https://orf-live.ors-shoutcast.at/wie-q2a</CurrentURI>
-      <CurrentURIMetaData>&lt;DIDL-Lite 
+      <CurrentURI>x-sonosapi-stream:tunein%3a8007?sid=303&amp;flags=8232&amp;sn=1</CurrentURI>
+      <CurrentURIMetaData>
+      &lt;DIDL-Lite 
         xmlns:dc=&quot;http://purl.org/dc/elements/1.1/&quot; 
         xmlns:upnp=&quot;urn:schemas-upnp-org:metadata-1-0/upnp/&quot; 
         xmlns:r=&quot;urn:schemas-rinconnetworks-com:metadata-1-0/&quot; 
-        xmlns=&quot;urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/&quot;&gt;&lt;item id=&quot;-1&quot; parentID=&quot;-1&quot; restricted=&quot;true&quot;&gt;&lt;res protocolInfo=&quot;x-rincon-mp3radio:*:*:*&quot;&gt;x-rincon-mp3radio://https://orf-live.ors-shoutcast.at/wie-q2a&lt;/res&gt;&lt;r:streamContent&gt;Kurt Ostbahn &amp;amp; Combo - I wues garned wissn&lt;/r:streamContent&gt;&lt;dc:title&gt;wie-q2a&lt;/dc:title&gt;&lt;upnp:class&gt;object.item&lt;/upnp:class&gt;&lt;/item&gt;&lt;/DIDL-Lite&gt;</CurrentURIMetaData>
+        xmlns=&quot;urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/&quot;&gt;&lt;item id=&quot;-1&quot; parentID=&quot;-1&quot; restricted=&quot;true&quot;&gt;&lt;dc:title&gt;ORF Radio Osterreich 1&lt;/dc:title&gt;&lt;upnp:class&gt;object.item.audioItem.audioBroadcast&lt;/upnp:class&gt;&lt;desc id=&quot;cdudn&quot; nameSpace=&quot;urn:schemas-rinconnetworks-com:metadata-1-0/&quot;&gt;SA_RINCON65031_&lt;/desc&gt;&lt;/item&gt;&lt;/DIDL-Lite&gt;
+        
+      </CurrentURIMetaData>
     </u:SetAVTransportURI>
   </u:Body>
 </s:Envelope>

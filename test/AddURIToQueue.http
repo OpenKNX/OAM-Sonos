@@ -1,0 +1,14 @@
+POST http://192.168.0.7:1400/MediaRenderer/AVTransport/Control HTTP/1.1
+SOAPAction: urn:schemas-upnp-org:service:AVTransport:1#AddURIToQueue
+
+<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+  <s:Body>
+    <u:AddURIToQueue xmlns:u="urn:schemas-upnp-org:service:AVTransport:1">
+      <InstanceID>0</InstanceID>
+      <EnqueuedURI>https://cdn.freesound.org/previews/555/555016_12434214-lq.mp3</EnqueuedURI>
+      <EnqueuedURIMetaData></EnqueuedURIMetaData>
+      <DesiredFirstTrackNumberEnqueued>0</DesiredFirstTrackNumberEnqueued>
+      <EnqueueAsNext>1</EnqueueAsNext>
+    </u:AddURIToQueue>
+  </u:Body>
+</s:Envelope>
