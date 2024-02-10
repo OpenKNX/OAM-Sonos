@@ -341,6 +341,7 @@ const char* SonosApi::getPlayModeString(SonosApiPlayMode playMode)
 
 const char masterVolume[] PROGMEM = "&lt;Volume channel=&quot;Master&quot; val=&quot;";
 const char masterMute[] PROGMEM = "&lt;Mute channel=&quot;Master&quot; val=&quot;";
+const char masterLoudness[] PROGMEM = "&lt;Loudness channel=&quot;Master&quot; val=&quot;";
 const char transportState[] PROGMEM = "&lt;TransportState val=&quot;";
 const char playMode[] PROGMEM = "&lt;CurrentPlayMode val=&quot;";
 const char trackURI[] PROGMEM = "&lt;CurrentTrackURI val=&quot;";
@@ -384,6 +385,13 @@ void SonosApi::handleBody(AsyncWebServerRequest* request, uint8_t* data, size_t 
                 Serial.print("Mute: ");
                 Serial.println(currentMute);
                 _notificationHandler->notificationMuteChanged(*this, currentMute);
+            }
+            if (readFromEncodeXML(buffer, masterLoudness, valueBuffer, valueBufferSize))
+            {
+                auto currentMute = valueBuffer[0] == '1';
+                Serial.print("Loudness: ");
+                Serial.println(currentMute);
+                _notificationHandler->notificationLoudnessChanged(*this, currentMute);
             }
             if (readFromEncodeXML(buffer, transportState, valueBuffer, valueBufferSize))
             {
@@ -626,6 +634,27 @@ boolean SonosApi::getMute()
         wifiClient_xPath(xPath, wifiClient, path, 4, resultBuffer, sizeof(resultBuffer));
         currentMute = resultBuffer[0] == '1'; });
     return currentMute;
+}
+
+void SonosApi::setLoudness(boolean loudness)
+{
+    postAction(renderingControlUrl, renderingControlSoapAction, "SetLoudness", [loudness](ParameterBuilder& b) {
+        b.AddParameter("Channel", "Master");
+        b.AddParameter("DesiredLoudness", loudness);
+    });
+}
+
+boolean SonosApi::getLoudness()
+{
+    boolean currentLoudness = 0;
+    postAction(
+        renderingControlUrl, renderingControlSoapAction, "GetLoudness", [](ParameterBuilder& b) { b.AddParameter("Channel", "Master"); }, [=, &currentLoudness](WiFiClient& wifiClient) {
+        MicroXPath_P xPath;
+        PGM_P path[] = {p_SoapEnvelope, p_SoapBody, "u:GetLoudnessResponse", "CurrentLoudness"};
+        char resultBuffer[10];
+        wifiClient_xPath(xPath, wifiClient, path, 4, resultBuffer, sizeof(resultBuffer));
+        currentLoudness = resultBuffer[0] == '1'; });
+    return currentLoudness;
 }
 
 const char* renderingGroupRenderingControlUrl PROGMEM = "/MediaRenderer/GroupRenderingControl/Control";

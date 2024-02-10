@@ -44,6 +44,7 @@ class SonosApiNotificationHandler
   public:
     virtual void notificationVolumeChanged(SonosApi& caller, uint8_t volume) {}
     virtual void notificationMuteChanged(SonosApi& caller, boolean mute) {}
+    virtual void notificationLoudnessChanged(SonosApi& caller, boolean loudness) {}
     virtual void notificationGroupVolumeChanged(SonosApi& caller, uint8_t volume) {};
     virtual void notificationGroupMuteChanged(SonosApi& caller, boolean mute) {};
     virtual void notificationPlayStateChanged(SonosApi& caller, SonosApiPlayState playState) {};
@@ -129,6 +130,8 @@ class SonosApi : private AsyncWebHandler
     uint8_t getVolume();
     void setMute(boolean mute);
     boolean getMute();
+    void setLoudness(boolean loudness);
+    boolean getLoudness();
     void setGroupVolume(uint8_t volume);
     void setGroupVolumeRelative(int8_t volume);
     uint8_t getGroupVolume();

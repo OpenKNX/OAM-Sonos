@@ -1,0 +1,12 @@
+POST http://192.168.0.76:1400/MediaRenderer/RenderingControl/Control HTTP/1.1
+SOAPAction: urn:schemas-upnp-org:service:RenderingControl:1#SetEQ
+
+<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+  <s:Body>
+    <u:SetEQ xmlns:u="urn:schemas-upnp-org:service:RenderingControl:1">
+      <InstanceID>0</InstanceID>
+      <EQType>NightMode</EQType>
+      <DesiredValue>0</DesiredValue>
+    </u:SetEQ>
+  </u:Body>
+</s:Envelope>

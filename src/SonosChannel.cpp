@@ -429,6 +429,17 @@ bool SonosChannel::processCommand(const std::string cmd, bool diagnoseKo)
         Serial.println();
         Serial.println(_sonosApi.getGroupVolume());
     }
+    else if (cmd.rfind("ldn ", 0) == 0)
+    {
+        Serial.println();
+        bool loudness = cmd.substr(4) == "1";
+        _sonosApi.setLoudness(loudness);
+    }
+    else if (cmd == "ldn")
+    {
+        Serial.println();
+        Serial.println(_sonosApi.getLoudness() ? "1" : "0");
+    }    
     else if (cmd == "mute")
     {
         Serial.println();

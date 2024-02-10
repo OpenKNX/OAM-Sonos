@@ -103,6 +103,8 @@ void SonosModule::showHelp()
     openknx.console.printHelpLine("son<CC> vol", "Show volume of channel CC. i.e. son01 vol");
     openknx.console.printHelpLine("son<CC> vol <XXX>", "Set volume of channel CC. i.e. son01 vol 17");
     openknx.console.printHelpLine("son<CC> rvol <XXX>", "Set relative volume of channel CC. i.e. son01 rvol -1");
+    openknx.console.printHelpLine("son<CC> ldn", "Show loudness state of channel CC. i.e. son01 ldn");
+    openknx.console.printHelpLine("son<CC> ldn <X>", "Set loudness state of channel CC. i.e. son01 ldn 1");
     openknx.console.printHelpLine("son<CC> mute", "Show mute state of channel CC. i.e. son01 mute");
     openknx.console.printHelpLine("son<CC> mute <X>", "Set mute state of channel CC. i.e. son01 mute 1");
     openknx.console.printHelpLine("son<CC> gvol", "Show group volume of channel CC. i.e. son01 gvol");
