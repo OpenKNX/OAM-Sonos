@@ -467,7 +467,18 @@ bool SonosChannel::processCommand(const std::string cmd, bool diagnoseKo)
     {
         Serial.println();
         Serial.println(_sonosApi.getLoudness() ? "1" : "0");
-    }    
+    } 
+    else if (cmd.rfind("led ", 0) == 0)
+    {
+        Serial.println();
+        bool on = cmd.substr(4) == "1";
+        _sonosApi.setStatusLight(on);
+    }
+    else if (cmd == "led")
+    {
+        Serial.println();
+        Serial.println(_sonosApi.getStatusLight() ? "1" : "0");
+    }       
     else if (cmd == "mute")
     {
         Serial.println();

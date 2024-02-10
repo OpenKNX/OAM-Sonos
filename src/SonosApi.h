@@ -102,7 +102,7 @@ class SonosApi : private AsyncWebHandler
     static void wifiClient_xPath(MicroXPath_P& xPath, WiFiClient& wifiClient, PGM_P* path, uint8_t pathSize, char* resultBuffer, size_t resultBufferSize);
 
     typedef std::function<void(ParameterBuilder&)> TParameterBuilderFunction;
-    void writeSoapHttpCall(Stream& stream, const char* soapUrl, const char* soapAction, const char* action, TParameterBuilderFunction parameterFunction);
+    void writeSoapHttpCall(Stream& stream, const char* soapUrl, const char* soapAction, const char* action, TParameterBuilderFunction parameterFunction, bool addInstanceNode);
     void writeSubscribeHttpCall(Stream& stream, const char* soapUrl);
     
     SonosApiPlayState getPlayStateFromString(const char* value);
@@ -110,7 +110,7 @@ class SonosApi : private AsyncWebHandler
     const char* getPlayModeString(SonosApiPlayMode playMode);
 
     typedef std::function<void(WiFiClient&)> THandlerWifiResultFunction;
-    int postAction(const char* soapUrl, const char* soapAction, const char* action, TParameterBuilderFunction parameterFunction = nullptr, THandlerWifiResultFunction wifiResultFunction = nullptr);
+    int postAction(const char* soapUrl, const char* soapAction, const char* action, TParameterBuilderFunction parameterFunction = nullptr, THandlerWifiResultFunction wifiResultFunction = nullptr, bool addInstanceNode = true);
     int subscribeEvents(const char* soapUrl);
     void subscribeAll();
 
@@ -173,4 +173,6 @@ class SonosApi : private AsyncWebHandler
     void gotoTime(uint8_t hour, uint8_t minute, uint8_t second);
     void addTrackToQueue(const char *scheme, const char *address, const char* metadata = nullptr, uint16_t desiredTrackNumber = 0, bool enqueueAsNext = true);
     void removeAllTracksFromQueue();
+    void setStatusLight(boolean on);
+    boolean getStatusLight();
 };

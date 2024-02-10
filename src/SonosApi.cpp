@@ -514,9 +514,11 @@ void SonosApi::handleBody(AsyncWebServerRequest* request, uint8_t* data, size_t 
     request->send(200);
 }
 
-void SonosApi::writeSoapHttpCall(Stream& stream, const char* soapUrl, const char* soapAction, const char* action, TParameterBuilderFunction parameterFunction)
+void SonosApi::writeSoapHttpCall(Stream& stream, const char* soapUrl, const char* soapAction, const char* action, TParameterBuilderFunction parameterFunction, bool addInstanceNode)
 {
-    uint16_t contentLength = 200 + strlen(action) * 2 + strlen(soapAction);
+    uint16_t contentLength = 174 + strlen(action) * 2 + strlen(soapAction);
+    if (addInstanceNode)
+        contentLength += 26;
     if (parameterFunction != nullptr)
     {
         ParameterBuilder countCharParameterBuilder(nullptr);
@@ -545,7 +547,9 @@ void SonosApi::writeSoapHttpCall(Stream& stream, const char* soapUrl, const char
     stream.print(action);
     stream.print(" xmlns:u='");
     stream.print(soapAction);
-    stream.print(F("'><InstanceID>0</InstanceID>"));
+    stream.print("'>");
+    if (addInstanceNode)
+        stream.print(F("<InstanceID>0</InstanceID>"));
     if (parameterFunction != nullptr)
     {
         ParameterBuilder context(&stream);
@@ -556,7 +560,7 @@ void SonosApi::writeSoapHttpCall(Stream& stream, const char* soapUrl, const char
     stream.print(F("></s:Body></s:Envelope>"));
 }
 
-int SonosApi::postAction(const char* soapUrl, const char* soapAction, const char* action, TParameterBuilderFunction parameterFunction, THandlerWifiResultFunction wifiResultFunction)
+int SonosApi::postAction(const char* soapUrl, const char* soapAction, const char* action, TParameterBuilderFunction parameterFunction, THandlerWifiResultFunction wifiResultFunction, bool addInstanceNode)
 {
     WiFiClient wifiClient;
     if (wifiClient.connect(_speakerIP, 1400) != true)
@@ -565,8 +569,9 @@ int SonosApi::postAction(const char* soapUrl, const char* soapAction, const char
         return -1;
     }
 
-    writeSoapHttpCall(Serial, soapUrl, soapAction, action, parameterFunction);
-    writeSoapHttpCall(wifiClient, soapUrl, soapAction, action, parameterFunction);
+    writeSoapHttpCall(Serial, soapUrl, soapAction, action, parameterFunction, addInstanceNode);
+    Serial.println();
+    writeSoapHttpCall(wifiClient, soapUrl, soapAction, action, parameterFunction, addInstanceNode);
 
     auto start = millis();
     while (!wifiClient.available())
@@ -650,6 +655,31 @@ boolean SonosApi::getMute()
         wifiClient_xPath(xPath, wifiClient, path, 4, resultBuffer, sizeof(resultBuffer));
         currentMute = resultBuffer[0] == '1'; });
     return currentMute;
+}
+
+const char* devicePropertiesUrl PROGMEM = "/DeviceProperties/Control";
+const char* devicePropertiesSoapAction PROGMEM = "urn:schemas-upnp-org:service:DeviceProperties:1";
+
+
+void SonosApi::setStatusLight(boolean on)
+{
+    postAction(devicePropertiesUrl, devicePropertiesSoapAction, "SetLEDState", [on](ParameterBuilder& b) {
+        b.AddParameter("DesiredLEDState", on ? "On" : "Off");
+    }, nullptr, false);
+}
+
+boolean SonosApi::getStatusLight()
+{
+    boolean currentLEDState = 0;
+    postAction(
+        devicePropertiesUrl, devicePropertiesSoapAction, "GetLEDState", nullptr, [=, &currentLEDState](WiFiClient& wifiClient) {
+        MicroXPath_P xPath;
+        PGM_P path[] = {p_SoapEnvelope, p_SoapBody, "u:GetLEDStateResponse", "CurrentLEDState"};
+        char resultBuffer[10];
+        wifiClient_xPath(xPath, wifiClient, path, 4, resultBuffer, sizeof(resultBuffer));
+        currentLEDState = strcmp(resultBuffer, "On") == 0;
+        }, false);
+    return currentLEDState;
 }
 
 int8_t SonosApi::getTreble()

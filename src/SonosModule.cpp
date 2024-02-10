@@ -128,6 +128,8 @@ void SonosModule::showHelp()
     openknx.console.printHelpLine("son<CC> dele <TT>", "The Channel CC delegates the coordination to channel TT. i.e. son01 dele 02");
     openknx.console.printHelpLine("son<CC> join <TT>", "The Channel CC join group of channel TT. i.e. son01 join 02");
     openknx.console.printHelpLine("son<CC> noti <N>", "The Channel CC plays the notification N. i.e. son01 noti 1");
+    openknx.console.printHelpLine("son<CC> led", "Show led state of channel CC. i.e. son01 led");
+    openknx.console.printHelpLine("son<CC> led <X>", "Set led state of channel CC. i.e. son01 led 1");
 }
 
 void SonosModule::showInformations()
