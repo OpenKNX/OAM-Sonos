@@ -38,7 +38,7 @@ size_t ParameterBuilder::writeEncoded(const char* str, byte mode)
     if (str == nullptr)
         return 0;
     const char* c;
-    const char* const * expanded = nullptr;
+    const char* const* expanded = nullptr;
     switch (mode)
     {
         case ENCODE_XML:
@@ -53,10 +53,10 @@ size_t ParameterBuilder::writeEncoded(const char* str, byte mode)
             c = cURL;
             break;
         default:
-        if (_stream == nullptr)
-            return strlen(str);
-        else
-            return _stream->write(str);
+            if (_stream == nullptr)
+                return strlen(str);
+            else
+                return _stream->write(str);
     }
     size_t length = 0;
     char* p = (char*)str;
@@ -74,7 +74,7 @@ size_t ParameterBuilder::writeEncoded(const char* str, byte mode)
             char buf[11];
             if (mode == ENCODE_URL)
             {
-                sprintf(buf, "%%%02X", (unsigned int) *p);
+                sprintf(buf, "%%%02X", (unsigned int)*p);
             }
             else
             {
@@ -103,39 +103,67 @@ void ParameterBuilder::AddParameter(const char* name, int32_t value)
 {
     char buffer[12];
     itoa(value, buffer, 10);
-    AddParameter(name, buffer, ENCODE_NO,  nullptr, ENCODE_NO, nullptr, ENCODE_NO);
+    AddParameter(name, buffer, ENCODE_NO);
 }
 
 void ParameterBuilder::AddParameter(const char* name, bool value)
 {
-    AddParameter(name, value ? "1" : "0", ENCODE_NO,  nullptr, ENCODE_NO, nullptr, ENCODE_NO);
+    AddParameter(name, value ? "1" : "0", ENCODE_NO);
 }
 
-void ParameterBuilder::AddParameter(const char* name, const char* value1, byte escapeMode1, const char* value2, byte escapeMode2, const char* value3, byte escapeMode3, const char* value4, byte escapeMode4)
+void ParameterBuilder::AddParameter(const char* name, const char* value, byte escapeMode)
 {
     if (_stream == nullptr)
     {
         _length += strlen(name) * 2 + 5;
-        _length += writeEncoded(value1, escapeMode1);
-        _length += writeEncoded(value2, escapeMode2);
-        _length += writeEncoded(value3, escapeMode3);
-        _length += writeEncoded(value4, escapeMode4);
+        _length += writeEncoded(value, escapeMode);
     }
     else
     {
-        _stream->write('<');
-        _stream->write(name);
-        _stream->write('>');
-        writeEncoded(value1, escapeMode1);
-        writeEncoded(value2, escapeMode2);
-        writeEncoded(value3, escapeMode3);
-        writeEncoded(value4, escapeMode4);
+        _length += _stream->write('<');
+        _length += _stream->write(name);
+        _length += _stream->write('>');
+        _length += writeEncoded(value, escapeMode);
         _stream->write("</");
         _stream->write(name);
         _stream->write('>');
     }
 }
 
+void ParameterBuilder::BeginParameter(const char* name)
+{
+    currentParameterName = name;
+    if (_stream == nullptr)
+    {
+        _length += strlen(name) + 2;
+    }
+    else
+    {
+        _stream->write('<');
+        _stream->write(name);
+        _stream->write('>');
+    }
+}
+void ParameterBuilder::ParmeterValuePart(const char* valuePart, byte escapeMode)
+{
+    _length += writeEncoded(valuePart, escapeMode);     
+}
+
+
+void ParameterBuilder::EndParameter()
+{
+    if (_stream == nullptr)
+    {
+        _length += strlen(currentParameterName) + 3;
+    }
+    else
+    {
+        _length += _stream->write("</");
+        _length += _stream->write(currentParameterName);
+        _length += _stream->write('>');
+    }
+    currentParameterName = nullptr;
+}
 size_t ParameterBuilder::length()
 {
     return _length;
@@ -668,7 +696,10 @@ const char* renderingAVTransportSoapAction PROGMEM = "urn:schemas-upnp-org:servi
 void SonosApi::setAVTransportURI(const char* schema, const char* currentURI, const char* currentURIMetaData)
 {
     postAction(renderingAVTransportUrl, renderingAVTransportSoapAction, "SetAVTransportURI", [schema, currentURI, currentURIMetaData](ParameterBuilder& b) {
-        b.AddParameter("CurrentURI", schema, ParameterBuilder::ENCODE_NO, currentURI, ParameterBuilder::ENCODE_XML);
+        b.BeginParameter("CurrentURI");
+        b.ParmeterValuePart(schema, ParameterBuilder::ENCODE_NO);
+        b.ParmeterValuePart(currentURI, ParameterBuilder::ENCODE_XML);
+        b.EndParameter();
         b.AddParameter("CurrentURIMetaData", currentURIMetaData);
     });
 }
@@ -1078,7 +1109,10 @@ void SonosApi::gotoTime(uint8_t hour, uint8_t minute, uint8_t second)
 void SonosApi::addTrackToQueue(const char* scheme, const char* address, const char* metadata, uint16_t desiredTrackNumber, bool enqueueAsNext)
 {
     postAction(renderingAVTransportUrl, renderingAVTransportSoapAction, "AddURIToQueue", [scheme, address, metadata, desiredTrackNumber, enqueueAsNext](ParameterBuilder& b) {
-        b.AddParameter("EnqueuedURI", scheme, ParameterBuilder::ENCODE_NO, address);
+        b.BeginParameter("EnqueuedURI");
+        b.ParmeterValuePart(scheme, ParameterBuilder::ENCODE_NO);
+        b.ParmeterValuePart(address);
+        b.EndParameter();
         b.AddParameter("EnqueuedURIMetaData", metadata);
         b.AddParameter("DesiredFirstTrackNumberEnqueued", desiredTrackNumber);
         b.AddParameter("EnqueueAsNext", enqueueAsNext);
@@ -1090,14 +1124,24 @@ void SonosApi::removeAllTracksFromQueue()
     postAction(renderingAVTransportUrl, renderingAVTransportSoapAction, "RemoveAllTracksFromQueue");
 }
 
-const char radioMetadataBegin[] PROGMEM = "&lt;DIDL-Lite xmlns:dc=&quot;http://purl.org/dc/elements/1.1/&quot; xmlns:upnp=&quot;urn:schemas-upnp-org:metadata-1-0/upnp/&quot; xmlns:r=&quot;urn:schemas-rinconnetworks-com:metadata-1-0/&quot; xmlns=&quot;urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/&quot;&gt;&lt;item id=&quot;R:0/0/46&quot; parentID=&quot;R:0/0&quot; restricted=&quot;true&quot;&gt;&lt;dc:title&gt;";
-const char radioMetadataEnd[] PROGMEM = "&lt;/dc:title&gt;&lt;upnp:class&gt;object.item.audioItem.audioBroadcast&lt;/upnp:class&gt;&lt;desc id=&quot;cdudn&quot; nameSpace=&quot;urn:schemas-rinconnetworks-com:metadata-1-0/&quot;&gt;SA_RINCON65031_&lt;/desc&gt;&lt;/item&gt;&lt;/DIDL-Lite&gt;";
+const char radioMetadataBeginTitle[] PROGMEM = "<DIDL-Lite xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/' xmlns:r='urn:schemas-rinconnetworks-com:metadata-1-0/' xmlns='urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/'><item id='R:0/0/46' parentID='R:0/0' restricted='true'><dc:title>";
+const char radioMetadataEndTitleBeginImageUrl[] PROGMEM = "</dc:title><upnp:albumArtURI>";
+const char radioMetadataEndImageUrl[] PROGMEM = "</upnp:albumArtURI><upnp:class>object.item.audioItem.audioBroadcast</upnp:class><desc id='cdudn' nameSpace='urn:schemas-rinconnetworks-com:metadata-1-0/'>SA_RINCON65031_</desc></item></DIDL-Lite>";
 
-void SonosApi::playInternetRadio(const char* streamingUrl, const char* radioStationName)
+void SonosApi::playInternetRadio(const char* streamingUrl, const char* radioStationName, const char* imageUrl)
 {
-    postAction(renderingAVTransportUrl, renderingAVTransportSoapAction, "SetAVTransportURI", [streamingUrl, radioStationName](ParameterBuilder& b) {
-        b.AddParameter("CurrentURI", "x-rincon-mp3radio://", ParameterBuilder::ENCODE_NO, streamingUrl, ParameterBuilder::ENCODE_XML);
-        b.AddParameter("CurrentURIMetaData", radioMetadataBegin, ParameterBuilder::ENCODE_NO, radioStationName, ParameterBuilder::ENCODE_DOUBLE_XML, radioMetadataEnd, ParameterBuilder::ENCODE_NO);
+    postAction(renderingAVTransportUrl, renderingAVTransportSoapAction, "SetAVTransportURI", [streamingUrl, radioStationName, imageUrl](ParameterBuilder& b) {
+        b.BeginParameter("CurrentURI");
+        b.ParmeterValuePart("x-rincon-mp3radio://", ParameterBuilder::ENCODE_NO);
+        b.ParmeterValuePart(streamingUrl, ParameterBuilder::ENCODE_XML);
+        b.EndParameter();
+        b.BeginParameter("CurrentURIMetaData");
+        b.ParmeterValuePart(radioMetadataBeginTitle, ParameterBuilder::ENCODE_NO);
+        b.ParmeterValuePart(radioStationName, ParameterBuilder::ENCODE_DOUBLE_XML);
+        b.ParmeterValuePart(radioMetadataEndTitleBeginImageUrl, ParameterBuilder::ENCODE_NO);
+        b.ParmeterValuePart(imageUrl, ParameterBuilder::ENCODE_DOUBLE_XML);
+        b.ParmeterValuePart(radioMetadataEndTitleBeginImageUrl, ParameterBuilder::ENCODE_NO);
+        b.EndParameter();
     });
     play();
 }
@@ -1111,7 +1155,10 @@ void SonosApi::playFromHttp(const char* url)
 void SonosApi::playMusicLibraryFile(const char* mediathekFilePath)
 {
     postAction(renderingAVTransportUrl, renderingAVTransportSoapAction, "SetAVTransportURI", [mediathekFilePath](ParameterBuilder& b) {
-        b.AddParameter("CurrentURI", "x-file-cifs:", ParameterBuilder::ENCODE_NO, mediathekFilePath, ParameterBuilder::ENCODE_XML);
+        b.BeginParameter("CurrentURI");
+        b.ParmeterValuePart("x-file-cifs:", ParameterBuilder::ENCODE_NO);
+        b.ParmeterValuePart(mediathekFilePath, ParameterBuilder::ENCODE_XML);
+        b.EndParameter();
         b.AddParameter("CurrentURIMetaData", nullptr);
     });
     play();
@@ -1126,7 +1173,12 @@ void SonosApi::playMusicLibraryDirectory(const char* mediathekDirectory)
     const char* cDir = dir.c_str();
 
     postAction(renderingAVTransportUrl, renderingAVTransportSoapAction, "AddURIToQueue", [this, cDir](ParameterBuilder& b) {
-        b.AddParameter("EnqueuedURI", "x-rincon-playlist:", ParameterBuilder::ENCODE_NO, this->getUID().c_str(), ParameterBuilder::ENCODE_NO, "#S:", ParameterBuilder::ENCODE_NO, cDir, ParameterBuilder::ENCODE_NO);
+        b.BeginParameter("EnqueuedURI");
+        b.ParmeterValuePart("x-rincon-playlist:", ParameterBuilder::ENCODE_NO);
+        b.ParmeterValuePart(this->getUID().c_str(), ParameterBuilder::ENCODE_NO);
+        b.ParmeterValuePart("#S:", ParameterBuilder::ENCODE_NO);
+        b.ParmeterValuePart(cDir, ParameterBuilder::ENCODE_NO);
+        b.EndParameter();
         b.AddParameter("EnqueuedURIMetaData");
         b.AddParameter("DesiredFirstTrackNumberEnqueued", 0);
         b.AddParameter("EnqueueAsNext", true);
@@ -1147,7 +1199,6 @@ void SonosApi::playTVIn()
     setAVTransportURI("x-sonos-htastream:", url.c_str());
     play();
 }
-
 
 void SonosApi::playQueue()
 {

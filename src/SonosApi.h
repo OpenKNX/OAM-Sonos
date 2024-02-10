@@ -62,15 +62,19 @@ class ParameterBuilder
   private:
     Stream* _stream;
     size_t _length = 0;
+    const char* currentParameterName = nullptr;
     size_t writeEncoded(const char* buffer, byte escapeMode);
     ParameterBuilder(ParameterBuilder& b) {} // Prevent copy constructor usage
   public:
     size_t length();
     ParameterBuilder(Stream* stream);
-    void AddParameter(const char* name, const char* value1 = nullptr, byte escapeMode1 = ENCODE_XML, const char* value2 = nullptr, byte escapeMode2 = ENCODE_XML, const char* value3 = nullptr, byte escapeMode3 = ENCODE_XML, const char* value4 = nullptr, byte escapeMode4 = ENCODE_XML);
+    void AddParameter(const char* name, const char* value = nullptr, byte escapeMode = ENCODE_XML);
     void AddParameter(const char* name, int32_t value);
     void AddParameter(const char* name, uint32_t value);
     void AddParameter(const char* name, bool value);
+    void BeginParameter(const char* name);
+    void ParmeterValuePart(const char* valuePart = nullptr, byte escapeMode = ENCODE_XML);
+    void EndParameter();
 };
 
 class SonosApi : private AsyncWebHandler
@@ -143,7 +147,7 @@ class SonosApi : private AsyncWebHandler
     SonosApi* findGroupCoordinator(bool cached = false);
     SonosApi* findNextPlayingGroupCoordinator();
     void setAVTransportURI(const char* schema, const char* uri, const char* metadata = nullptr);
-    void playInternetRadio(const char* streamingUrl, const char* radionStationName);
+    void playInternetRadio(const char* streamingUrl, const char* radionStationName, const char* imageUrl = nullptr);
     void playFromHttp(const char* url);
     void playMusicLibraryFile(const char* mediathekFilePath);
     void playMusicLibraryDirectory(const char* mediathekDirectory);

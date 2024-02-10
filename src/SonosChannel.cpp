@@ -515,6 +515,14 @@ bool SonosChannel::processCommand(const std::string cmd, bool diagnoseKo)
         auto notificationNr = atoi(cmd.substr(5).c_str());
         playNotification(notificationNr);
     }
+    else if (cmd.rfind("src ", 0) == 0)
+    {
+        Serial.println();
+        auto src = atoi(cmd.substr(4).c_str());
+        auto ko = KoSON_CHSourceNumber;
+        ko.valueNoSend(src, DPT_Value_1_Ucount);
+        processInputKo(ko);
+    }
     else if (cmd == "test1")
     {
         _sonosApi.playInternetRadio("https://orf-live.ors-shoutcast.at/wie-q2a.m3u", "Radio Wien");
