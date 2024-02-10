@@ -407,6 +407,34 @@ bool SonosChannel::processCommand(const std::string cmd, bool diagnoseKo)
         else
             _sonosApi.setGroupVolumeRelative(value);
     }
+    else if (cmd.rfind("treb ", 0) == 0)
+    {
+        Serial.println();
+        int value = atoi(cmd.c_str() + 5);
+        if (value < -10 || value > 10)
+            Serial.printf("Invalid treble %d\r\n", value);
+        else
+            _sonosApi.setTreble(value);
+    }
+    else if (cmd == "treb")
+    {
+        Serial.println();
+        Serial.println(_sonosApi.getTreble());
+    }
+    else if (cmd.rfind("bass ", 0) == 0)
+    {
+        Serial.println();
+        int value = atoi(cmd.c_str() + 5);
+        if (value < -10 || value > 10)
+            Serial.printf("Invalid bass %d\r\n", value);
+        else
+            _sonosApi.setBass(value);
+    }
+    else if (cmd == "bass")
+    {
+        Serial.println();
+        Serial.println(_sonosApi.getBass());
+    }   
     else if (cmd.rfind("mute ", 0) == 0)
     {
         Serial.println();

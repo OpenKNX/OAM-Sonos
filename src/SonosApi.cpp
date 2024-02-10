@@ -342,6 +342,8 @@ const char* SonosApi::getPlayModeString(SonosApiPlayMode playMode)
 const char masterVolume[] PROGMEM = "&lt;Volume channel=&quot;Master&quot; val=&quot;";
 const char masterMute[] PROGMEM = "&lt;Mute channel=&quot;Master&quot; val=&quot;";
 const char masterLoudness[] PROGMEM = "&lt;Loudness channel=&quot;Master&quot; val=&quot;";
+const char treble[] PROGMEM = "&lt;Treble val=&quot;";
+const char bass[] PROGMEM = "&lt;Bass val=&quot;";
 const char transportState[] PROGMEM = "&lt;TransportState val=&quot;";
 const char playMode[] PROGMEM = "&lt;CurrentPlayMode val=&quot;";
 const char trackURI[] PROGMEM = "&lt;CurrentTrackURI val=&quot;";
@@ -379,6 +381,20 @@ void SonosApi::handleBody(AsyncWebServerRequest* request, uint8_t* data, size_t 
                 Serial.println(currentVolume);
                 _notificationHandler->notificationVolumeChanged(*this, currentVolume);
             }
+            if (readFromEncodeXML(buffer, bass, valueBuffer, valueBufferSize))
+            {
+                auto currentBass = constrain(atoi(valueBuffer), -10, 10);
+                Serial.print("Bass: ");
+                Serial.println(currentBass);
+                _notificationHandler->notificationBassChanged(*this, currentBass);
+            }
+            if (readFromEncodeXML(buffer, treble, valueBuffer, valueBufferSize))
+            {
+                auto currentTreble = constrain(atoi(valueBuffer), -10, 10);
+                Serial.print("Treble: ");
+                Serial.println(currentTreble);
+                _notificationHandler->notificationTrebleChanged(*this, currentTreble);
+            }            
             if (readFromEncodeXML(buffer, masterMute, valueBuffer, valueBufferSize))
             {
                 auto currentMute = valueBuffer[0] == '1';
@@ -635,6 +651,49 @@ boolean SonosApi::getMute()
         currentMute = resultBuffer[0] == '1'; });
     return currentMute;
 }
+
+int8_t SonosApi::getTreble()
+{
+    int8_t currentTreble = 0;
+    postAction(renderingControlUrl, renderingControlSoapAction, "GetTreble", [](ParameterBuilder& b) { b.AddParameter("Channel", "Master"); }, [=, &currentTreble](WiFiClient& wifiClient) {
+        MicroXPath_P xPath;
+        PGM_P path[] = {p_SoapEnvelope, p_SoapBody, "u:GetTrebleResponse", "CurrentTreble"};
+        char resultBuffer[10];
+        wifiClient_xPath(xPath, wifiClient, path, 4, resultBuffer, sizeof(resultBuffer));
+        currentTreble = (int8_t)constrain(atoi(resultBuffer), -10, 10);
+    });
+    return currentTreble;
+}
+
+void SonosApi::setTreble(int8_t treble)
+{
+    postAction(renderingControlUrl, renderingControlSoapAction, "SetTreble", [treble](ParameterBuilder& b) {
+        b.AddParameter("Channel", "Master");
+        b.AddParameter("DesiredTreble", treble);
+    });
+}
+
+int8_t SonosApi::getBass()
+{
+    int8_t currentBass = 0;
+    postAction(renderingControlUrl, renderingControlSoapAction, "GetBass", [](ParameterBuilder& b) { b.AddParameter("Channel", "Master"); }, [=, &currentBass](WiFiClient& wifiClient) {
+        MicroXPath_P xPath;
+        PGM_P path[] = {p_SoapEnvelope, p_SoapBody, "u:GetBassResponse", "CurrentBass"};
+        char resultBuffer[10];
+        wifiClient_xPath(xPath, wifiClient, path, 4, resultBuffer, sizeof(resultBuffer));
+        currentBass = (int8_t)constrain(atoi(resultBuffer), -10, 10);
+    });
+    return currentBass;
+}
+
+void SonosApi::setBass(int8_t bass)
+{
+    postAction(renderingControlUrl, renderingControlSoapAction, "SetBass", [bass](ParameterBuilder& b) {
+        b.AddParameter("Channel", "Master");
+        b.AddParameter("DesiredBass", bass);
+    });
+}
+
 
 void SonosApi::setLoudness(boolean loudness)
 {

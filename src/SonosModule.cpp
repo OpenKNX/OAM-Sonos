@@ -102,6 +102,10 @@ void SonosModule::showHelp()
     openknx.console.printHelpLine("son<CC> uid", "Show sonos UID of channel CC. i.e. son01 uid");
     openknx.console.printHelpLine("son<CC> vol", "Show volume of channel CC. i.e. son01 vol");
     openknx.console.printHelpLine("son<CC> vol <XXX>", "Set volume of channel CC. i.e. son01 vol 17");
+    openknx.console.printHelpLine("son<CC> treb", "Get trebl of channel CC. i.e. son01 treb");
+    openknx.console.printHelpLine("son<CC> treb <X>", "Set treble (-10/10) of channel CC. i.e. son01 treb 0");
+    openknx.console.printHelpLine("son<CC> bass", "Get bass of channel CC. i.e. son01 bass");
+    openknx.console.printHelpLine("son<CC> bass <X>", "Set bass (-10/10) of channel CC. i.e. son01 bass 0");
     openknx.console.printHelpLine("son<CC> rvol <XXX>", "Set relative volume of channel CC. i.e. son01 rvol -1");
     openknx.console.printHelpLine("son<CC> ldn", "Show loudness state of channel CC. i.e. son01 ldn");
     openknx.console.printHelpLine("son<CC> ldn <X>", "Set loudness state of channel CC. i.e. son01 ldn 1");

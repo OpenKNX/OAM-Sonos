@@ -1,0 +1,12 @@
+POST http://192.168.0.7:1400/MediaRenderer/RenderingControl/Control HTTP/1.1
+SOAPAction: urn:schemas-upnp-org:service:RenderingControl:1#SetBass
+
+<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+  <s:Body>
+    <u:SetBass xmlns:u="urn:schemas-upnp-org:service:RenderingControl:1">
+        <InstanceID>0</InstanceID>
+        <Channel>Master</Channel>
+        <DesiredBass>0</DesiredBass>
+    </u:SetBass>
+  </u:Body>
+</s:Envelope>
