@@ -29,7 +29,7 @@
               <ParameterType Id="%AID%_PT-SourceType" Name="SourceType">
                 <TypeRestriction Base="Value" SizeInBit="8">
                   <Enumeration Text="Inaktiv" Value="0" Id="%AID%_PT-SourceType_EN-0" />
-                  <Enumeration Text="Radio" Value="1" Id="%AID%_PT-SourceType_EN-1" />
+                  <Enumeration Text="Radio Stream" Value="1" Id="%AID%_PT-SourceType_EN-1" />
                   <Enumeration Text="Http"  Value="2" Id="%AID%_PT-SourceType_EN-2" />
                   <Enumeration Text="Musikbibliothek Datei"  Value="3" Id="%AID%_PT-SourceType_EN-3" />
                   <Enumeration Text="Musikbibliothek Verzeichnis"  Value="4" Id="%AID%_PT-SourceType_EN-4" />
@@ -39,7 +39,7 @@
                 </TypeRestriction>
               </ParameterType>
               <ParameterType Id="%AID%_PT-SourceUri" Name="SourceUri">
-                <TypeText SizeInBit="2048" /> <!-- 256 characters -->
+                <TypeText SizeInBit="1200" /> <!-- 150 characters -->
               </ParameterType>
               <ParameterType Id="%AID%_PT-SourceTitle" Name="SourceTitle">
                 <TypeText SizeInBit="160" /> <!-- 20 characters -->
@@ -62,39 +62,44 @@
                 <Parameter Id="%AID%_UP-%TT%10041" Name="NotificationVolume4" ParameterType="%AID%_PT-NotificationVolume" Offset="1027" BitOffset="0" Text="Lautstärke" Value="25" />                
             </Union>
             <!-- Sound source 1 -->
-            <Union SizeInBit="2216">
+            <Union SizeInBit="2560">
                 <Memory CodeSegment="%MID%" Offset="1028" BitOffset="0" />
                 <Parameter Id="%AID%_UP-%TT%00011" Name="SourceType1" ParameterType="%AID%_PT-SourceType" Offset="0" BitOffset="0" Text="Quellenart" Value="0" />
                 <Parameter Id="%AID%_UP-%TT%00012" Name="SourceTitle1" ParameterType="%AID%_PT-SourceTitle" Offset="1" BitOffset="0" Text="Name" Value="" />
                 <Parameter Id="%AID%_UP-%TT%00013" Name="SourceUri1" ParameterType="%AID%_PT-SourceUri" Offset="21" BitOffset="0" Text="URL" Value="" />
+                <Parameter Id="%AID%_UP-%TT%00014" Name="SourceUriImage1" ParameterType="%AID%_PT-SourceUri" Offset="171" BitOffset="0" Text="Logo URL" Value="" />
             </Union>
             <!-- Sound source 2 -->
-            <Union SizeInBit="2216">
-                <Memory CodeSegment="%MID%" Offset="1305" BitOffset="0" />
+            <Union SizeInBit="2560">
+                <Memory CodeSegment="%MID%" Offset="3588" BitOffset="0" />
                 <Parameter Id="%AID%_UP-%TT%00021" Name="SourceType2" ParameterType="%AID%_PT-SourceType" Offset="0" BitOffset="0" Text="Quellenart" Value="0" />
                 <Parameter Id="%AID%_UP-%TT%00022" Name="SourceTitle2" ParameterType="%AID%_PT-SourceTitle" Offset="1" BitOffset="0" Text="Name" Value="" />
                 <Parameter Id="%AID%_UP-%TT%00023" Name="SourceUri2" ParameterType="%AID%_PT-SourceUri" Offset="21" BitOffset="0" Text="URL" Value="" />
+                <Parameter Id="%AID%_UP-%TT%00024" Name="SourceUriImage2" ParameterType="%AID%_PT-SourceUri" Offset="171" BitOffset="0" Text="Logo URL" Value="" />
             </Union>
             <!-- Sound source 3 -->   
-            <Union SizeInBit="2216">
-                <Memory CodeSegment="%MID%" Offset="1582" BitOffset="0" />
+            <Union SizeInBit="2560">
+                <Memory CodeSegment="%MID%" Offset="6148" BitOffset="0" />
                 <Parameter Id="%AID%_UP-%TT%00031" Name="SourceType3" ParameterType="%AID%_PT-SourceType" Offset="0" BitOffset="0" Text="Quellenart" Value="0" />
                 <Parameter Id="%AID%_UP-%TT%00032" Name="SourceTitle3" ParameterType="%AID%_PT-SourceTitle" Offset="1" BitOffset="0" Text="Name" Value="" />
                 <Parameter Id="%AID%_UP-%TT%00033" Name="SourceUri3" ParameterType="%AID%_PT-SourceUri" Offset="21" BitOffset="0" Text="URL" Value="" />
+                <Parameter Id="%AID%_UP-%TT%00034" Name="SourceUriImage3" ParameterType="%AID%_PT-SourceUri" Offset="171" BitOffset="0" Text="Logo URL" Value="" />
             </Union>
             <!-- Sound source 4 -->   
-            <Union SizeInBit="2216">
-                <Memory CodeSegment="%MID%" Offset="1859" BitOffset="0" />
+            <Union SizeInBit="2560">
+                <Memory CodeSegment="%MID%" Offset="8708" BitOffset="0" />
                 <Parameter Id="%AID%_UP-%TT%00041" Name="SourceType4" ParameterType="%AID%_PT-SourceType" Offset="0" BitOffset="0" Text="Quellenart" Value="0" />
                 <Parameter Id="%AID%_UP-%TT%00042" Name="SourceTitle4" ParameterType="%AID%_PT-SourceTitle" Offset="1" BitOffset="0" Text="Name" Value="" />
                 <Parameter Id="%AID%_UP-%TT%00043" Name="SourceUri4" ParameterType="%AID%_PT-SourceUri" Offset="21" BitOffset="0" Text="URL" Value="" />
+                <Parameter Id="%AID%_UP-%TT%00044" Name="SourceUriImage4" ParameterType="%AID%_PT-SourceUri" Offset="171" BitOffset="0" Text="Logo URL" Value="" />
             </Union>
             <!-- Sound source 5 -->   
-            <Union SizeInBit="2216">
-                <Memory CodeSegment="%MID%" Offset="2136" BitOffset="0" />
+            <Union SizeInBit="2560">
+                <Memory CodeSegment="%MID%" Offset="11268" BitOffset="0" />
                 <Parameter Id="%AID%_UP-%TT%00051" Name="SourceType5" ParameterType="%AID%_PT-SourceType" Offset="0" BitOffset="0" Text="Quellenart" Value="0" />
                 <Parameter Id="%AID%_UP-%TT%00052" Name="SourceTitle5" ParameterType="%AID%_PT-SourceTitle" Offset="1" BitOffset="0" Text="Name" Value="" />
                 <Parameter Id="%AID%_UP-%TT%00053" Name="SourceUri5" ParameterType="%AID%_PT-SourceUri" Offset="21" BitOffset="0" Text="URL" Value="" />
+                <Parameter Id="%AID%_UP-%TT%00054" Name="SourceUriImage5" ParameterType="%AID%_PT-SourceUri" Offset="171" BitOffset="0" Text="Logo URL" Value="" />
             </Union>
             </Parameters>
             <ParameterRefs>
@@ -123,22 +128,24 @@
               <!--Source Ttile 1 -->
               <ParameterRef Id="%AID%_UP-%TT%00012_R-%TT%0001201" RefId="%AID%_UP-%TT%00012" />
               <!--Source Radio 1 -->
-              <ParameterRef Id="%AID%_UP-%TT%00013_R-%TT%0001301" RefId="%AID%_UP-%TT%00013" Text="URL" />
+              <ParameterRef Id="%AID%_UP-%TT%00013_R-%TT%0001301" RefId="%AID%_UP-%TT%00013" Text="Streaming URL" />
               <!--Source Url 1 -->
               <ParameterRef Id="%AID%_UP-%TT%00013_R-%TT%0001302" RefId="%AID%_UP-%TT%00013" Text="URL" />
               <!--Source Network File 1 -->
               <ParameterRef Id="%AID%_UP-%TT%00013_R-%TT%0001303" RefId="%AID%_UP-%TT%00013" Text="Netzwerk Dateipfad" />
               <!--Source Network Directory 1 -->
               <ParameterRef Id="%AID%_UP-%TT%00013_R-%TT%0001304" RefId="%AID%_UP-%TT%00013" Text="Netzwerk Verzeichnis" />
-               <!--Source Sonos Uri 1 -->
+              <!--Source Sonos Uri 1 -->
               <ParameterRef Id="%AID%_UP-%TT%00013_R-%TT%0001307" RefId="%AID%_UP-%TT%00013" Text="Sonos URI" />
+              <!--Source Image Uri 1 -->
+              <ParameterRef Id="%AID%_UP-%TT%00014_R-%TT%0001401" RefId="%AID%_UP-%TT%00014" />
 
               <!--Source Type 2 -->
               <ParameterRef Id="%AID%_UP-%TT%00021_R-%TT%0002101" RefId="%AID%_UP-%TT%00021" />
               <!--Source Ttile 2 -->
               <ParameterRef Id="%AID%_UP-%TT%00022_R-%TT%0002201" RefId="%AID%_UP-%TT%00022" />
               <!--Source Radio 2 -->
-              <ParameterRef Id="%AID%_UP-%TT%00023_R-%TT%0002301" RefId="%AID%_UP-%TT%00023" Text="URL" />
+              <ParameterRef Id="%AID%_UP-%TT%00023_R-%TT%0002301" RefId="%AID%_UP-%TT%00023" Text="Streaming URL" />
               <!--Source Url 2 -->
               <ParameterRef Id="%AID%_UP-%TT%00023_R-%TT%0002302" RefId="%AID%_UP-%TT%00023" Text="URL" />
               <!--Source Network File 2 -->
@@ -147,13 +154,15 @@
               <ParameterRef Id="%AID%_UP-%TT%00023_R-%TT%0002304" RefId="%AID%_UP-%TT%00023" Text="Netzwerk Verzeichnis" />
                <!--Source Sonos Uri 2 -->
               <ParameterRef Id="%AID%_UP-%TT%00023_R-%TT%0002307" RefId="%AID%_UP-%TT%00023" Text="Sonos URI" />
-
+              <!--Source Image Uri 2 -->
+              <ParameterRef Id="%AID%_UP-%TT%00024_R-%TT%0002401" RefId="%AID%_UP-%TT%00024" />
+              
               <!--Source Type 3 -->
               <ParameterRef Id="%AID%_UP-%TT%00031_R-%TT%0003101" RefId="%AID%_UP-%TT%00031" />
               <!--Source Ttile 3 -->
               <ParameterRef Id="%AID%_UP-%TT%00032_R-%TT%0003201" RefId="%AID%_UP-%TT%00032" />
               <!--Source Radio 3 -->
-              <ParameterRef Id="%AID%_UP-%TT%00033_R-%TT%0003301" RefId="%AID%_UP-%TT%00033" Text="URL" />
+              <ParameterRef Id="%AID%_UP-%TT%00033_R-%TT%0003301" RefId="%AID%_UP-%TT%00033" Text="Streaming URL" />
               <!--Source Url 3 -->
               <ParameterRef Id="%AID%_UP-%TT%00033_R-%TT%0003302" RefId="%AID%_UP-%TT%00033" Text="URL" />
               <!--Source Network File 3 -->
@@ -162,13 +171,15 @@
               <ParameterRef Id="%AID%_UP-%TT%00033_R-%TT%0003304" RefId="%AID%_UP-%TT%00033" Text="Netzwerk Verzeichnis" />
                <!--Source Sonos Uri 3 -->
               <ParameterRef Id="%AID%_UP-%TT%00033_R-%TT%0003307" RefId="%AID%_UP-%TT%00033" Text="Sonos URI" />
+              <!--Source Image Uri 3 -->
+              <ParameterRef Id="%AID%_UP-%TT%00034_R-%TT%0003401" RefId="%AID%_UP-%TT%00034" />
 
               <!--Source Type 4 -->
               <ParameterRef Id="%AID%_UP-%TT%00041_R-%TT%0004101" RefId="%AID%_UP-%TT%00041" />
               <!--Source Ttile 4 -->
               <ParameterRef Id="%AID%_UP-%TT%00042_R-%TT%0004201" RefId="%AID%_UP-%TT%00042" />
               <!--Source Radio 4 -->
-              <ParameterRef Id="%AID%_UP-%TT%00043_R-%TT%0004301" RefId="%AID%_UP-%TT%00043" Text="URL" />
+              <ParameterRef Id="%AID%_UP-%TT%00043_R-%TT%0004301" RefId="%AID%_UP-%TT%00043" Text="Streaming URL" />
               <!--Source Url 4 -->
               <ParameterRef Id="%AID%_UP-%TT%00043_R-%TT%0004302" RefId="%AID%_UP-%TT%00043" Text="URL" />
                <!--Source Network File 4 -->
@@ -177,13 +188,15 @@
               <ParameterRef Id="%AID%_UP-%TT%00043_R-%TT%0004304" RefId="%AID%_UP-%TT%00043" Text="Netzwerk Verzeichnis" />
                <!--Source Sonos Uri 4 -->
               <ParameterRef Id="%AID%_UP-%TT%00043_R-%TT%0004307" RefId="%AID%_UP-%TT%00043" Text="Sonos URI" />
+              <!--Source Image Uri 4 -->
+              <ParameterRef Id="%AID%_UP-%TT%00044_R-%TT%0004401" RefId="%AID%_UP-%TT%00044" />
 
               <!--Source Type 5 -->
               <ParameterRef Id="%AID%_UP-%TT%00051_R-%TT%0005101" RefId="%AID%_UP-%TT%00051" />
               <!--Source Ttile 5 -->
               <ParameterRef Id="%AID%_UP-%TT%00052_R-%TT%0005201" RefId="%AID%_UP-%TT%00052" />
               <!--Source Radio 5 -->
-              <ParameterRef Id="%AID%_UP-%TT%00053_R-%TT%0005301" RefId="%AID%_UP-%TT%00053" Text="URL" />
+              <ParameterRef Id="%AID%_UP-%TT%00053_R-%TT%0005301" RefId="%AID%_UP-%TT%00053" Text="Streaming URL" />
               <!--Source Url 5 -->
               <ParameterRef Id="%AID%_UP-%TT%00053_R-%TT%0005302" RefId="%AID%_UP-%TT%00053" Text="URL" />
               <!--Source Network File 5 -->
@@ -192,7 +205,9 @@
               <ParameterRef Id="%AID%_UP-%TT%00053_R-%TT%0005304" RefId="%AID%_UP-%TT%00053" Text="Netzwerk Verzeichnis" />
                <!--Source Sonos Uri 5 -->
               <ParameterRef Id="%AID%_UP-%TT%00053_R-%TT%0005307" RefId="%AID%_UP-%TT%00053" Text="Sonos URI" />
-           
+              <!--Source Image Uri 5 -->
+              <ParameterRef Id="%AID%_UP-%TT%00054_R-%TT%0005401" RefId="%AID%_UP-%TT%00054" />
+
             </ParameterRefs>
             <ComObjectTable>
             </ComObjectTable>
@@ -224,6 +239,8 @@
                     <ParameterRefRef RefId="%AID%_UP-%TT%00013_R-%TT%0001301" HelpContext="Empty" IndentLevel="1" />
                     <!-- Title-->
                     <ParameterRefRef RefId="%AID%_UP-%TT%00012_R-%TT%0001201" HelpContext="Empty" IndentLevel="1" />
+                    <!-- Image Url-->
+                    <ParameterRefRef RefId="%AID%_UP-%TT%00014_R-%TT%0001401" HelpContext="Empty" IndentLevel="1" />
                   </when>  <!-- Radio -->
                   <when test="2" >  <!-- http -->
                     <!-- Url-->
@@ -246,7 +263,9 @@
                     <ParameterRefRef RefId="%AID%_UP-%TT%00013_R-%TT%0001307" HelpContext="Empty" IndentLevel="1" />
                     <!-- Title-->
                     <ParameterRefRef RefId="%AID%_UP-%TT%00012_R-%TT%0001201" HelpContext="Empty" IndentLevel="1" />
-                  </when>  <!-- Sonos URI -->
+                    <!-- Image Url-->
+                    <ParameterRefRef RefId="%AID%_UP-%TT%00014_R-%TT%0001401" HelpContext="Empty" IndentLevel="1" />
+                </when>  <!-- Sonos URI -->
                 </choose> <!-- Source Type -->
 
                 <ParameterSeparator Id="%AID%_PS-nnn" Text="" UIHint="HorizontalRuler" />
@@ -260,6 +279,8 @@
                     <ParameterRefRef RefId="%AID%_UP-%TT%00023_R-%TT%0002301" HelpContext="Empty" IndentLevel="1" />
                     <!-- Title-->
                     <ParameterRefRef RefId="%AID%_UP-%TT%00022_R-%TT%0002201" HelpContext="Empty" IndentLevel="1" />
+                    <!-- Image Url-->
+                    <ParameterRefRef RefId="%AID%_UP-%TT%00024_R-%TT%0002401" HelpContext="Empty" IndentLevel="1" />
                   </when>  <!-- Radio -->
                   <when test="2" >  <!-- http -->
                     <!-- Url-->
@@ -282,6 +303,8 @@
                     <ParameterRefRef RefId="%AID%_UP-%TT%00023_R-%TT%0002307" HelpContext="Empty" IndentLevel="1" />
                     <!-- Title-->
                     <ParameterRefRef RefId="%AID%_UP-%TT%00022_R-%TT%0002201" HelpContext="Empty" IndentLevel="1" />
+                    <!-- Image Url-->
+                    <ParameterRefRef RefId="%AID%_UP-%TT%00024_R-%TT%0002401" HelpContext="Empty" IndentLevel="1" />
                   </when>  <!-- Sonos URI -->
                 </choose> <!-- Source Type -->
 
@@ -296,6 +319,8 @@
                     <ParameterRefRef RefId="%AID%_UP-%TT%00033_R-%TT%0003301" HelpContext="Empty" IndentLevel="1" />
                     <!-- Title-->
                     <ParameterRefRef RefId="%AID%_UP-%TT%00032_R-%TT%0003201" HelpContext="Empty" IndentLevel="1" />
+                    <!-- Image Url-->
+                    <ParameterRefRef RefId="%AID%_UP-%TT%00034_R-%TT%0003401" HelpContext="Empty" IndentLevel="1" />
                   </when>  <!-- Radio -->
                   <when test="2" >  <!-- http -->
                     <!-- Url-->
@@ -318,6 +343,8 @@
                     <ParameterRefRef RefId="%AID%_UP-%TT%00033_R-%TT%0003307" HelpContext="Empty" IndentLevel="1" />
                     <!-- Title-->
                     <ParameterRefRef RefId="%AID%_UP-%TT%00032_R-%TT%0003201" HelpContext="Empty" IndentLevel="1" />
+                    <!-- Image Url-->
+                    <ParameterRefRef RefId="%AID%_UP-%TT%00034_R-%TT%0003401" HelpContext="Empty" IndentLevel="1" />
                   </when>  <!-- Sonos URI -->
                 </choose> <!-- Source Type -->
 
@@ -332,6 +359,8 @@
                     <ParameterRefRef RefId="%AID%_UP-%TT%00043_R-%TT%0004301" HelpContext="Empty" IndentLevel="1" />
                     <!-- Title-->
                     <ParameterRefRef RefId="%AID%_UP-%TT%00042_R-%TT%0004201" HelpContext="Empty" IndentLevel="1" />
+                    <!-- Image Url-->
+                    <ParameterRefRef RefId="%AID%_UP-%TT%00044_R-%TT%0004401" HelpContext="Empty" IndentLevel="1" />
                   </when>  <!-- Radio -->
                   <when test="2" >  <!-- http -->
                     <!-- Url-->
@@ -354,7 +383,9 @@
                     <ParameterRefRef RefId="%AID%_UP-%TT%00043_R-%TT%0004307" HelpContext="Empty" IndentLevel="1" />
                     <!-- Title-->
                     <ParameterRefRef RefId="%AID%_UP-%TT%00042_R-%TT%0004201" HelpContext="Empty" IndentLevel="1" />
-                  </when>  <!-- Sonos URI -->
+                    <!-- Image Url-->
+                    <ParameterRefRef RefId="%AID%_UP-%TT%00044_R-%TT%0004401" HelpContext="Empty" IndentLevel="1" />
+                   </when>  <!-- Sonos URI -->
                 </choose> <!-- Source Type -->
 
                 <ParameterSeparator Id="%AID%_PS-nnn" Text="" UIHint="HorizontalRuler" />
@@ -368,7 +399,9 @@
                     <ParameterRefRef RefId="%AID%_UP-%TT%00053_R-%TT%0005301" HelpContext="Empty" IndentLevel="1" />
                     <!-- Title-->
                     <ParameterRefRef RefId="%AID%_UP-%TT%00052_R-%TT%0005201" HelpContext="Empty" IndentLevel="1" />
-                  </when>  <!-- Radio -->
+                    <!-- Image Url-->
+                    <ParameterRefRef RefId="%AID%_UP-%TT%00054_R-%TT%0005401" HelpContext="Empty" IndentLevel="1" />
+                   </when>  <!-- Radio -->
                   <when test="2" >  <!-- http -->
                     <!-- Url-->
                     <ParameterRefRef RefId="%AID%_UP-%TT%00053_R-%TT%0005302" HelpContext="Empty" IndentLevel="1" />
@@ -390,6 +423,8 @@
                     <ParameterRefRef RefId="%AID%_UP-%TT%00053_R-%TT%0005307" HelpContext="Empty" IndentLevel="1" />
                     <!-- Title-->
                     <ParameterRefRef RefId="%AID%_UP-%TT%00052_R-%TT%0005201" HelpContext="Empty" IndentLevel="1" />
+                    <!-- Image Url-->
+                    <ParameterRefRef RefId="%AID%_UP-%TT%00054_R-%TT%0005401" HelpContext="Empty" IndentLevel="1" />
                   </when>  <!-- Sonos URI -->
                 </choose> <!-- Source Type -->
 

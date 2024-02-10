@@ -257,7 +257,8 @@ void SonosChannel::processInputKo(GroupObject& ko)
                 {
                     const char* uri = (const char*)(knx.paramData(parameterOffset + SON_SourceUri1));
                     const char* title = (const char*)(knx.paramData(parameterOffset + SON_SourceTitle1));
-                    groupCoordinator->playInternetRadio(uri, title);
+                    const char* imageUrl = (const char*)(knx.paramData(parameterOffset + SON_SourceUriImage1));
+                    groupCoordinator->playInternetRadio(uri, title, imageUrl);
                     break;
                 }
                 case 2: // Http
@@ -299,7 +300,15 @@ void SonosChannel::processInputKo(GroupObject& ko)
                 case 7: // Sonos Uri
                 {
                     const char* uri = (const char*)(knx.paramData(parameterOffset + SON_SourceUri1));
-                    groupCoordinator->setAVTransportURI(nullptr, uri);
+                    const char* title = (const char*)(knx.paramData(parameterOffset + SON_SourceTitle1));
+                    const char* imageUrl = (const char*)(knx.paramData(parameterOffset + SON_SourceUriImage1));
+                    if (strlen(title) > 0 || strlen(imageUrl) > 0)
+                        groupCoordinator->playInternetRadio(uri, title, imageUrl, "");
+                    else
+                    {
+                        groupCoordinator->setAVTransportURI(nullptr, uri);
+                        groupCoordinator->play();
+                    }
                     break;
                 }
             }

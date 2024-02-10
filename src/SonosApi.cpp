@@ -1128,19 +1128,21 @@ const char radioMetadataBeginTitle[] PROGMEM = "<DIDL-Lite xmlns:dc='http://purl
 const char radioMetadataEndTitleBeginImageUrl[] PROGMEM = "</dc:title><upnp:albumArtURI>";
 const char radioMetadataEndImageUrl[] PROGMEM = "</upnp:albumArtURI><upnp:class>object.item.audioItem.audioBroadcast</upnp:class><desc id='cdudn' nameSpace='urn:schemas-rinconnetworks-com:metadata-1-0/'>SA_RINCON65031_</desc></item></DIDL-Lite>";
 
-void SonosApi::playInternetRadio(const char* streamingUrl, const char* radioStationName, const char* imageUrl)
+void SonosApi::playInternetRadio(const char* streamingUrl, const char* radioStationName, const char* imageUrl, const char* schema)
 {
-    postAction(renderingAVTransportUrl, renderingAVTransportSoapAction, "SetAVTransportURI", [streamingUrl, radioStationName, imageUrl](ParameterBuilder& b) {
+    if (schema == nullptr)
+        schema = "x-rincon-mp3radio://";
+    postAction(renderingAVTransportUrl, renderingAVTransportSoapAction, "SetAVTransportURI", [streamingUrl, radioStationName, imageUrl, schema](ParameterBuilder& b) {
         b.BeginParameter("CurrentURI");
-        b.ParmeterValuePart("x-rincon-mp3radio://", ParameterBuilder::ENCODE_NO);
+        b.ParmeterValuePart(schema, ParameterBuilder::ENCODE_NO);
         b.ParmeterValuePart(streamingUrl, ParameterBuilder::ENCODE_XML);
         b.EndParameter();
         b.BeginParameter("CurrentURIMetaData");
-        b.ParmeterValuePart(radioMetadataBeginTitle, ParameterBuilder::ENCODE_NO);
+        b.ParmeterValuePart(radioMetadataBeginTitle, ParameterBuilder::ENCODE_XML);
         b.ParmeterValuePart(radioStationName, ParameterBuilder::ENCODE_DOUBLE_XML);
-        b.ParmeterValuePart(radioMetadataEndTitleBeginImageUrl, ParameterBuilder::ENCODE_NO);
+        b.ParmeterValuePart(radioMetadataEndTitleBeginImageUrl, ParameterBuilder::ENCODE_XML);
         b.ParmeterValuePart(imageUrl, ParameterBuilder::ENCODE_DOUBLE_XML);
-        b.ParmeterValuePart(radioMetadataEndTitleBeginImageUrl, ParameterBuilder::ENCODE_NO);
+        b.ParmeterValuePart(radioMetadataEndImageUrl, ParameterBuilder::ENCODE_XML);
         b.EndParameter();
     });
     play();

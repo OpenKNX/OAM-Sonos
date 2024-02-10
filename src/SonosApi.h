@@ -147,7 +147,7 @@ class SonosApi : private AsyncWebHandler
     SonosApi* findGroupCoordinator(bool cached = false);
     SonosApi* findNextPlayingGroupCoordinator();
     void setAVTransportURI(const char* schema, const char* uri, const char* metadata = nullptr);
-    void playInternetRadio(const char* streamingUrl, const char* radionStationName, const char* imageUrl = nullptr);
+    void playInternetRadio(const char* streamingUrl, const char* radionStationName, const char* imageUrl = nullptr, const char* schema = nullptr);
     void playFromHttp(const char* url);
     void playMusicLibraryFile(const char* mediathekFilePath);
     void playMusicLibraryDirectory(const char* mediathekDirectory);
