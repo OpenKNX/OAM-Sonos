@@ -434,7 +434,7 @@ bool SonosChannel::processCommand(const std::string cmd, bool diagnoseKo)
     {
         Serial.println();
         Serial.println(_sonosApi.getBass());
-    }   
+    }
     else if (cmd.rfind("mute ", 0) == 0)
     {
         Serial.println();
@@ -467,7 +467,7 @@ bool SonosChannel::processCommand(const std::string cmd, bool diagnoseKo)
     {
         Serial.println();
         Serial.println(_sonosApi.getLoudness() ? "1" : "0");
-    } 
+    }
     else if (cmd.rfind("led ", 0) == 0)
     {
         Serial.println();
@@ -478,7 +478,7 @@ bool SonosChannel::processCommand(const std::string cmd, bool diagnoseKo)
     {
         Serial.println();
         Serial.println(_sonosApi.getStatusLight() ? "1" : "0");
-    }       
+    }
     else if (cmd == "mute")
     {
         Serial.println();
@@ -601,6 +601,59 @@ bool SonosChannel::processCommand(const std::string cmd, bool diagnoseKo)
     else if (cmd == "test5")
     {
         _sonosApi.stop();
+    }
+    else if (cmd.rfind("br ", 0) == 0)
+    {
+        Serial.println();
+        auto src = atoi(cmd.substr(3).c_str());
+        const char* search = "Aaa";
+        if (src == 1)
+            search = "Abc";
+        else if (src == 2)
+            search = "Test";
+        else if (src == 3)
+            search = "XXX";
+         else if (src == 4)
+            search = "Mach dich bereit";
+       
+        Serial.println(search);
+        uint32_t searchIndex = 0;
+        auto result = _sonosApi.browsePlaylists(searchIndex);
+        auto cmp = strcmp(result.title.c_str(), search);
+        if (cmp == 0)
+        {
+            Serial.println("Found 1");
+        }
+        else if (cmp > 0)
+        {
+            Serial.println((int) result.title.c_str()[0]);
+              Serial.println((int) search[0]);
+            Serial.println("Not Found 1");
+        }
+        else
+        {
+            uint32_t lowerLimit = 1;
+            uint32_t upperLimit = result.totalEntries - 1;
+            while (lowerLimit <= upperLimit)
+            {
+                auto searchIndex = (lowerLimit + upperLimit) / 2;
+                result = _sonosApi.browsePlaylists(searchIndex);
+                cmp = strcmp(result.title.c_str(), search);
+                if (cmp == 0)
+                {
+                    Serial.println("Found 2");
+                    break;
+                }
+                else if (cmp < 0)
+                    lowerLimit = searchIndex + 1;
+                else
+                    upperLimit = searchIndex - 1;
+            }
+            if (lowerLimit > upperLimit)
+                Serial.println("Not Found 2");
+        }
+        Serial.println(result.title);
+        Serial.println(result.uri);
     }
     else
         return false;

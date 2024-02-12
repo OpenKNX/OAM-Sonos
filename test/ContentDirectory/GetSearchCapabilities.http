@@ -1,0 +1,9 @@
+POST http://192.168.0.7:1400/MediaServer/ContentDirectory/Control HTTP/1.1
+SOAPAction: urn:schemas-upnp-org:service:ContentDirectory:1#GetSearchCapabilities
+
+<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+  <s:Body>
+    <u:GetSearchCapabilities xmlns:u="urn:schemas-upnp-org:service:ContentDirectory:1">
+    </u:GetSearchCapabilities>
+  </u:Body>
+</s:Envelope>

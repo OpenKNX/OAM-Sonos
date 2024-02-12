@@ -73,11 +73,18 @@ class ParameterBuilder
     ParameterBuilder(Stream* stream);
     void AddParameter(const char* name, const char* value = nullptr, byte escapeMode = ENCODE_XML);
     void AddParameter(const char* name, int32_t value);
-    void AddParameter(const char* name, uint32_t value);
     void AddParameter(const char* name, bool value);
     void BeginParameter(const char* name);
     void ParmeterValuePart(const char* valuePart = nullptr, byte escapeMode = ENCODE_XML);
     void EndParameter();
+};
+
+class SonosApiBrowseResult
+{
+  public:
+    int totalEntries;
+    String title;
+    String uri;
 };
 
 class SonosApi : private AsyncWebHandler
@@ -99,7 +106,8 @@ class SonosApi : private AsyncWebHandler
       return "Sonos.API";
     }
     static uint32_t formatedTimestampToSeconds(char* durationAsString);
-    static void wifiClient_xPath(MicroXPath_P& xPath, WiFiClient& wifiClient, PGM_P* path, uint8_t pathSize, char* resultBuffer, size_t resultBufferSize);
+    static void xPathOnWifiClient(MicroXPath_P& xPath, WiFiClient& wifiClient, PGM_P* path, uint8_t pathSize, char* resultBuffer, size_t resultBufferSize);
+    static const char* xPathOnString(MicroXPath_P& xPath, const char* bufferToSearch, PGM_P* path, uint8_t pathSize, char* resultBuffer, size_t resultBufferSize, bool xmlDecode);
 
     typedef std::function<void(ParameterBuilder&)> TParameterBuilderFunction;
     void writeSoapHttpCall(Stream& stream, const char* soapUrl, const char* soapAction, const char* action, TParameterBuilderFunction parameterFunction, bool addInstanceNode);
@@ -175,4 +183,5 @@ class SonosApi : private AsyncWebHandler
     void removeAllTracksFromQueue();
     void setStatusLight(boolean on);
     boolean getStatusLight();
+    const SonosApiBrowseResult browsePlaylists(uint32_t index);
 };

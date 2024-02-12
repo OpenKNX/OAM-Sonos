@@ -146,9 +146,8 @@ void ParameterBuilder::BeginParameter(const char* name)
 }
 void ParameterBuilder::ParmeterValuePart(const char* valuePart, byte escapeMode)
 {
-    _length += writeEncoded(valuePart, escapeMode);     
+    _length += writeEncoded(valuePart, escapeMode);
 }
-
 
 void ParameterBuilder::EndParameter()
 {
@@ -192,7 +191,7 @@ void SonosApi::init(AsyncWebServer* webServer, IPAddress speakerIP)
     _subscriptionTime = millis() - ((_subscriptionTimeInSeconds - _channelIndex) * 1000); // prevent inital subscription to be at the same time for all channels
 }
 
-void SonosApi::wifiClient_xPath(MicroXPath_P& xPath, WiFiClient& wifiClient, PGM_P* path, uint8_t pathSize, char* resultBuffer, size_t resultBufferSize)
+void SonosApi::xPathOnWifiClient(MicroXPath_P& xPath, WiFiClient& wifiClient, PGM_P* path, uint8_t pathSize, char* resultBuffer, size_t resultBufferSize)
 {
     xPath.setPath(path, pathSize);
     while (wifiClient.available() && !xPath.getValue(wifiClient.read(), resultBuffer, resultBufferSize))
@@ -394,7 +393,7 @@ void SonosApi::handleBody(AsyncWebServerRequest* request, uint8_t* data, size_t 
                 Serial.print("Treble: ");
                 Serial.println(currentTreble);
                 _notificationHandler->notificationTrebleChanged(*this, currentTreble);
-            }            
+            }
             if (readFromEncodeXML(buffer, masterMute, valueBuffer, valueBufferSize))
             {
                 auto currentMute = valueBuffer[0] == '1';
@@ -631,7 +630,7 @@ uint8_t SonosApi::getVolume()
         MicroXPath_P xPath;
         PGM_P path[] = {p_SoapEnvelope, p_SoapBody, "u:GetVolumeResponse", "CurrentVolume"};
         char resultBuffer[10];
-        wifiClient_xPath(xPath, wifiClient, path, 4, resultBuffer, sizeof(resultBuffer));
+        xPathOnWifiClient(xPath, wifiClient, path, 4, resultBuffer, sizeof(resultBuffer));
         currentVolume = (uint8_t)constrain(atoi(resultBuffer), 0, 100); });
     return currentVolume;
 }
@@ -652,7 +651,7 @@ boolean SonosApi::getMute()
         MicroXPath_P xPath;
         PGM_P path[] = {p_SoapEnvelope, p_SoapBody, "u:GetMuteResponse", "CurrentMute"};
         char resultBuffer[10];
-        wifiClient_xPath(xPath, wifiClient, path, 4, resultBuffer, sizeof(resultBuffer));
+        xPathOnWifiClient(xPath, wifiClient, path, 4, resultBuffer, sizeof(resultBuffer));
         currentMute = resultBuffer[0] == '1'; });
     return currentMute;
 }
@@ -660,12 +659,13 @@ boolean SonosApi::getMute()
 const char* devicePropertiesUrl PROGMEM = "/DeviceProperties/Control";
 const char* devicePropertiesSoapAction PROGMEM = "urn:schemas-upnp-org:service:DeviceProperties:1";
 
-
 void SonosApi::setStatusLight(boolean on)
 {
-    postAction(devicePropertiesUrl, devicePropertiesSoapAction, "SetLEDState", [on](ParameterBuilder& b) {
-        b.AddParameter("DesiredLEDState", on ? "On" : "Off");
-    }, nullptr, false);
+    postAction(
+        devicePropertiesUrl, devicePropertiesSoapAction, "SetLEDState", [on](ParameterBuilder& b) {
+            b.AddParameter("DesiredLEDState", on ? "On" : "Off");
+        },
+        nullptr, false);
 }
 
 boolean SonosApi::getStatusLight()
@@ -673,25 +673,26 @@ boolean SonosApi::getStatusLight()
     boolean currentLEDState = 0;
     postAction(
         devicePropertiesUrl, devicePropertiesSoapAction, "GetLEDState", nullptr, [=, &currentLEDState](WiFiClient& wifiClient) {
-        MicroXPath_P xPath;
-        PGM_P path[] = {p_SoapEnvelope, p_SoapBody, "u:GetLEDStateResponse", "CurrentLEDState"};
-        char resultBuffer[10];
-        wifiClient_xPath(xPath, wifiClient, path, 4, resultBuffer, sizeof(resultBuffer));
-        currentLEDState = strcmp(resultBuffer, "On") == 0;
-        }, false);
+            MicroXPath_P xPath;
+            PGM_P path[] = {p_SoapEnvelope, p_SoapBody, "u:GetLEDStateResponse", "CurrentLEDState"};
+            char resultBuffer[10];
+            xPathOnWifiClient(xPath, wifiClient, path, 4, resultBuffer, sizeof(resultBuffer));
+            currentLEDState = strcmp(resultBuffer, "On") == 0;
+        },
+        false);
     return currentLEDState;
 }
 
 int8_t SonosApi::getTreble()
 {
     int8_t currentTreble = 0;
-    postAction(renderingControlUrl, renderingControlSoapAction, "GetTreble", [](ParameterBuilder& b) { b.AddParameter("Channel", "Master"); }, [=, &currentTreble](WiFiClient& wifiClient) {
+    postAction(
+        renderingControlUrl, renderingControlSoapAction, "GetTreble", [](ParameterBuilder& b) { b.AddParameter("Channel", "Master"); }, [=, &currentTreble](WiFiClient& wifiClient) {
         MicroXPath_P xPath;
         PGM_P path[] = {p_SoapEnvelope, p_SoapBody, "u:GetTrebleResponse", "CurrentTreble"};
         char resultBuffer[10];
-        wifiClient_xPath(xPath, wifiClient, path, 4, resultBuffer, sizeof(resultBuffer));
-        currentTreble = (int8_t)constrain(atoi(resultBuffer), -10, 10);
-    });
+        xPathOnWifiClient(xPath, wifiClient, path, 4, resultBuffer, sizeof(resultBuffer));
+        currentTreble = (int8_t)constrain(atoi(resultBuffer), -10, 10); });
     return currentTreble;
 }
 
@@ -706,13 +707,13 @@ void SonosApi::setTreble(int8_t treble)
 int8_t SonosApi::getBass()
 {
     int8_t currentBass = 0;
-    postAction(renderingControlUrl, renderingControlSoapAction, "GetBass", [](ParameterBuilder& b) { b.AddParameter("Channel", "Master"); }, [=, &currentBass](WiFiClient& wifiClient) {
+    postAction(
+        renderingControlUrl, renderingControlSoapAction, "GetBass", [](ParameterBuilder& b) { b.AddParameter("Channel", "Master"); }, [=, &currentBass](WiFiClient& wifiClient) {
         MicroXPath_P xPath;
         PGM_P path[] = {p_SoapEnvelope, p_SoapBody, "u:GetBassResponse", "CurrentBass"};
         char resultBuffer[10];
-        wifiClient_xPath(xPath, wifiClient, path, 4, resultBuffer, sizeof(resultBuffer));
-        currentBass = (int8_t)constrain(atoi(resultBuffer), -10, 10);
-    });
+        xPathOnWifiClient(xPath, wifiClient, path, 4, resultBuffer, sizeof(resultBuffer));
+        currentBass = (int8_t)constrain(atoi(resultBuffer), -10, 10); });
     return currentBass;
 }
 
@@ -723,7 +724,6 @@ void SonosApi::setBass(int8_t bass)
         b.AddParameter("DesiredBass", bass);
     });
 }
-
 
 void SonosApi::setLoudness(boolean loudness)
 {
@@ -741,7 +741,7 @@ boolean SonosApi::getLoudness()
         MicroXPath_P xPath;
         PGM_P path[] = {p_SoapEnvelope, p_SoapBody, "u:GetLoudnessResponse", "CurrentLoudness"};
         char resultBuffer[10];
-        wifiClient_xPath(xPath, wifiClient, path, 4, resultBuffer, sizeof(resultBuffer));
+        xPathOnWifiClient(xPath, wifiClient, path, 4, resultBuffer, sizeof(resultBuffer));
         currentLoudness = resultBuffer[0] == '1'; });
     return currentLoudness;
 }
@@ -782,7 +782,7 @@ uint8_t SonosApi::getGroupVolume()
         MicroXPath_P xPath;
         PGM_P path[] = {p_SoapEnvelope, p_SoapBody, "u:GetGroupVolumeResponse", "CurrentVolume"};
         char resultBuffer[10];
-        wifiClient_xPath(xPath, wifiClient, path, 4, resultBuffer, sizeof(resultBuffer));
+        xPathOnWifiClient(xPath, wifiClient, path, 4, resultBuffer, sizeof(resultBuffer));
         currentGroupVolume = (uint8_t)constrain(atoi(resultBuffer), 0, 100);
     });
     return currentGroupVolume;
@@ -802,7 +802,7 @@ boolean SonosApi::getGroupMute()
         MicroXPath_P xPath;
         PGM_P path[] = {p_SoapEnvelope, p_SoapBody, "u:GetGroupMuteResponse", "CurrentMute"};
         char resultBuffer[10];
-        wifiClient_xPath(xPath, wifiClient, path, 4, resultBuffer, sizeof(resultBuffer));
+        xPathOnWifiClient(xPath, wifiClient, path, 4, resultBuffer, sizeof(resultBuffer));
         currentGroupMute = resultBuffer[0] == '1';
     });
     return currentGroupMute;
@@ -846,7 +846,7 @@ SonosApiPlayState SonosApi::getPlayState()
         MicroXPath_P xPath;
         PGM_P path[] = {p_SoapEnvelope, p_SoapBody, "u:GetTransportInfoResponse", "CurrentTransportState"};
         char resultBuffer[20];
-        wifiClient_xPath(xPath, wifiClient, path, 4, resultBuffer, sizeof(resultBuffer));
+        xPathOnWifiClient(xPath, wifiClient, path, 4, resultBuffer, sizeof(resultBuffer));
         currentPlayState = getPlayStateFromString(resultBuffer);
     });
     return currentPlayState;
@@ -886,7 +886,7 @@ SonosApiPlayMode SonosApi::getPlayMode()
         MicroXPath_P xPath;
         PGM_P path[] = {p_SoapEnvelope, p_SoapBody, "u:GetTransportSettingsResponse", "PlayMode"};
         char resultBuffer[20];
-        wifiClient_xPath(xPath, wifiClient, path, 4, resultBuffer, sizeof(resultBuffer));
+        xPathOnWifiClient(xPath, wifiClient, path, 4, resultBuffer, sizeof(resultBuffer));
         currentPlayMode = getPlayModeFromString(resultBuffer);
     });
     return currentPlayMode;
@@ -987,7 +987,7 @@ String SonosApi::getUID(IPAddress ipAddress)
     char resultBuffer[30];
     MicroXPath_P xPath;
 
-    wifiClient_xPath(xPath, wifiClient, path, 3, resultBuffer, 30);
+    xPathOnWifiClient(xPath, wifiClient, path, 3, resultBuffer, 30);
     wifiClient.stop();
     return resultBuffer;
 }
@@ -1035,19 +1035,19 @@ const CurrentSonsTrackInfo SonosApi::getTrackInfo()
         String uri;
         String metadata;
         PGM_P pathTrack[] = {p_SoapEnvelope, p_SoapBody, "u:GetPositionInfoResponse", "Track"};
-        wifiClient_xPath(xPath, wifiClient, pathTrack, 4, resultBuffer, bufferSize);
+        xPathOnWifiClient(xPath, wifiClient, pathTrack, 4, resultBuffer, bufferSize);
         trackNumber = atoi(resultBuffer);
         PGM_P pathDuration[] = {p_SoapEnvelope, p_SoapBody, "u:GetPositionInfoResponse", "TrackDuration"};
-        wifiClient_xPath(xPath, wifiClient, pathDuration, 4, resultBuffer, bufferSize);
+        xPathOnWifiClient(xPath, wifiClient, pathDuration, 4, resultBuffer, bufferSize);
         duration = formatedTimestampToSeconds(resultBuffer);
         PGM_P pathMetadata[] = {p_SoapEnvelope, p_SoapBody, "u:GetPositionInfoResponse", "TrackMetaData"};
-        wifiClient_xPath(xPath, wifiClient, pathMetadata, 4, resultBuffer, bufferSize);
+        xPathOnWifiClient(xPath, wifiClient, pathMetadata, 4, resultBuffer, bufferSize);
         metadata = resultBuffer;
         PGM_P pathUri[] = {p_SoapEnvelope, p_SoapBody, "u:GetPositionInfoResponse", "TrackURI"};
-        wifiClient_xPath(xPath, wifiClient, pathUri, 4, resultBuffer, bufferSize);
+        xPathOnWifiClient(xPath, wifiClient, pathUri, 4, resultBuffer, bufferSize);
         uri = resultBuffer;
         PGM_P pathRelTime[] = {p_SoapEnvelope, p_SoapBody, "u:GetPositionInfoResponse", "RelTime"};
-        wifiClient_xPath(xPath, wifiClient, pathRelTime, 4, resultBuffer, bufferSize);
+        xPathOnWifiClient(xPath, wifiClient, pathRelTime, 4, resultBuffer, bufferSize);
         position = formatedTimestampToSeconds(resultBuffer);
 
         delete resultBuffer;
@@ -1325,4 +1325,94 @@ void SonosApi::playQueue()
     String url = getUID() + "#0";
     setAVTransportURI("x-rincon-queue:", url.c_str());
     play();
+}
+
+const char* contentDirectoryUrl PROGMEM = "/MediaServer/ContentDirectory/Control";
+const char* contentDirectorySoapAction PROGMEM = "urn:schemas-upnp-org:service:ContentDirectory:1";
+
+const char* SonosApi::xPathOnString(MicroXPath_P& xPath, const char* bufferToSearch, PGM_P* path, uint8_t pathSize, char* resultBuffer, size_t resultBufferSize, bool xmlDecode)
+{
+    const char* xmlEncodeStart = nullptr;
+    char c;
+    while ((c = *bufferToSearch) != 0)
+    {
+        bufferToSearch++;
+        if (xmlDecode)
+        {
+            if (c == '&')
+            {
+                // XML Encode start
+                xmlEncodeStart = bufferToSearch;
+                continue;
+            }
+            else if (xmlEncodeStart != nullptr)
+            {
+                if (c != ';')
+                    continue;
+                // XML Encode end
+                if (strncmp(xmlEncodeStart, "lt", 2) == 0)
+                    c = '<';
+                else if (strncmp(xmlEncodeStart, "gt", 2) == 0)
+                    c = '>';
+                else if (strncmp(xmlEncodeStart, "amp", 3) == 0)
+                    c = '&';
+                else if (strncmp(xmlEncodeStart, "quot", 4) == 0)
+                    c = '"';
+                else if (strncmp(xmlEncodeStart, "apos", 4) == 0)
+                    c = '\'';
+                else
+                    continue; // Invalid encode sequence
+                xmlEncodeStart = nullptr;
+            }
+        }
+        if (xPath.getValue(c, resultBuffer, resultBufferSize))
+            return bufferToSearch;
+    }
+    return bufferToSearch;
+}
+
+const SonosApiBrowseResult SonosApi::browsePlaylists(uint32_t index)
+{
+    SonosApiBrowseResult browseResult;
+    postAction(
+        contentDirectoryUrl, contentDirectorySoapAction, "Browse", [index](ParameterBuilder& b) { 
+            b.AddParameter("ObjectID", "SQ:"); 
+            b.AddParameter("BrowseFlag", "BrowseDirectChildren"); 
+            b.AddParameter("Filter", "*"); 
+            b.AddParameter("StartingIndex", (int32_t) index); 
+            b.AddParameter("RequestedCount", "1"); 
+            b.AddParameter("SortCriteria", "+dc:title"); },
+        [=, &browseResult](WiFiClient& wifiClient) {
+            MicroXPath_P xPath;
+            PGM_P path[] = {p_SoapEnvelope, p_SoapBody, "u:BrowseResponse", "Result"};
+            const static size_t bufferSize = 3000;
+            auto resultBuffer = new char[bufferSize];
+            try
+            {
+                xPathOnWifiClient(xPath, wifiClient, path, 4, resultBuffer, bufferSize);
+
+                MicroXPath_P xPathMetadata;
+                const char* metadata = resultBuffer;
+                PGM_P pathTitle[] = {"DIDL-Lite", "container", "dc:title"};
+                xPathMetadata.setPath(pathTitle, 3);
+                metadata = xPathOnString(xPathMetadata, metadata, pathTitle, 3, resultBuffer, bufferSize, true);
+                browseResult.title = resultBuffer;
+
+                PGM_P pathRes[] = {"DIDL-Lite", "container", "res"};
+                xPathMetadata.setPath(pathRes, 3);
+                metadata = xPathOnString(xPathMetadata, metadata, pathTitle, 3, resultBuffer, bufferSize, true);
+                browseResult.uri = resultBuffer;
+
+                PGM_P path3[] = {p_SoapEnvelope, p_SoapBody, "u:BrowseResponse", "TotalMatches"};
+                xPathOnWifiClient(xPath, wifiClient, path3, 4, resultBuffer, bufferSize);
+                browseResult.totalEntries = atoi(resultBuffer);
+            }
+            catch(...)
+            {
+                delete resultBuffer;
+                throw;
+            }
+            delete resultBuffer;
+        });
+    return browseResult;
 }
