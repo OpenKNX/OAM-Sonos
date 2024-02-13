@@ -1,6 +1,7 @@
 #include "SonosApi.h"
 #include "WiFi.h"
 #include "WiFiClient.h"
+#include <unordered_set>
 
 //  Original Source of the escape function
 //    FILE: XMLWriter.cpp
@@ -1371,12 +1372,12 @@ const char* SonosApi::xPathOnString(MicroXPath_P& xPath, const char* bufferToSea
     return bufferToSearch;
 }
 
-const SonosApiBrowseResult SonosApi::browsePlaylists(uint32_t index)
+const SonosApiBrowseResult SonosApi::browse(const char* objectId, uint32_t index, uint32_t* totalNumberOfItems)
 {
     SonosApiBrowseResult browseResult;
     postAction(
-        contentDirectoryUrl, contentDirectorySoapAction, "Browse", [index](ParameterBuilder& b) { 
-            b.AddParameter("ObjectID", "SQ:"); 
+        contentDirectoryUrl, contentDirectorySoapAction, "Browse", [index, objectId, totalNumberOfItems](ParameterBuilder& b) { 
+            b.AddParameter("ObjectID", objectId); 
             b.AddParameter("BrowseFlag", "BrowseDirectChildren"); 
             b.AddParameter("Filter", "*"); 
             b.AddParameter("StartingIndex", (int32_t) index); 
@@ -1405,9 +1406,9 @@ const SonosApiBrowseResult SonosApi::browsePlaylists(uint32_t index)
 
                 PGM_P path3[] = {p_SoapEnvelope, p_SoapBody, "u:BrowseResponse", "TotalMatches"};
                 xPathOnWifiClient(xPath, wifiClient, path3, 4, resultBuffer, bufferSize);
-                browseResult.totalEntries = atoi(resultBuffer);
+                *totalNumberOfItems = (uint32_t)atoi(resultBuffer);
             }
-            catch(...)
+            catch (...)
             {
                 delete resultBuffer;
                 throw;
@@ -1415,4 +1416,78 @@ const SonosApiBrowseResult SonosApi::browsePlaylists(uint32_t index)
             delete resultBuffer;
         });
     return browseResult;
+}
+
+const SonosApiBrowseResult SonosApi::search(const char* objectId, const char* titleToSearch)
+{
+    // get first entry to get the total number of items
+    uint32_t searchIndex = 0;
+    uint32_t totalNumberOfItems;
+    auto result = browse(objectId, searchIndex, &totalNumberOfItems);
+    auto cmp = strcasecmp(result.title.c_str(), titleToSearch);
+    if (cmp == 0)
+    {
+        // coincidentally found
+        return result;
+    }
+    if (totalNumberOfItems > 1)
+    {
+        // Try to find with binary search,
+        // but this is not 100% safe because the sort order of sons is base on unicode while strmp uses a simple byte compare
+        int32_t lowerLimit = 1;
+        int32_t upperLimit = totalNumberOfItems - 1;
+        std::unordered_set<uint32_t> checkedindex;
+        while (lowerLimit <= upperLimit)
+        {
+            auto searchIndex = (lowerLimit + upperLimit) / 2;
+            result = browse(objectId, searchIndex, &totalNumberOfItems);
+            Serial.println("***");
+             Serial.println(searchIndex);
+            Serial.println(totalNumberOfItems);
+            cmp = strcasecmp(result.title.c_str(), titleToSearch);
+            if (cmp == 0)
+            {
+                return result;
+            }
+            else if (cmp < 0)
+                lowerLimit = searchIndex + 1;
+            else
+                upperLimit = searchIndex - 1;
+            checkedindex.insert(searchIndex);
+        }
+        // Because binary search usage is not safe, try it again with linear search
+        uint32_t startValue = 1; // 0 index already checked
+        int32_t excludedEndValue = totalNumberOfItems;
+        int8_t loopOffset = 1;
+        if (strncasecmp(titleToSearch, "m", 1) > 0)
+        {
+            // Start search from end
+            startValue = totalNumberOfItems - 1;
+            excludedEndValue = 0;  // 0 is already checked
+            loopOffset = -1;
+        }
+        for (auto searchIndex = startValue; searchIndex != excludedEndValue; searchIndex += loopOffset)
+        {
+            if (checkedindex.find(searchIndex) != checkedindex.end())
+                continue;
+            auto result = browse(objectId, searchIndex, &totalNumberOfItems);
+            cmp = strcasecmp(result.title.c_str(), titleToSearch);
+            if (cmp == 0)
+            {
+                return result;
+            }
+        }
+    }      
+    return SonosApiBrowseResult();
+}
+
+void SonosApi::playSonosPlaylist(const char* playListTitle)
+{
+    auto result = search("SQ:", playListTitle);
+    if (!result.uri.isEmpty())
+    {
+        removeAllTracksFromQueue();
+        addTrackToQueue(nullptr, result.uri.c_str());
+        playQueue();
+    }
 }

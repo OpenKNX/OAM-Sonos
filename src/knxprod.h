@@ -10,7 +10,7 @@
                                              
 #define MAIN_OpenKnxId 0xAE
 #define MAIN_ApplicationNumber 43
-#define MAIN_ApplicationVersion 13
+#define MAIN_ApplicationVersion 14
 #define MAIN_ParameterSize 13699
 #define MAIN_MaxKoNumber 1029
 #define MAIN_OrderNumber "MGKnxSON"

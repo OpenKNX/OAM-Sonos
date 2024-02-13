@@ -130,6 +130,7 @@ void SonosModule::showHelp()
     openknx.console.printHelpLine("son<CC> noti <N>", "The Channel CC plays the notification N. i.e. son01 noti 1");
     openknx.console.printHelpLine("son<CC> led", "Show led state of channel CC. i.e. son01 led");
     openknx.console.printHelpLine("son<CC> led <X>", "Set led state of channel CC. i.e. son01 led 1");
+    openknx.console.printHelpLine("son<CC> pl <XXXXX>", "Start playing playlist named XX on channel CC. i.e. son01 pl best");
 }
 
 void SonosModule::showInformations()

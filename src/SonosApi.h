@@ -82,7 +82,6 @@ class ParameterBuilder
 class SonosApiBrowseResult
 {
   public:
-    int totalEntries;
     String title;
     String uri;
 };
@@ -167,6 +166,7 @@ class SonosApi : private AsyncWebHandler
     void playInternetRadio(const char* streamingUrl, const char* radionStationName, const char* imageUrl = nullptr, const char* schema = nullptr);
     void playFromHttp(const char* url);
     void playMusicLibraryFile(const char* mediathekFilePath);
+    void playSonosPlaylist(const char* playListTitle);
     void playMusicLibraryDirectory(const char* mediathekDirectory);
     void playLineIn();
     void playTVIn();
@@ -183,5 +183,6 @@ class SonosApi : private AsyncWebHandler
     void removeAllTracksFromQueue();
     void setStatusLight(boolean on);
     boolean getStatusLight();
-    const SonosApiBrowseResult browsePlaylists(uint32_t index);
+    const SonosApiBrowseResult browse(const char* objectId, uint32_t index, uint32_t* totalNumberOfItems);
+    const SonosApiBrowseResult search(const char* objectId, const char* titleToSearch);
 };

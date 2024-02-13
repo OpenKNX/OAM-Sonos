@@ -35,7 +35,8 @@
                   <Enumeration Text="Musikbibliothek Verzeichnis"  Value="4" Id="%AID%_PT-SourceType_EN-4" />
                   <Enumeration Text="Line In"  Value="5" Id="%AID%_PT-SourceType_EN-5" />
                   <Enumeration Text="TV In (Nur mit Playbar)"  Value="6" Id="%AID%_PT-SourceType_EN-6" />
-                  <Enumeration Text="Sonos Uri"  Value="7" Id="%AID%_PT-SourceType_EN-7" />
+                  <Enumeration Text="Sonos Playlist"  Value="7" Id="%AID%_PT-SourceType_EN-7" />
+                  <Enumeration Text="Sonos Uri"  Value="8" Id="%AID%_PT-SourceType_EN-8" />
                 </TypeRestriction>
               </ParameterType>
               <ParameterType Id="%AID%_PT-SourceUri" Name="SourceUri">
@@ -135,8 +136,10 @@
               <ParameterRef Id="%AID%_UP-%TT%00013_R-%TT%0001303" RefId="%AID%_UP-%TT%00013" Text="Netzwerk Dateipfad" />
               <!--Source Network Directory 1 -->
               <ParameterRef Id="%AID%_UP-%TT%00013_R-%TT%0001304" RefId="%AID%_UP-%TT%00013" Text="Netzwerk Verzeichnis" />
+              <!--Source Sonos Playlist 1 -->
+              <ParameterRef Id="%AID%_UP-%TT%00013_R-%TT%0001307" RefId="%AID%_UP-%TT%00013" Text="Name der Playliste" />
               <!--Source Sonos Uri 1 -->
-              <ParameterRef Id="%AID%_UP-%TT%00013_R-%TT%0001307" RefId="%AID%_UP-%TT%00013" Text="Sonos URI" />
+              <ParameterRef Id="%AID%_UP-%TT%00013_R-%TT%0001308" RefId="%AID%_UP-%TT%00013" Text="Sonos URI" />
               <!--Source Image Uri 1 -->
               <ParameterRef Id="%AID%_UP-%TT%00014_R-%TT%0001401" RefId="%AID%_UP-%TT%00014" />
 
@@ -152,8 +155,10 @@
               <ParameterRef Id="%AID%_UP-%TT%00023_R-%TT%0002303" RefId="%AID%_UP-%TT%00023" Text="Netzwerk Dateipfad" />
               <!--Source Network Directory 2 -->
               <ParameterRef Id="%AID%_UP-%TT%00023_R-%TT%0002304" RefId="%AID%_UP-%TT%00023" Text="Netzwerk Verzeichnis" />
-               <!--Source Sonos Uri 2 -->
-              <ParameterRef Id="%AID%_UP-%TT%00023_R-%TT%0002307" RefId="%AID%_UP-%TT%00023" Text="Sonos URI" />
+              <!--Source Sonos Playlist 2 -->
+              <ParameterRef Id="%AID%_UP-%TT%00023_R-%TT%0002307" RefId="%AID%_UP-%TT%00023" Text="Name der Playliste" />
+              <!--Source Sonos Uri 2 -->
+              <ParameterRef Id="%AID%_UP-%TT%00023_R-%TT%0002308" RefId="%AID%_UP-%TT%00023" Text="Sonos URI" />
               <!--Source Image Uri 2 -->
               <ParameterRef Id="%AID%_UP-%TT%00024_R-%TT%0002401" RefId="%AID%_UP-%TT%00024" />
               
@@ -169,8 +174,10 @@
               <ParameterRef Id="%AID%_UP-%TT%00033_R-%TT%0003303" RefId="%AID%_UP-%TT%00033" Text="Netzwerk Dateipfad" />
               <!--Source Network Directory 3 -->
               <ParameterRef Id="%AID%_UP-%TT%00033_R-%TT%0003304" RefId="%AID%_UP-%TT%00033" Text="Netzwerk Verzeichnis" />
+              <!--Source Sonos Playlist 3 -->
+              <ParameterRef Id="%AID%_UP-%TT%00033_R-%TT%0003307" RefId="%AID%_UP-%TT%00033" Text="Name der Playliste" />
                <!--Source Sonos Uri 3 -->
-              <ParameterRef Id="%AID%_UP-%TT%00033_R-%TT%0003307" RefId="%AID%_UP-%TT%00033" Text="Sonos URI" />
+              <ParameterRef Id="%AID%_UP-%TT%00033_R-%TT%0003308" RefId="%AID%_UP-%TT%00033" Text="Sonos URI" />
               <!--Source Image Uri 3 -->
               <ParameterRef Id="%AID%_UP-%TT%00034_R-%TT%0003401" RefId="%AID%_UP-%TT%00034" />
 
@@ -186,8 +193,10 @@
               <ParameterRef Id="%AID%_UP-%TT%00043_R-%TT%0004303" RefId="%AID%_UP-%TT%00043" Text="Netzwerk Dateipfad" />
               <!--Source Network Directory 4 -->
               <ParameterRef Id="%AID%_UP-%TT%00043_R-%TT%0004304" RefId="%AID%_UP-%TT%00043" Text="Netzwerk Verzeichnis" />
+              <!--Source Sonos Playlist 4 -->
+              <ParameterRef Id="%AID%_UP-%TT%00043_R-%TT%0004307" RefId="%AID%_UP-%TT%00043" Text="Name der Playliste" />
                <!--Source Sonos Uri 4 -->
-              <ParameterRef Id="%AID%_UP-%TT%00043_R-%TT%0004307" RefId="%AID%_UP-%TT%00043" Text="Sonos URI" />
+              <ParameterRef Id="%AID%_UP-%TT%00043_R-%TT%0004308" RefId="%AID%_UP-%TT%00043" Text="Sonos URI" />
               <!--Source Image Uri 4 -->
               <ParameterRef Id="%AID%_UP-%TT%00044_R-%TT%0004401" RefId="%AID%_UP-%TT%00044" />
 
@@ -203,8 +212,10 @@
               <ParameterRef Id="%AID%_UP-%TT%00053_R-%TT%0005303" RefId="%AID%_UP-%TT%00053" Text="Netzwerk Dateipfad" />
               <!--Source Network Directory 5 -->
               <ParameterRef Id="%AID%_UP-%TT%00053_R-%TT%0005304" RefId="%AID%_UP-%TT%00053" Text="Netzwerk Verzeichnis" />
-               <!--Source Sonos Uri 5 -->
-              <ParameterRef Id="%AID%_UP-%TT%00053_R-%TT%0005307" RefId="%AID%_UP-%TT%00053" Text="Sonos URI" />
+              <!--Source Sonos Playlist 5 -->
+              <ParameterRef Id="%AID%_UP-%TT%00053_R-%TT%0005307" RefId="%AID%_UP-%TT%00053" Text="Name der Playliste" />
+              <!--Source Sonos Uri 5 -->
+              <ParameterRef Id="%AID%_UP-%TT%00053_R-%TT%0005308" RefId="%AID%_UP-%TT%00053" Text="Sonos URI" />
               <!--Source Image Uri 5 -->
               <ParameterRef Id="%AID%_UP-%TT%00054_R-%TT%0005401" RefId="%AID%_UP-%TT%00054" />
 
@@ -258,9 +269,13 @@
                   </when>  <!-- Line In -->
                   <when test="6" >  <!-- TV In -->
                   </when>  <!-- Line In -->
-                  <when test="7" >  <!-- Sonos URI -->
+                  <when test="7" >  <!-- Sonos Playlist -->
+                    <!-- Sonos playlist-->
+                    <ParameterRefRef RefId="%AID%_UP-%TT%00013_R-%TT%0001307" HelpContext="Empty" IndentLevel="1" />                
+                  </when>  <!-- Sonos playlist -->
+                  <when test="8" >  <!-- Sonos URI -->
                     <!-- Uri-->
-                    <ParameterRefRef RefId="%AID%_UP-%TT%00013_R-%TT%0001307" HelpContext="Empty" IndentLevel="1" />
+                    <ParameterRefRef RefId="%AID%_UP-%TT%00013_R-%TT%0001308" HelpContext="Empty" IndentLevel="1" />
                     <!-- Title-->
                     <ParameterRefRef RefId="%AID%_UP-%TT%00012_R-%TT%0001201" HelpContext="Empty" IndentLevel="1" />
                     <!-- Image Url-->
@@ -298,9 +313,13 @@
                   </when>  <!-- Line In -->
                   <when test="6" >  <!-- TV In -->
                   </when>  <!-- Line In -->
-                  <when test="7" >  <!-- Sonos URI -->
+                  <when test="7" >  <!-- Sonos Playlist -->
+                    <!-- Sonos playlist-->
+                    <ParameterRefRef RefId="%AID%_UP-%TT%00023_R-%TT%0002307" HelpContext="Empty" IndentLevel="1" />                
+                  </when>  <!-- Sonos playlist -->
+                  <when test="8" >  <!-- Sonos URI -->
                     <!-- Uri-->
-                    <ParameterRefRef RefId="%AID%_UP-%TT%00023_R-%TT%0002307" HelpContext="Empty" IndentLevel="1" />
+                    <ParameterRefRef RefId="%AID%_UP-%TT%00023_R-%TT%0002308" HelpContext="Empty" IndentLevel="1" />
                     <!-- Title-->
                     <ParameterRefRef RefId="%AID%_UP-%TT%00022_R-%TT%0002201" HelpContext="Empty" IndentLevel="1" />
                     <!-- Image Url-->
@@ -338,9 +357,13 @@
                   </when>  <!-- Line In -->
                   <when test="6" >  <!-- TV In -->
                   </when>  <!-- Line In -->
-                  <when test="7" >  <!-- Sonos URI -->
+                  <when test="7" >  <!-- Sonos Playlist -->
+                    <!-- Sonos playlist-->
+                    <ParameterRefRef RefId="%AID%_UP-%TT%00033_R-%TT%0003307" HelpContext="Empty" IndentLevel="1" />                
+                  </when>  <!-- Sonos playlist -->
+                  <when test="8" >  <!-- Sonos URI -->
                     <!-- Uri-->
-                    <ParameterRefRef RefId="%AID%_UP-%TT%00033_R-%TT%0003307" HelpContext="Empty" IndentLevel="1" />
+                    <ParameterRefRef RefId="%AID%_UP-%TT%00033_R-%TT%0003308" HelpContext="Empty" IndentLevel="1" />
                     <!-- Title-->
                     <ParameterRefRef RefId="%AID%_UP-%TT%00032_R-%TT%0003201" HelpContext="Empty" IndentLevel="1" />
                     <!-- Image Url-->
@@ -378,9 +401,13 @@
                   </when>  <!-- Line In -->
                   <when test="6" >  <!-- TV In -->
                   </when>  <!-- Line In -->
-                  <when test="7" >  <!-- Sonos URI -->
+                  <when test="7" >  <!-- Sonos Playlist -->
+                    <!-- Sonos playlist-->
+                    <ParameterRefRef RefId="%AID%_UP-%TT%00043_R-%TT%0004307" HelpContext="Empty" IndentLevel="1" />                
+                  </when>  <!-- Sonos playlist -->
+                  <when test="8" >  <!-- Sonos URI -->
                     <!-- Uri-->
-                    <ParameterRefRef RefId="%AID%_UP-%TT%00043_R-%TT%0004307" HelpContext="Empty" IndentLevel="1" />
+                    <ParameterRefRef RefId="%AID%_UP-%TT%00043_R-%TT%0004308" HelpContext="Empty" IndentLevel="1" />
                     <!-- Title-->
                     <ParameterRefRef RefId="%AID%_UP-%TT%00042_R-%TT%0004201" HelpContext="Empty" IndentLevel="1" />
                     <!-- Image Url-->
@@ -418,9 +445,13 @@
                   </when>  <!-- Line In -->
                   <when test="6" >  <!-- TV In -->
                   </when>  <!-- Line In -->
-                  <when test="7" >  <!-- Sonos URI -->
+                  <when test="7" >  <!-- Sonos Playlist -->
+                    <!-- Sonos playlist-->
+                    <ParameterRefRef RefId="%AID%_UP-%TT%00053_R-%TT%0005307" HelpContext="Empty" IndentLevel="1" />                
+                  </when>  <!-- Sonos playlist -->
+                  <when test="8" >  <!-- Sonos URI -->
                     <!-- Uri-->
-                    <ParameterRefRef RefId="%AID%_UP-%TT%00053_R-%TT%0005307" HelpContext="Empty" IndentLevel="1" />
+                    <ParameterRefRef RefId="%AID%_UP-%TT%00053_R-%TT%0005308" HelpContext="Empty" IndentLevel="1" />
                     <!-- Title-->
                     <ParameterRefRef RefId="%AID%_UP-%TT%00052_R-%TT%0005201" HelpContext="Empty" IndentLevel="1" />
                     <!-- Image Url-->
