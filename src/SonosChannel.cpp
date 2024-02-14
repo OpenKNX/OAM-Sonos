@@ -143,6 +143,104 @@ void SonosChannel::notificationGroupCoordinatorChanged(SonosApi& caller)
         KoSON_CHGroupMuteState.value(groupMute, DPT_Switch);
 }
 
+void SonosChannel::notificationTrackChanged(SonosApi& caller, SonosTrackInfo& trackInfo)
+{
+    uint8_t sourceNumber = 0;
+    if (!trackInfo.uri.isEmpty())
+    {
+        auto channelOffset = SON_SourceUri2 - SON_SourceUri1;
+        for (uint8_t index = 0; index < 5 && sourceNumber == 0; index++)
+        {
+            auto parameterOffset = index * channelOffset;
+            auto sourceType = knx.paramByte(parameterOffset + SON_SourceType1);
+            switch (sourceType)
+            {
+                case 1: // Radio
+                {
+                    if (trackInfo.uri.startsWith(SonosApi::DefaultSchemaInternetRadio))
+                    {
+                        const char* uri = (const char*)(knx.paramData(parameterOffset + SON_SourceUri1));
+                        if (strcmp(trackInfo.uri.c_str() + strlen(SonosApi::DefaultSchemaInternetRadio), uri) == 0)
+                            sourceNumber = index + 1;
+                    }
+                    break;
+                }
+                case 2: // Http
+                {
+                    const char* uri = (const char*)(knx.paramData(parameterOffset + SON_SourceUri1));
+                    if (strcmp(trackInfo.uri.c_str(), uri) == 0)
+                        sourceNumber = index + 1;
+                    break;
+                }
+                case 3: // Music libary file
+                {
+                    if (trackInfo.uri.startsWith(SonosApi::SchemaMusicLibraryFile))
+                    {
+                        String uri = (const char*)(knx.paramData(parameterOffset + SON_SourceUri1));
+                        if (strcmp(trackInfo.uri.c_str() + strlen(SonosApi::SchemaMusicLibraryFile), uri.c_str()) == 0)
+                            sourceNumber = index + 1;
+                    }
+                    break;
+                }
+                case 4: // Music libary dir
+                {
+                    if (trackInfo.uri.startsWith(SonosApi::SchemaMusicLibraryFile))
+                    {
+                        String uri = (const char*)(knx.paramData(parameterOffset + SON_SourceUri1));
+                        uri.replace(" ", "%20");
+                        if (!uri.endsWith("/"))
+                            uri += "/";
+                        if (strncmp(trackInfo.uri.c_str() + strlen(SonosApi::SchemaMusicLibraryFile), uri.c_str(), uri.length()) == 0)
+                            sourceNumber = index + 1;
+                    }
+                    break;
+                }
+                case 5: // Line In
+                {
+                    if (trackInfo.uri.startsWith(SonosApi::SchemaLineIn))
+                    {
+                        auto groupCoordinator = _sonosApi.findGroupCoordinator();
+                        if (groupCoordinator != nullptr &&
+                            strcmp(trackInfo.uri.c_str() + strlen(SonosApi::SchemaLineIn), groupCoordinator->getUID().c_str()) == 0)
+                            sourceNumber = index + 1;
+                    }
+                    break;
+                }
+                case 6: // TV In
+                {
+                    if (trackInfo.uri.startsWith(SonosApi::SchemaTVIn))
+                    {
+                        auto groupCoordinator = _sonosApi.findGroupCoordinator();
+                        if (groupCoordinator != nullptr)
+                        {
+                            auto url = groupCoordinator->getUID() + SonosApi::UrlPostfixTVIn;
+                            if (strcmp(trackInfo.uri.c_str() + strlen(SonosApi::SchemaTVIn), url.c_str()) == 0)
+                                sourceNumber = index + 1;
+                        }
+                    }
+                    break;
+                }
+                case 7: // Sonos playlist
+                {
+                    // Can not be detected
+                }
+                case 8: // Sonos Uri
+                {
+                    const char* uri = (const char*)(knx.paramData(parameterOffset + SON_SourceUri1));
+                    if (trackInfo.uri == uri)
+                        sourceNumber = index + 1;
+                }
+            }
+        }
+    }
+    Serial.print("Source State: ");
+    Serial.println(sourceNumber);
+    if ((uint8_t)KoSON_CHSourceState.value(DPT_Value_1_Ucount) != sourceNumber)
+    {
+        KoSON_CHSourceState.value(sourceNumber, DPT_Value_1_Ucount);
+    }
+}
+
 void SonosChannel::processInputKo(GroupObject& ko)
 {
     auto index = SON_KoCalcIndex(ko.asap());
@@ -299,8 +397,8 @@ void SonosChannel::processInputKo(GroupObject& ko)
                 }
                 case 7: // Sonos playlist
                 {
-                   const char* uri = (const char*)(knx.paramData(parameterOffset + SON_SourceUri1));
-                   groupCoordinator->playSonosPlaylist(uri);
+                    const char* uri = (const char*)(knx.paramData(parameterOffset + SON_SourceUri1));
+                    groupCoordinator->playSonosPlaylist(uri);
                 }
                 case 8: // Sonos Uri
                 {

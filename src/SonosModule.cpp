@@ -118,6 +118,7 @@ void SonosModule::showHelp()
     openknx.console.printHelpLine("son<CC> gmute <X>", "Set group mute state of channel CC. i.e. son01 gmute 1");
     openknx.console.printHelpLine("son<CC> track", "Show the track info of channel CC. i.e. son01 track");
     openknx.console.printHelpLine("son<CC> state", "Show the play state of channel CC. i.e. son01 state");
+    openknx.console.printHelpLine("son<CC> src <S>", "Start playing of the source number S of channel CC. i.e. son01 src 1");
     openknx.console.printHelpLine("son<CC> play", "Start playing of the current media of channel CC. i.e. son01 play");
     openknx.console.printHelpLine("son<CC> pause", "Pause playing of channel CC. i.e. son01 pause");
     openknx.console.printHelpLine("son<CC> next", "Channel CC go to next song. i.e. son01 next");

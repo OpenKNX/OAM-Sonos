@@ -51,7 +51,7 @@ class SonosApiNotificationHandler
     virtual void notificationGroupMuteChanged(SonosApi& caller, boolean mute) {};
     virtual void notificationPlayStateChanged(SonosApi& caller, SonosApiPlayState playState) {};
     virtual void notificationPlayModeChanged(SonosApi& caller, SonosApiPlayMode playMode) {};
-    virtual void notificationTrackChanged(SonosApi& caller, SonosTrackInfo* trackInfo) {};
+    virtual void notificationTrackChanged(SonosApi& caller, SonosTrackInfo& trackInfo) {};
     virtual void notificationGroupCoordinatorChanged(SonosApi& caller) {};
 };
 
@@ -88,6 +88,14 @@ class SonosApiBrowseResult
 
 class SonosApi : private AsyncWebHandler
 {
+    public:
+        const static char DefaultSchemaInternetRadio[];
+        const static char SchemaMusicLibraryFile[];
+        const static char SchemaLineIn[];
+        const static char SchemaTVIn[];
+        const static char UrlPostfixTVIn[];
+    private:
+
     static std::vector<SonosApi*> AllSonosApis;
     const static uint32_t _subscriptionTimeInSeconds = 600;
     String _uuid;

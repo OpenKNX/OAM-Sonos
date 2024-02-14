@@ -456,7 +456,7 @@ void SonosApi::handleBody(AsyncWebServerRequest* request, uint8_t* data, size_t 
             }
             if (sonosTrackInfo != nullptr)
             {
-                _notificationHandler->notificationTrackChanged(*this, sonosTrackInfo);
+                _notificationHandler->notificationTrackChanged(*this, *sonosTrackInfo);
                 if (sonosTrackInfo->uri.startsWith(sonosSchemaMaster))
                 {
                     auto newGroupCoordinator = sonosTrackInfo->uri.substring(strlen(sonosSchemaMaster));
@@ -1247,10 +1247,12 @@ const char radioMetadataBeginTitle[] PROGMEM = "<DIDL-Lite xmlns:dc='http://purl
 const char radioMetadataEndTitleBeginImageUrl[] PROGMEM = "</dc:title><upnp:albumArtURI>";
 const char radioMetadataEndImageUrl[] PROGMEM = "</upnp:albumArtURI><upnp:class>object.item.audioItem.audioBroadcast</upnp:class><desc id='cdudn' nameSpace='urn:schemas-rinconnetworks-com:metadata-1-0/'>SA_RINCON65031_</desc></item></DIDL-Lite>";
 
+const char SonosApi::DefaultSchemaInternetRadio[] PROGMEM = "x-rincon-mp3radio://";
+
 void SonosApi::playInternetRadio(const char* streamingUrl, const char* radioStationName, const char* imageUrl, const char* schema)
 {
     if (schema == nullptr)
-        schema = "x-rincon-mp3radio://";
+        schema = DefaultSchemaInternetRadio;
     postAction(renderingAVTransportUrl, renderingAVTransportSoapAction, "SetAVTransportURI", [streamingUrl, radioStationName, imageUrl, schema](ParameterBuilder& b) {
         b.BeginParameter("CurrentURI");
         b.ParmeterValuePart(schema, ParameterBuilder::ENCODE_NO);
@@ -1273,11 +1275,13 @@ void SonosApi::playFromHttp(const char* url)
     play();
 }
 
+const char SonosApi::SchemaMusicLibraryFile[] PROGMEM = "x-file-cifs:";
+
 void SonosApi::playMusicLibraryFile(const char* mediathekFilePath)
 {
     postAction(renderingAVTransportUrl, renderingAVTransportSoapAction, "SetAVTransportURI", [mediathekFilePath](ParameterBuilder& b) {
         b.BeginParameter("CurrentURI");
-        b.ParmeterValuePart("x-file-cifs:", ParameterBuilder::ENCODE_NO);
+        b.ParmeterValuePart(SchemaMusicLibraryFile, ParameterBuilder::ENCODE_NO);
         b.ParmeterValuePart(mediathekFilePath, ParameterBuilder::ENCODE_XML);
         b.EndParameter();
         b.AddParameter("CurrentURIMetaData", nullptr);
@@ -1307,17 +1311,22 @@ void SonosApi::playMusicLibraryDirectory(const char* mediathekDirectory)
     playQueue();
 }
 
+const char SonosApi::SchemaLineIn[] PROGMEM = "x-rincon-stream:";
+
 void SonosApi::playLineIn()
 {
-    setAVTransportURI("x-rincon-stream:", getUID().c_str());
+    setAVTransportURI(SchemaLineIn, getUID().c_str());
     play();
 }
+
+const char SonosApi::SchemaTVIn[] PROGMEM = "x-sonos-htastream:";
+const char SonosApi::UrlPostfixTVIn[] PROGMEM = ":spdif";
 
 void SonosApi::playTVIn()
 {
     String url = getUID();
-    url += ":spdif";
-    setAVTransportURI("x-sonos-htastream:", url.c_str());
+    url += UrlPostfixTVIn;
+    setAVTransportURI(SchemaTVIn, url.c_str());
     play();
 }
 

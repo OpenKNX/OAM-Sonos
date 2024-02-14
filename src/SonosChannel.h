@@ -23,6 +23,7 @@ class SonosChannel : public OpenKNX::Channel, protected SonosApiNotificationHand
         void notificationGroupMuteChanged(SonosApi& caller, boolean mute) override;
         void notificationPlayStateChanged(SonosApi& caller, SonosApiPlayState playState) override;
         void notificationGroupCoordinatorChanged(SonosApi& caller) override;
+        void notificationTrackChanged(SonosApi& caller, SonosTrackInfo& trackInfo) override;
         void joinChannel(uint8_t channelNumber);
         void joinNextPlayingGroup();
         bool delegateCoordination(bool rejoinGroup);
