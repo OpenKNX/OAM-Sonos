@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-model href="../../Organization/knxprod-support/knx_project_20/knx-editor.xsd" type="application/xml" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<KNX xmlns:op="http://github.com/OpenKNX/OpenKNXproducer" xmlns="http://knx.org/xml/project/20" CreatedBy="KNX MT" ToolVersion="5.1.255.16695">
+  <ManufacturerData>
+    <Manufacturer>
+      <ApplicationPrograms>
+        <ApplicationProgram>
+          <Static>
+            <Parameters>
+              <!-- Source Type -->
+              <Parameter Id="%AID%_P-%TT%%CC%001" Name="CH%C%SourceType" ParameterType="%AID%_PT-SourceType" Text="Quellenart" Value="0">
+                <Memory CodeSegment="%AID%_RS-04-00000" Offset="0" BitOffset="0" />
+              </Parameter>           
+   
+              <!-- Source Title -->
+              <Parameter Id="%AID%_P-%TT%%CC%002" Name="CH%C%SourceTitle" ParameterType="%AID%_PT-SourceTitle" Text="Name" Value="">
+                <Memory CodeSegment="%AID%_RS-04-00000" Offset="1" BitOffset="0" />
+              </Parameter>           
+
+              <!-- Source Uri -->
+              <Parameter Id="%AID%_P-%TT%%CC%003" Name="CH%C%SourceUri" ParameterType="%AID%_PT-SourceUri" Text="URL" Value="">
+                <Memory CodeSegment="%AID%_RS-04-00000" Offset="21" BitOffset="0" />
+              </Parameter>           
+
+              <!-- Source Uri Image-->
+              <Parameter Id="%AID%_P-%TT%%CC%004" Name="CH%C%SourceUriImage" ParameterType="%AID%_PT-SourceUri" Text="Logobild URL" Value="">
+                <Memory CodeSegment="%AID%_RS-04-00000" Offset="171" BitOffset="0" />
+              </Parameter>           
+       
+            </Parameters>
+            <ParameterRefs>
+              <!-- Source Type -->
+              <ParameterRef Id="%AID%_P-%TT%%CC%001_R-%TT%%CC%00101" RefId="%AID%_P-%TT%%CC%001" />
+              <!-- Source Title -->
+              <ParameterRef Id="%AID%_P-%TT%%CC%002_R-%TT%%CC%00201" RefId="%AID%_P-%TT%%CC%002" />
+              
+              <!-- Source Radio -->
+              <ParameterRef Id="%AID%_P-%TT%%CC%003_R-%TT%%CC%00301" RefId="%AID%_P-%TT%%CC%003" Text="Streaming URL"/>  
+              <!-- Source Url -->
+              <ParameterRef Id="%AID%_P-%TT%%CC%003_R-%TT%%CC%00302" RefId="%AID%_P-%TT%%CC%003" Text="URL"/>  
+              <!-- Source Network File -->
+              <ParameterRef Id="%AID%_P-%TT%%CC%003_R-%TT%%CC%00303" RefId="%AID%_P-%TT%%CC%003" Text="Netzwerk Dateipfad"/>  
+              <!-- Source Network Directory -->
+              <ParameterRef Id="%AID%_P-%TT%%CC%003_R-%TT%%CC%00304" RefId="%AID%_P-%TT%%CC%003" Text="Netzwerk Verzeichnis"/>  
+              <!-- Source Playlist -->
+              <ParameterRef Id="%AID%_P-%TT%%CC%003_R-%TT%%CC%00307" RefId="%AID%_P-%TT%%CC%003" Text="Name der Playliste"/>  
+              <!-- Source Sonos Uri -->
+              <ParameterRef Id="%AID%_P-%TT%%CC%003_R-%TT%%CC%00308" RefId="%AID%_P-%TT%%CC%003" Text="Sonos URI"/>  
+
+              <!-- Source Image Uri -->
+              <ParameterRef Id="%AID%_P-%TT%%CC%004_R-%TT%%CC%00401" RefId="%AID%_P-%TT%%CC%004" />  
+
+            </ParameterRefs>
+            <ComObjectTable>
+            </ComObjectTable>
+            <ComObjectRefs>
+            </ComObjectRefs>
+          </Static>
+          <Dynamic>
+            <ChannelIndependentBlock> 
+              <ParameterBlock Id="%AID%_PB-%C%2" Name="Sonos%C%Sources" Text="Tonquelle %C%" Icon="waveform" HelpContext="Empty">
+                <Channel Id="%AID%_CH-SONSRC%CC%" Name="f%CC%SONSRCSource" Number="SON%CC%" Text="Tonquelle %C%" >
+                  <ParameterBlock Id="%AID%_PB-%TT%%CC%01" Name="SON%C%SourceWrapper" Inline="true">
+                    <!-- Tonquelle 1 -->
+                  <ParameterSeparator Id="%AID%_PS-nnn" Text="Tonquelle 1" UIHint="Headline" />
+                  <!-- Source Type -->
+                  <ParameterRefRef RefId="%AID%_P-%TT%%CC%001_R-%TT%%CC%00101" HelpContext="Empty" IndentLevel="1" />
+                  <choose ParamRefId="%AID%_P-%TT%%CC%001_R-%TT%%CC%00101">  <!-- Source Type -->
+                    <when test="1" >  <!-- Radio -->
+                      <!-- Stream Url-->
+                      <ParameterRefRef RefId="%AID%_P-%TT%%CC%003_R-%TT%%CC%00301" HelpContext="Empty" IndentLevel="1" />
+                      <!-- Title-->
+                      <ParameterRefRef RefId="%AID%_P-%TT%%CC%002_R-%TT%%CC%00201" HelpContext="Empty" IndentLevel="1" />
+                      <!-- Image Url-->
+                      <ParameterRefRef RefId="%AID%_P-%TT%%CC%004_R-%TT%%CC%00401" HelpContext="Empty" IndentLevel="1" />
+                    </when>  <!-- Radio -->
+                    <when test="2" >  <!-- http -->
+                      <!-- Url-->
+                      <ParameterRefRef RefId="%AID%_P-%TT%%CC%003_R-%TT%%CC%00302" HelpContext="Empty" IndentLevel="1" />
+                    </when>  <!-- http -->
+                    <when test="3" >  <!-- Network File -->
+                      <!-- Network file-->
+                      <ParameterRefRef RefId="%AID%_P-%TT%%CC%003_R-%TT%%CC%00303" HelpContext="Empty" IndentLevel="1" />
+                    </when>  <!-- Network File -->
+                    <when test="4" >  <!-- Network Directory -->
+                      <!-- Network directory-->
+                      <ParameterRefRef RefId="%AID%_P-%TT%%CC%003_R-%TT%%CC%00304" HelpContext="Empty" IndentLevel="1" />
+                    </when>  <!-- Network Directory -->
+                    <when test="5" >  <!-- Line In -->
+                    </when>  <!-- Line In -->
+                    <when test="6" >  <!-- TV In -->
+                    </when>  <!-- Line In -->
+                    <when test="7" >  <!-- Sonos Playlist -->
+                      <!-- Sonos playlist-->
+                      <ParameterRefRef RefId="%AID%_P-%TT%%CC%003_R-%TT%%CC%00307" HelpContext="Empty" IndentLevel="1" />                
+                    </when>  <!-- Sonos playlist -->
+                    <when test="8" >  <!-- Sonos URI -->
+                      <!-- Uri-->
+                      <ParameterRefRef RefId="%AID%_P-%TT%%CC%003_R-%TT%%CC%00308" HelpContext="Empty" IndentLevel="1" />
+                      <!-- Title-->
+                      <ParameterRefRef RefId="%AID%_P-%TT%%CC%002_R-%TT%%CC%00201" HelpContext="Empty" IndentLevel="1" />
+                      <!-- Image Url-->
+                      <ParameterRefRef RefId="%AID%_P-%TT%%CC%004_R-%TT%%CC%00401" HelpContext="Empty" IndentLevel="1" />
+                    </when>  <!-- Sonos URI -->
+                    </choose> <!-- Source Type -->
+                  </ParameterBlock>
+                </Channel>
+              </ParameterBlock>
+            </ChannelIndependentBlock>
+          </Dynamic>
+        </ApplicationProgram>
+      </ApplicationPrograms>
+    </Manufacturer>
+  </ManufacturerData>
+</KNX>

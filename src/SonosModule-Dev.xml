@@ -4,8 +4,8 @@
   <op:ETS
     OpenKnxId="0xAE"
     ApplicationNumber="0x2B"
-    ApplicationVersion="14"
-    ReplacesVersions="1 2 3 4 5 6 7 8 9 10 11 12 13"
+    ApplicationVersion="16"
+    ReplacesVersions="1 2 3 4 5 6 7 8 9 10 11 12 13 14 15"
     ApplicationRevision="0"
     ProductName="Sonos Steuerung"
     BusCurrent="30"
@@ -23,6 +23,11 @@
     share="../lib/OFM-Network/src/Network.share.xml">
     <op:verify File="../lib/OFM-Network/library.json" ModuleVersion="2" /> 
   </op:define>
+
+  <op:define prefix="SONSRC" ModuleType="21"
+    share="SonosModule.Sources.share.xml"
+    template="SonosModule.Sources.templ.xml"
+    NumChannels="5"/>  
 
   <op:define prefix="SON" ModuleType="20"
     share="SonosModule.share.xml"
