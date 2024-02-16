@@ -9,12 +9,12 @@
             <ParameterTypes>
               <ParameterType Id="%AID%_PT-SonosChannelUsage" Name="SonosChannelUsage">
                 <TypeRestriction Base="Value" SizeInBit="8">
-                  <Enumeration Text="Inaktiv (Konfiguration erhalten)" Value="0" Id="%AID%_PT-SonosChannelUsage_EN-0" />
-                  <Enumeration Text="Inaktiv"                          Value="1" Id="%AID%_PT-SonosChannelUsage_EN-1" />
-                  <Enumeration Text="Einzelsteuerung"                  Value="2" Id="%AID%_PT-SonosChannelUsage_EN-2" />
-                  <Enumeration Text="Gruppensteuerung"                 Value="3" Id="%AID%_PT-SonosChannelUsage_EN-3" />
-                  <Enumeration Text="Einzel- und Gruppensteurung"      Value="4" Id="%AID%_PT-SonosChannelUsage_EN-4" />
-                  <Enumeration Text="Nur Gruppenteilnehmer"            Value="5" Id="%AID%_PT-SonosChannelUsage_EN-5" />            
+                  <Enumeration Text="Inaktiv (Konfiguration erhalten)" Value="0" Id="%ENID%" />
+                  <Enumeration Text="Inaktiv"                          Value="1" Id="%ENID%" />
+                  <Enumeration Text="Einzelsteuerung"                  Value="2" Id="%ENID%" />
+                  <Enumeration Text="Gruppensteuerung"                 Value="3" Id="%ENID%" />
+                  <Enumeration Text="Einzel- und Gruppensteurung"      Value="4" Id="%ENID%" />
+                  <Enumeration Text="Nur Gruppenteilnehmer"            Value="5" Id="%ENID%" />            
                 </TypeRestriction>
               </ParameterType>   
               <ParameterType Id="%AID%_PT-SonosName" Name="SonosName">
@@ -35,7 +35,7 @@
             </ParameterTypes>
             <Parameters>
             <!-- Notification sounds -->
-            <Union SizeInBit="604">
+            <Union SizeInBit="4832">
                 <Memory CodeSegment="%MID%" Offset="0" BitOffset="0" />
                 <Parameter Id="%AID%_UP-%TT%10010" Name="NotificationUrl1" ParameterType="%AID%_PT-NotificationUri" Offset="0" BitOffset="0" Text="URL" Value="https://cdn.freesound.org/previews/555/555016_12434214-lq.mp3" />
                 <Parameter Id="%AID%_UP-%TT%10011" Name="NotificationVolume1" ParameterType="%AID%_PT-NotificationVolume" Offset="150" BitOffset="0" Text="Lautstärke" Value="25" />                

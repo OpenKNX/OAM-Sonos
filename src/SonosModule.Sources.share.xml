@@ -9,15 +9,15 @@
             <ParameterTypes>
               <ParameterType Id="%AID%_PT-SourceType" Name="SourceType">
                 <TypeRestriction Base="Value" SizeInBit="8">
-                  <Enumeration Text="Inaktiv" Value="0" Id="%AID%_PT-SourceType_EN-0" />
-                  <Enumeration Text="Radio Stream" Value="1" Id="%AID%_PT-SourceType_EN-1" />
-                  <Enumeration Text="Http"  Value="2" Id="%AID%_PT-SourceType_EN-2" />
-                  <Enumeration Text="Musikbibliothek Datei"  Value="3" Id="%AID%_PT-SourceType_EN-3" />
-                  <Enumeration Text="Musikbibliothek Verzeichnis"  Value="4" Id="%AID%_PT-SourceType_EN-4" />
-                  <Enumeration Text="Line In"  Value="5" Id="%AID%_PT-SourceType_EN-5" />
-                  <Enumeration Text="TV In (Nur mit Playbar)"  Value="6" Id="%AID%_PT-SourceType_EN-6" />
-                  <Enumeration Text="Sonos Playlist"  Value="7" Id="%AID%_PT-SourceType_EN-7" />
-                  <Enumeration Text="Sonos Uri"  Value="8" Id="%AID%_PT-SourceType_EN-8" />
+                  <Enumeration Text="Inaktiv" Value="0" Id="%ENID%" />
+                  <Enumeration Text="Radio Stream" Value="1" Id="%ENID%" />
+                  <Enumeration Text="Http"  Value="2" Id="%ENID%" />
+                  <Enumeration Text="Musikbibliothek Datei"  Value="3" Id="%ENID%" />
+                  <Enumeration Text="Musikbibliothek Verzeichnis"  Value="4" Id="%ENID%" />
+                  <Enumeration Text="Line In"  Value="5" Id="%ENID%" />
+                  <Enumeration Text="TV In (Nur mit Playbar)"  Value="6" Id="%ENID%" />
+                  <Enumeration Text="Sonos Playlist"  Value="7" Id="%ENID%" />
+                  <Enumeration Text="Sonos Uri"  Value="8" Id="%ENID%" />
                 </TypeRestriction>
               </ParameterType>
               <ParameterType Id="%AID%_PT-SourceUri" Name="SourceUri">
