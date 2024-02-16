@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-model href="../../Organization/knxprod-support/knx_project_14/knx-editor.xsd" type="application/xml" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<KNX xmlns:op="http://github.com/OpenKNX/OpenKNXproducer" xmlns="http://knx.org/xml/project/14" CreatedBy="KNX MT" ToolVersion="5.1.255.16695">
+  <ManufacturerData>
+    <Manufacturer>
+      <ApplicationPrograms>
+        <ApplicationProgram>
+          <Static>
+            <ParameterTypes>
+              <ParameterType Id="%AID%_PT-SourceType" Name="SourceType">
+                <TypeRestriction Base="Value" SizeInBit="8">
+                  <Enumeration Text="Inaktiv" Value="0" Id="%ENID%" />
+                  <Enumeration Text="Radio Stream" Value="1" Id="%ENID%" />
+                  <Enumeration Text="Http"  Value="2" Id="%ENID%" />
+                  <Enumeration Text="Musikbibliothek Datei"  Value="3" Id="%ENID%" />
+                  <Enumeration Text="Musikbibliothek Verzeichnis"  Value="4" Id="%ENID%" />
+                  <Enumeration Text="Line In"  Value="5" Id="%ENID%" />
+                  <Enumeration Text="TV In (Nur mit Playbar)"  Value="6" Id="%ENID%" />
+                  <Enumeration Text="Sonos Playlist"  Value="7" Id="%ENID%" />
+                  <Enumeration Text="Sonos Uri"  Value="8" Id="%ENID%" />
+                </TypeRestriction>
+              </ParameterType>
+              <ParameterType Id="%AID%_PT-SourceUri" Name="SourceUri">
+                <TypeText SizeInBit="1200" /> <!-- 150 characters -->
+              </ParameterType>
+              <ParameterType Id="%AID%_PT-SourceTitle" Name="SourceTitle">
+                <TypeText SizeInBit="160" /> <!-- 20 characters -->
+              </ParameterType>
+            </ParameterTypes>
+            <Parameters>
+            </Parameters>
+            <ParameterRefs>
+            </ParameterRefs>
+          </Static>
+          <Dynamic>
+            <Channel Name="MainChannel" Text="Tonquellen" Number="%TT%" Id="%AID%_CH-%TT%" Icon="waveform">
+              <op:include href="SonosModule.Sources.templ.xml" xpath="//Dynamic/ChannelIndependentBlock/*" type="template" prefix="SONSRC" IsInner="true" />
+            </Channel>
+        </Dynamic>
+        </ApplicationProgram>
+      </ApplicationPrograms>
+    </Manufacturer>
+  </ManufacturerData>
+</KNX>

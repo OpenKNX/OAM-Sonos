@@ -22,6 +22,11 @@
     share="SonosModule.share.xml"
     template="SonosModule.templ.xml"
     NumChannels="30" KoOffset="400" />
+ 
+  <op:define prefix="SONSRC" ModuleType="21"
+    share="SonosModule.Sources.share.xml"
+    template="SonosModule.Sources.templ.xml"
+    NumChannels="5"/>
 
   <op:config name="%NET_WifiConfig%" value="1" /> 
   <op:define prefix="NET" ModuleType="11" 
