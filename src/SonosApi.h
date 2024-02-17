@@ -3,7 +3,11 @@
 #include "WiFi.h"
 #include <MicroXPath.h>
 #include <MicroXPath_P.h>
+#ifdef ARDUINO_ARCH_ESP32
 #include <ESPAsyncWebServer.h>
+#else 
+#include "WebServer.h"
+#endif
 
 enum SonosApiPlayState : byte
 {
@@ -73,7 +77,6 @@ class ParameterBuilder
     ParameterBuilder(Stream* stream);
     void AddParameter(const char* name, const char* value = nullptr, byte escapeMode = ENCODE_XML);
     void AddParameter(const char* name, int32_t value);
-    void AddParameter(const char* name, bool value);
     void BeginParameter(const char* name);
     void ParmeterValuePart(const char* valuePart = nullptr, byte escapeMode = ENCODE_XML);
     void EndParameter();
@@ -86,7 +89,10 @@ class SonosApiBrowseResult
     String uri;
 };
 
-class SonosApi : private AsyncWebHandler
+class SonosApi 
+#ifdef ARDUINO_ARCH_ESP32
+: private AsyncWebHandler
+#endif
 {
     public:
         const static char DefaultSchemaInternetRadio[];
@@ -129,17 +135,22 @@ class SonosApi : private AsyncWebHandler
     int subscribeEvents(const char* soapUrl);
     void subscribeAll();
 
+#ifdef ARDUINO_ARCH_ESP32
     // AsyncWebHandler
     bool canHandle(AsyncWebServerRequest *request) override final;
     void handleBody(AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) override final;
-   
+#endif   
   public:
     ~SonosApi();
     String& getUID();
     static String getUID(IPAddress ipAddress);
 
     IPAddress& getSpeakerIP();
+#ifdef ARDUINO_ARCH_ESP32
     void init(AsyncWebServer* webServer, IPAddress speakerIP);
+#else
+    void init(IPAddress speakerIP);
+#endif
     void setCallback(SonosApiNotificationHandler* notificationHandler);
     void loop();
     void setVolume(uint8_t volume);

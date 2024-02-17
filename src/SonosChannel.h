@@ -10,7 +10,9 @@ class SonosModule;
 class SonosChannel : public OpenKNX::Channel, protected SonosApiNotificationHandler
 {
     private:
+#ifdef ARDUINO_ARCH_ESP32    
         SonosApiPlayNotification* _playNotification = nullptr;
+#endif
         SonosModule& _sonosModule;
         SonosApi& _sonosApi;
         VolumeController _volumeController;
@@ -26,8 +28,10 @@ class SonosChannel : public OpenKNX::Channel, protected SonosApiNotificationHand
         void notificationTrackChanged(SonosApi& caller, SonosTrackInfo& trackInfo) override;
         void joinChannel(uint8_t channelNumber);
         void joinNextPlayingGroup();
-        bool delegateCoordination(bool rejoinGroup);
+        bool delegateCoordination(bool rejoinGroup);     
+#if ARDUINO_ARCH_ESP32 
         void playNotification(byte notificationNumber);
+#endif
     protected:
         void loop1() override;
         void processInputKo(GroupObject &ko) override;

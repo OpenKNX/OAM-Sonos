@@ -1,7 +1,9 @@
 #include "SonosChannel.h"
 #include "SonosModule.h"
 
+#if ARDUINO_ARCH_ESP32
 #include "WebSocketsClient.h"
+#endif
 #include "WiFiClientSecure.h"
 
 SonosChannel::SonosChannel(SonosModule& sonosModule, uint8_t _channelIndex /* this parameter is used in macros, do not rename */, SonosApi& sonosApi)
@@ -31,6 +33,7 @@ const std::string SonosChannel::logPrefix()
 
 void SonosChannel::loop1()
 {
+#ifdef ARDUINO_ARCH_ESP32   
     if (_playNotification != nullptr)
     {
         if (_playNotification->checkFinished())
@@ -39,6 +42,7 @@ void SonosChannel::loop1()
             _playNotification = nullptr;
         }
     }
+#endif
     _sonosApi.loop();
     _volumeController.loop1(_sonosApi, _speakerIP, _channelIndex);
     _groupVolumeController.loop1(_sonosApi, _speakerIP, _channelIndex);
@@ -146,7 +150,7 @@ void SonosChannel::notificationGroupCoordinatorChanged(SonosApi& caller)
 void SonosChannel::notificationTrackChanged(SonosApi& caller, SonosTrackInfo& trackInfo)
 {
     uint8_t sourceNumber = 0;
-    if (!trackInfo.uri.isEmpty())
+    if (trackInfo.uri.length() != 0)
     {
         for (uint8_t _channelIndex = 0; _channelIndex < SONSRC_ChannelCount && sourceNumber == 0; _channelIndex++)
         {
@@ -422,8 +426,10 @@ void SonosChannel::processInputKo(GroupObject& ko)
             if (trigger)
             {
                 byte notification = index - SON_KoCHNotificationSound1 + 1;
-                logDebugP("play notification %d", notification);
+                logDebugP("play notification %d", notification);      
+#if ARDUINO_ARCH_ESP32    
                 playNotification(notification);
+#endif
             }
         }
     }
@@ -668,18 +674,20 @@ bool SonosChannel::processCommand(const std::string cmd, bool diagnoseKo)
         auto targetChannel = atoi(cmd.substr(5).c_str());
         joinChannel(targetChannel);
     }
+#if ARDUINO_ARCH_ESP32 
     else if (cmd.rfind("noti ", 0) == 0)
     {
         Serial.println();
         auto notificationNr = atoi(cmd.substr(5).c_str());
         playNotification(notificationNr);
     }
+#endif
     else if (cmd.rfind("src ", 0) == 0)
     {
         Serial.println();
         auto src = atoi(cmd.substr(4).c_str());
         auto ko = KoSON_CHSourceNumber;
-        ko.valueNoSend(src, DPT_Value_1_Ucount);
+        ko.valueNoSend((uint8_t) src, DPT_Value_1_Ucount);
         processInputKo(ko);
     }
     else if (cmd.rfind("pl ", 0) == 0)
@@ -711,7 +719,7 @@ bool SonosChannel::processCommand(const std::string cmd, bool diagnoseKo)
         return false;
     return true;
 }
-
+#if ARDUINO_ARCH_ESP32 
 void SonosChannel::playNotification(byte notificationNumber)
 {
     if (_playNotification != nullptr)
@@ -735,6 +743,7 @@ void SonosChannel::playNotification(byte notificationNumber)
             break;
     }
 }
+#endif
 
 void SonosChannel::joinNextPlayingGroup()
 {

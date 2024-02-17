@@ -1,3 +1,4 @@
+#if ARDUINO_ARCH_ESP32
 #include "SonosApiPlayNotification.h"
 
 WebSocketsClient* SonosApiPlayNotification::_webSocket = nullptr;
@@ -68,3 +69,4 @@ bool SonosApiPlayNotification::checkFinished()
     }
     return false;
 }
+#endif

@@ -1,4 +1,5 @@
 #pragma once
+#if ARDUINO_ARCH_ESP32 
 #include "WebSocketsClient.h"
 
 class SonosApiPlayNotification
@@ -15,3 +16,4 @@ public:
     ~SonosApiPlayNotification();
     bool checkFinished();
 };
+#endif

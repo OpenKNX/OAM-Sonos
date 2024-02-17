@@ -107,11 +107,6 @@ void ParameterBuilder::AddParameter(const char* name, int32_t value)
     AddParameter(name, buffer, ENCODE_NO);
 }
 
-void ParameterBuilder::AddParameter(const char* name, bool value)
-{
-    AddParameter(name, value ? "1" : "0", ENCODE_NO);
-}
-
 void ParameterBuilder::AddParameter(const char* name, const char* value, byte escapeMode)
 {
     if (_stream == nullptr)
@@ -183,11 +178,17 @@ IPAddress& SonosApi::getSpeakerIP()
     return _speakerIP;
 }
 
-void SonosApi::init(AsyncWebServer* webServer, IPAddress speakerIP)
+void SonosApi::init(
+#ifdef ARDUINO_ARCH_ESP32
+    AsyncWebServer* webServer, 
+#endif
+    IPAddress speakerIP)
 {
     _speakerIP = speakerIP;
     _channelIndex = AllSonosApis.size();
+#ifdef ARDUINO_ARCH_ESP32    
     webServer->addHandler(this);
+#endif
     AllSonosApis.push_back(this);
     _subscriptionTime = millis() - ((_subscriptionTimeInSeconds - _channelIndex) * 1000); // prevent inital subscription to be at the same time for all channels
 }
@@ -227,7 +228,7 @@ void SonosApi::loop()
         }
     }
 }
-
+#ifdef ARDUINO_ARCH_ESP32   
 bool SonosApi::canHandle(AsyncWebServerRequest* request)
 {
     if (request->url().startsWith("/notification/"))
@@ -239,7 +240,7 @@ bool SonosApi::canHandle(AsyncWebServerRequest* request)
     }
     return false;
 }
-
+#endif
 const char p_PropertySet[] PROGMEM = "e:propertyset";
 const char p_Property[] PROGMEM = "e:property";
 const char p_LastChange[] PROGMEM = "LastChange";
@@ -353,7 +354,7 @@ const char trackNumber[] PROGMEM = "&lt;CurrentTrack val=&quot;";
 
 // const char numberOfTracks[] PROGMEM = "&lt;NumberOfTracks val=&quot;";
 // const char currentTrack[] PROGMEM = "&lt;CurrentTrack val=&quot;";
-
+#ifdef ARDUINO_ARCH_ESP32   
 void SonosApi::handleBody(AsyncWebServerRequest* request, uint8_t* data, size_t len, size_t index, size_t total)
 {
     Serial.print("Notification received ");
@@ -513,6 +514,7 @@ void SonosApi::handleBody(AsyncWebServerRequest* request, uint8_t* data, size_t 
     // Serial.println(String(data, len));
     request->send(200);
 }
+#endif
 
 void SonosApi::writeSoapHttpCall(Stream& stream, const char* soapUrl, const char* soapAction, const char* action, TParameterBuilderFunction parameterFunction, bool addInstanceNode)
 {
@@ -1067,7 +1069,7 @@ SonosApi* SonosApi::findGroupCoordinator(bool cached)
     {
         if (_groupCoordinatorCached != nullptr)
             return _groupCoordinatorCached;
-        if (_groupCoordinatorUuid.isEmpty())
+        if (_groupCoordinatorUuid.length() == 0)
         {
             _groupCoordinatorCached = this;
             return this;
@@ -1078,9 +1080,9 @@ SonosApi* SonosApi::findGroupCoordinator(bool cached)
         auto trackInfo = getTrackInfo();
         if (!trackInfo.uri.startsWith(sonosSchemaMaster))
         {
-            if (!_groupCoordinatorUuid.isEmpty())
+            if (_groupCoordinatorUuid.length() != 0)
             {
-                _groupCoordinatorUuid.clear();
+                _groupCoordinatorUuid = "";
                 _groupCoordinatorCached = this;
                 if (_notificationHandler != nullptr)
                     _notificationHandler->notificationGroupCoordinatorChanged(*this);
@@ -1153,7 +1155,7 @@ SonosApi* SonosApi::findNextPlayingGroupCoordinator()
                 // Own coordinator found
                 searchPlayingGroup = true;
             }
-            else if (!uidOfOwnCoordinator.isEmpty())
+            else if (uidOfOwnCoordinator.length() != 0)
             {
                 if (sonosApi->getUID() == uidOfOwnCoordinator)
                 {
@@ -1305,7 +1307,7 @@ void SonosApi::playMusicLibraryDirectory(const char* mediathekDirectory)
         b.ParmeterValuePart(cDir, ParameterBuilder::ENCODE_NO);
         b.EndParameter();
         b.AddParameter("EnqueuedURIMetaData");
-        b.AddParameter("DesiredFirstTrackNumberEnqueued", 0);
+        b.AddParameter("DesiredFirstTrackNumberEnqueued", (int32_t) 0);
         b.AddParameter("EnqueueAsNext", true);
     });
     playQueue();
@@ -1415,7 +1417,7 @@ const SonosApiBrowseResult SonosApi::browse(const char* objectId, uint32_t index
 
                 PGM_P path3[] = {p_SoapEnvelope, p_SoapBody, "u:BrowseResponse", "TotalMatches"};
                 xPathOnWifiClient(xPath, wifiClient, path3, 4, resultBuffer, bufferSize);
-                *totalNumberOfItems = (uint32_t)atoi(resultBuffer);
+                *totalNumberOfItems = (uint32_t)atoi(resultBuffer);             
             }
             catch (...)
             {
@@ -1493,7 +1495,7 @@ const SonosApiBrowseResult SonosApi::search(const char* objectId, const char* ti
 void SonosApi::playSonosPlaylist(const char* playListTitle)
 {
     auto result = search("SQ:", playListTitle);
-    if (!result.uri.isEmpty())
+    if (result.uri.length() != 0)
     {
         removeAllTracksFromQueue();
         addTrackToQueue(nullptr, result.uri.c_str());

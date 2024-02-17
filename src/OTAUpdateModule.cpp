@@ -10,6 +10,9 @@ const std::string OTAUpdateModule::version()
 {
     return "0";
 }
+#ifndef RTC_NOINIT_ATTR
+#define RTC_NOINIT_ATTR
+#endif
 
 static RTC_NOINIT_ATTR  bool rebootAfterSWUpdate=false;
 void OTAUpdateModule::setup(bool configured)
@@ -27,21 +30,20 @@ void OTAUpdateModule::setup(bool configured)
     {   
         if (rebootAfterSWUpdate)
             rebootAfterSWUpdate = false;
-        ArduinoOTA
-            .onStart([&]() {
+        ArduinoOTA.onStart([&]() {
                 if (ArduinoOTA.getCommand() == U_FLASH)
                     logInfoP("Start updating firmware");
                 else // U_SPIFFS
                     logInfoP("Start updating filesystem");
-            })
-            .onEnd([&]() {
+            });
+        ArduinoOTA.onEnd([&]() {
                 logInfoP("End update");
                 rebootAfterSWUpdate = true;
-            })
-            .onProgress([&](unsigned int progress, unsigned int total) {
+            });
+        ArduinoOTA.onProgress([&](unsigned int progress, unsigned int total) {
                 logInfoP("Progress: %.1f%%", (float) progress / (total / 100.0));
-            })
-            .onError([&](ota_error_t error) {
+            });
+        ArduinoOTA.onError([&](ota_error_t error) {
                 const char* errorText = "unkown";
                 if (error == OTA_AUTH_ERROR) errorText = "auth failed";
                 else if (error == OTA_BEGIN_ERROR) errorText = "begin failed";
