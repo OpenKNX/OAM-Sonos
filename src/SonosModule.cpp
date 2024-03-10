@@ -64,6 +64,16 @@ void SonosModule::processInputKo(GroupObject &ko)
 
 bool SonosModule::processCommand(const std::string cmd, bool diagnoseKo)
 {
+    if (cmd == "son debug")
+    {
+        _sonosApi.setDebugSerial(&Serial);
+        return true;
+    }
+    if (cmd == "son nodebug")
+    {
+        _sonosApi.setDebugSerial(nullptr);
+        return true;
+    }
     if (cmd.rfind("son", 0) == 0)
     {
         auto channelString = cmd.substr(3);
@@ -125,6 +135,8 @@ void SonosModule::showHelp()
     openknx.console.printHelpLine("son<CC> led", "Show led state of channel CC. i.e. son01 led");
     openknx.console.printHelpLine("son<CC> led <X>", "Set led state of channel CC. i.e. son01 led 1");
     openknx.console.printHelpLine("son<CC> pl <XXXXX>", "Start playing playlist named XX on channel CC. i.e. son01 pl best");
+    openknx.console.printHelpLine("son debug", "Debug sonos api");
+    openknx.console.printHelpLine("son nodebug", "Disable sonos api debug messages");
 }
 
 void SonosModule::showInformations()

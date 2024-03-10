@@ -1,10 +1,6 @@
 #include "SonosChannel.h"
 #include "SonosModule.h"
 
-#if ARDUINO_ARCH_ESP32
-#include "WebSocketsClient.h"
-#endif
-#include "WiFiClientSecure.h"
 
 SonosChannel::SonosChannel(SonosModule& sonosModule, uint8_t _channelIndex /* this parameter is used in macros, do not rename */, SonosApi& sonosApi)
     : _sonosModule(sonosModule), _name()
@@ -36,16 +32,7 @@ const std::string SonosChannel::logPrefix()
 
 void SonosChannel::loop1()
 {
-#ifdef ARDUINO_ARCH_ESP32   
-    if (_playNotification != nullptr)
-    {
-        if (_playNotification->checkFinished())
-        {
-            delete _playNotification;
-            _playNotification = nullptr;
-        }
-    }
-#endif
+
 }
 
 void SonosChannel::notificationVolumeChanged(SonosSpeaker* speaker, uint8_t volume)
@@ -725,24 +712,19 @@ bool SonosChannel::processCommand(const std::string cmd, bool diagnoseKo)
 #if ARDUINO_ARCH_ESP32 
 void SonosChannel::playNotification(byte notificationNumber)
 {
-    if (_playNotification != nullptr)
-    {
-        delete _playNotification;
-        _playNotification = nullptr;
-    }
     switch (notificationNumber)
     {
         case 1:
-            _playNotification = new SonosApiPlayNotification(_sonosSpeaker->getSpeakerIP(), (const char*)ParamSON_NotificationUrl1, ParamSON_NotificationVolume1, _sonosSpeaker->getUID());
+            _sonosSpeaker->playNotification((const char*)ParamSON_NotificationUrl1, ParamSON_NotificationVolume1);
             break;
         case 2:
-            _playNotification = new SonosApiPlayNotification(_sonosSpeaker->getSpeakerIP(), (const char*)ParamSON_NotificationUrl2, ParamSON_NotificationVolume2, _sonosSpeaker->getUID());
+            _sonosSpeaker->playNotification((const char*)ParamSON_NotificationUrl2, ParamSON_NotificationVolume2);
             break;
         case 3:
-            _playNotification = new SonosApiPlayNotification(_sonosSpeaker->getSpeakerIP(), (const char*)ParamSON_NotificationUrl3, ParamSON_NotificationVolume3, _sonosSpeaker->getUID());
+            _sonosSpeaker->playNotification((const char*)ParamSON_NotificationUrl3, ParamSON_NotificationVolume3);
             break;
         case 4:
-            _playNotification = new SonosApiPlayNotification(_sonosSpeaker->getSpeakerIP(), (const char*)ParamSON_NotificationUrl4, ParamSON_NotificationVolume4, _sonosSpeaker->getUID());
+            _sonosSpeaker->playNotification((const char*)ParamSON_NotificationUrl4, ParamSON_NotificationVolume4);
             break;
     }
 }

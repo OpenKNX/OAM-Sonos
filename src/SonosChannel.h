@@ -1,7 +1,6 @@
 #pragma once
 #include "OpenKNX.h"
 #include "SonosApi.h"
-#include "SonosApiPlayNotification.h"
 #include "WiFi.h"
 
 class SonosModule;
@@ -9,9 +8,6 @@ class SonosModule;
 class SonosChannel : public OpenKNX::Channel, protected SonosApiNotificationHandler
 {
     private:
-#ifdef ARDUINO_ARCH_ESP32    
-        SonosApiPlayNotification* _playNotification = nullptr;
-#endif
         SonosModule& _sonosModule;
         SonosSpeaker* _sonosSpeaker;
         String _name;
