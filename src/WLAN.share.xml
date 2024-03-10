@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-model href="../../Organization/knxprod-support/knx_project_14/knx-editor.xsd" type="application/xml" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<KNX xmlns:op="http://github.com/OpenKNX/OpenKNXproducer" xmlns="http://knx.org/xml/project/14" CreatedBy="KNX MT" ToolVersion="5.1.255.16695">
+  <ManufacturerData>
+    <Manufacturer>
+      <ApplicationPrograms>
+        <ApplicationProgram>
+          <Static>
+            <ParameterTypes>
+              <ParameterType Id="%AID%_PT-WifiSSID" Name="WifiSSID">
+                <TypeText SizeInBit="256" />
+              </ParameterType>
+              <ParameterType Id="%AID%_PT-WifiPassword" Name="WifiPassword">
+                <TypeText SizeInBit="504" />
+              </ParameterType>
+            </ParameterTypes>
+            <Parameters>
+              <!-- Wifi -->
+              <Union SizeInBit="760"><!-- 95 -->
+                <Memory CodeSegment="%MID%" Offset="0" BitOffset="0" />
+                <Parameter Id="%AID%_UP-%TT%00041" Name="WifiSSID"           ParameterType="%AID%_PT-WifiSSID"           Offset="0"  BitOffset="0" Text="SSID" Value="" />
+                <Parameter Id="%AID%_UP-%TT%00042" Name="WifiPassword"       ParameterType="%AID%_PT-WifiPassword"       Offset="32"  BitOffset="0" Text="Passswort" Value="" />
+              </Union>
+            </Parameters>
+            <ParameterRefs>
+              <!-- WifiSSID -->
+              <ParameterRef Id="%AID%_UP-%TT%00041_R-%TT%0004101" RefId="%AID%_UP-%TT%00041" />
+              <!-- WifiPassword -->
+              <ParameterRef Id="%AID%_UP-%TT%00042_R-%TT%0004201" RefId="%AID%_UP-%TT%00042" />
+            </ParameterRefs>
+          </Static>
+          <Dynamic>
+           <ChannelIndependentBlock>
+              <ParameterBlock Id="%AID%_PB-nnn" Name="Network" Text="Netzwerk" Icon="ethernet" HelpContext="Empty">
+                <ParameterSeparator Id="%AID%_PS-nnn" Text="WLAN" UIHint="Headline" />
+                <!-- WifiSSID -->
+                <ParameterRefRef RefId="%AID%_UP-%TT%00041_R-%TT%0004101" IndentLevel="1" HelpContext="WLAN-Wifi" />
+                 <!-- WifiPassword -->
+                <ParameterRefRef RefId="%AID%_UP-%TT%00042_R-%TT%0004201" IndentLevel="1" HelpContext="WLAN-Wifi" />
+              </ParameterBlock>
+            </ChannelIndependentBlock>
+         </Dynamic>
+        </ApplicationProgram>
+      </ApplicationPrograms>
+    </Manufacturer>
+  </ManufacturerData>
+</KNX>

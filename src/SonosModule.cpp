@@ -23,13 +23,7 @@ OpenKNX::Channel *SonosModule::createChannel(uint8_t _channelIndex /* this param
     if (ParamSON_CHSonosChannelUsage <= 1)
         return nullptr;
 
-    auto sonosApi = new SonosApi();
-    auto channel = new SonosChannel(*this, _channelIndex, *sonosApi);
-#if ARDUINO_ARCH_ESP32   
-    sonosApi->init(_webServer, channel->speakerIP());
-#else
-    sonosApi->init(channel->speakerIP());
-#endif
+    auto channel = new SonosChannel(*this, _channelIndex, _sonosApi);
     if (firstChannel == nullptr)
         firstChannel = channel;
     return channel;
@@ -37,11 +31,7 @@ OpenKNX::Channel *SonosModule::createChannel(uint8_t _channelIndex /* this param
 
 void SonosModule::setup()
 {
-    WiFi.mode(WIFI_STA);
-#if ARDUINO_ARCH_ESP32 
-    WiFi.begin((const char *)ParamNET_WifiSSID, (const char *)ParamNET_WifiPassword);
-#endif
-    // Do not call baseclass, baseclass will be called after first WiFi connection
+    
 }
 
 void SonosModule::setup1()
@@ -152,7 +142,7 @@ bool SonosModule::restorePower()
 
 void SonosModule::loop()
 {
-
+    _sonosApi.loop();
     bool connected = WiFi.status() == WL_CONNECTED;
     if (!connected)
     {
@@ -161,15 +151,9 @@ void SonosModule::loop()
     if (!_channelSetupCalled)
     {
         logInfoP("Wifi connected. IP: %s", WiFi.localIP().toString());
-#if ARDUINO_ARCH_ESP32
-        _webServer = new AsyncWebServer(80);
-#endif
   
         ChannelOwnerModule::setup();
         _channelSetupCalled = true;
-#if ARDUINO_ARCH_ESP32
-        _webServer->begin();
-#endif
     }
     // if (webServer != nullptr)
     //     webServer->handleClient();

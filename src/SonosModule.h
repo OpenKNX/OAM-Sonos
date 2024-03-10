@@ -2,7 +2,7 @@
 #include "OpenKNX.h"
 #include "ChannelOwnerModule.h"
 #include "SonosApi.h"
-#if ARDUINO_ARCH_ESP32 
+#if USE_ESP_ASNC_WEB_SERVER 
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #endif
@@ -12,9 +12,7 @@
 
 class SonosModule : public ChannelOwnerModule
 {
-#if ARDUINO_ARCH_ESP32  
-    AsyncWebServer* _webServer;
-#endif
+    SonosApi _sonosApi;
     bool _channelSetupCalled = false;
     volatile bool _channelSetup1Called = false;
   public:
