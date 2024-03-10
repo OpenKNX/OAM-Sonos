@@ -1,23 +1,24 @@
 #include "SonosChannel.h"
 #include "SonosModule.h"
 
-#include "WebSocketsClient.h"
-#include "WiFiClientSecure.h"
 
 SonosChannel::SonosChannel(SonosModule& sonosModule, uint8_t _channelIndex /* this parameter is used in macros, do not rename */, SonosApi& sonosApi)
-    : _sonosModule(sonosModule), _sonosApi(sonosApi), _groupVolumeController(true), _speakerIP(), _name()
+    : _sonosModule(sonosModule), _name()
 {
     this->_channelIndex = _channelIndex;
     auto parameterIP = (uint32_t)ParamSON_CHSonosIPAddress;
     uint32_t arduinoIP = ((parameterIP & 0xFF000000) >> 24) | ((parameterIP & 0x00FF0000) >> 8) | ((parameterIP & 0x0000FF00) << 8) | ((parameterIP & 0x000000FF) << 24);
-    _speakerIP = arduinoIP;
-    _name = _speakerIP.toString();
-    _sonosApi.setCallback(this);
+    IPAddress speakerIP = IPAddress(arduinoIP);
+    _sonosSpeaker = sonosApi.addSpeaker(speakerIP);
+    _name = speakerIP.toString();
+#if USE_ESP_ASNC_WEB_SERVER
+    _sonosSpeaker->setCallback(this);
+#endif
 }
 
-const IPAddress& SonosChannel::speakerIP()
+const IPAddress SonosChannel::speakerIP()
 {
-    return _speakerIP;
+    return _sonosSpeaker->getSpeakerIP();
 }
 
 const std::string SonosChannel::name()
@@ -31,36 +32,26 @@ const std::string SonosChannel::logPrefix()
 
 void SonosChannel::loop1()
 {
-    if (_playNotification != nullptr)
-    {
-        if (_playNotification->checkFinished())
-        {
-            delete _playNotification;
-            _playNotification = nullptr;
-        }
-    }
-    _sonosApi.loop();
-    _volumeController.loop1(_sonosApi, _speakerIP, _channelIndex);
-    _groupVolumeController.loop1(_sonosApi, _speakerIP, _channelIndex);
+
 }
 
-void SonosChannel::notificationVolumeChanged(SonosApi& caller, uint8_t volume)
+void SonosChannel::notificationVolumeChanged(SonosSpeaker* speaker, uint8_t volume)
 {
     if (volume != (uint8_t)KoSON_CHVolumeState.value(DPT_Scaling))
         KoSON_CHVolumeState.value(volume, DPT_Scaling);
 }
 
-void SonosChannel::notificationMuteChanged(SonosApi& caller, boolean mute)
+void SonosChannel::notificationMuteChanged(SonosSpeaker* speaker, boolean mute)
 {
     if (mute != (boolean)KoSON_CHMuteState.value(DPT_Switch))
         KoSON_CHMuteState.value(mute, DPT_Switch);
 }
 
-void SonosChannel::notificationGroupVolumeChanged(SonosApi& caller, uint8_t volume)
+void SonosChannel::notificationGroupVolumeChanged(SonosSpeaker* speaker, uint8_t volume)
 {
     if (volume != (uint8_t)KoSON_CHGroupVolumeState.value(DPT_Scaling))
         KoSON_CHGroupVolumeState.value(volume, DPT_Scaling);
-    if (&_sonosApi == &caller)
+    if (_sonosSpeaker == speaker)
     {
         // this channel is group coordinator, notify all participants
         for (int channelIndex = 0; channelIndex < _sonosModule.getNumberOfChannels(); channelIndex++)
@@ -68,19 +59,19 @@ void SonosChannel::notificationGroupVolumeChanged(SonosApi& caller, uint8_t volu
             if (channelIndex == _channelIndex)
                 continue;
             auto channel = (SonosChannel*)_sonosModule.getChannel(channelIndex);
-            if (channel != nullptr && channel->_sonosApi.findGroupCoordinator(true) == &caller)
+            if (channel != nullptr && channel->_sonosSpeaker->findGroupCoordinator(true) == speaker)
             {
-                channel->notificationGroupVolumeChanged(caller, volume);
+                channel->notificationGroupVolumeChanged(speaker, volume);
             }
         }
     }
 }
 
-void SonosChannel::notificationGroupMuteChanged(SonosApi& caller, boolean mute)
+void SonosChannel::notificationGroupMuteChanged(SonosSpeaker* speaker, boolean mute)
 {
     if (mute != (boolean)KoSON_CHGroupMuteState.value(DPT_Switch))
         KoSON_CHGroupMuteState.value(mute, DPT_Switch);
-    if (&_sonosApi == &caller)
+    if (_sonosSpeaker == speaker)
     {
         // this channel is group coordinator, notify all participants
         for (int channelIndex = 0; channelIndex < _sonosModule.getNumberOfChannels(); channelIndex++)
@@ -88,17 +79,17 @@ void SonosChannel::notificationGroupMuteChanged(SonosApi& caller, boolean mute)
             if (channelIndex == _channelIndex)
                 continue;
             auto channel = (SonosChannel*)_sonosModule.getChannel(channelIndex);
-            if (channel != nullptr && channel->_sonosApi.findGroupCoordinator(true) == &caller)
+            if (channel != nullptr && channel->_sonosSpeaker->findGroupCoordinator(true) == speaker)
             {
-                channel->notificationGroupMuteChanged(caller, mute);
+                channel->notificationGroupMuteChanged(speaker, mute);
             }
         }
     }
 }
 
-void SonosChannel::notificationPlayStateChanged(SonosApi& caller, SonosApiPlayState playState)
+void SonosChannel::notificationPlayStateChanged(SonosSpeaker* speaker, SonosApiPlayState playState)
 {
-    if (_sonosApi.findGroupCoordinator() == &_sonosApi)
+    if (_sonosSpeaker->findGroupCoordinator() == _sonosSpeaker)
     {
         // this channel is group coordinator
         bool playing = playState == SonosApiPlayState::Playing || playState == SonosApiPlayState::Transitioning;
@@ -111,13 +102,13 @@ void SonosChannel::notificationPlayStateChanged(SonosApi& caller, SonosApiPlaySt
             if (channelIndex == _channelIndex)
                 continue;
             auto channel = (SonosChannel*)_sonosModule.getChannel(channelIndex);
-            if (channel != nullptr && channel->_sonosApi.findGroupCoordinator(true) == &caller)
+            if (channel != nullptr && channel->_sonosSpeaker->findGroupCoordinator(true) == speaker)
             {
-                channel->notificationPlayStateChanged(caller, playState);
+                channel->notificationPlayStateChanged(speaker, playState);
             }
         }
     }
-    else if (&caller != &_sonosApi)
+    else if (speaker != _sonosSpeaker)
     {
         // called from master, take over play state
         bool playing = playState == SonosApiPlayState::Playing || playState == SonosApiPlayState::Transitioning;
@@ -126,9 +117,9 @@ void SonosChannel::notificationPlayStateChanged(SonosApi& caller, SonosApiPlaySt
     }
 }
 
-void SonosChannel::notificationGroupCoordinatorChanged(SonosApi& caller)
+void SonosChannel::notificationGroupCoordinatorChanged(SonosSpeaker* speaker)
 {
-    auto groupCoordinator = _sonosApi.findGroupCoordinator();
+    auto groupCoordinator = _sonosSpeaker->findGroupCoordinator();
     if (groupCoordinator == nullptr)
         return;
     auto playState = groupCoordinator->getPlayState();
@@ -143,10 +134,10 @@ void SonosChannel::notificationGroupCoordinatorChanged(SonosApi& caller)
         KoSON_CHGroupMuteState.value(groupMute, DPT_Switch);
 }
 
-void SonosChannel::notificationTrackChanged(SonosApi& caller, SonosTrackInfo& trackInfo)
+void SonosChannel::notificationTrackChanged(SonosSpeaker* speaker, SonosTrackInfo& trackInfo)
 {
     uint8_t sourceNumber = 0;
-    if (!trackInfo.uri.isEmpty())
+    if (trackInfo.uri.length() != 0)
     {
         for (uint8_t _channelIndex = 0; _channelIndex < SONSRC_ChannelCount && sourceNumber == 0; _channelIndex++)
         {
@@ -197,7 +188,7 @@ void SonosChannel::notificationTrackChanged(SonosApi& caller, SonosTrackInfo& tr
                 {
                     if (trackInfo.uri.startsWith(SonosApi::SchemaLineIn))
                     {
-                        auto groupCoordinator = _sonosApi.findGroupCoordinator();
+                        auto groupCoordinator = _sonosSpeaker->findGroupCoordinator();
                         if (groupCoordinator != nullptr &&
                             strcmp(trackInfo.uri.c_str() + strlen(SonosApi::SchemaLineIn), groupCoordinator->getUID().c_str()) == 0)
                             sourceNumber = _channelIndex + 1;
@@ -208,7 +199,7 @@ void SonosChannel::notificationTrackChanged(SonosApi& caller, SonosTrackInfo& tr
                 {
                     if (trackInfo.uri.startsWith(SonosApi::SchemaTVIn))
                     {
-                        auto groupCoordinator = _sonosApi.findGroupCoordinator();
+                        auto groupCoordinator = _sonosSpeaker->findGroupCoordinator();
                         if (groupCoordinator != nullptr)
                         {
                             auto url = groupCoordinator->getUID() + SonosApi::UrlPostfixTVIn;
@@ -248,7 +239,7 @@ void SonosChannel::processInputKo(GroupObject& ko)
         {
             uint8_t volume = ko.value(DPT_Scaling);
             logDebugP("Set volume %d", volume);
-            _volumeController.setVolume(volume);
+            _sonosSpeaker->setVolume(volume);
             break;
         }
         case SON_KoCHVolumeRelativ:
@@ -256,21 +247,21 @@ void SonosChannel::processInputKo(GroupObject& ko)
             bool increase = ko.value(DPT_Step);
             auto volume = increase ? (int8_t)ParamSON_CHRelativVolumeStep : -(int8_t)ParamSON_CHRelativVolumeStep;
             logDebugP("Set volume relative %d", volume);
-            _sonosApi.setVolumeRelative(volume);
+            _sonosSpeaker->setVolumeRelative(volume);
             break;
         }
         case SON_KoCHMute:
         {
             boolean mute = ko.value(DPT_Switch);
             logDebugP("Set mute %d", mute);
-            _sonosApi.setMute(mute);
+            _sonosSpeaker->setMute(mute);
             break;
         }
         case SON_KoCHGroupVolume:
         {
             uint8_t volume = ko.value(DPT_Scaling);
             logDebugP("Set group volume %d", volume);
-            _groupVolumeController.setVolume(volume);
+            _sonosSpeaker->setGroupVolume(volume);
             break;
         }
         case SON_KoCHGroupVolumeRelativ:
@@ -278,7 +269,7 @@ void SonosChannel::processInputKo(GroupObject& ko)
             bool increase = ko.value(DPT_Step);
             auto volume = increase ? (int8_t)ParamSON_CHGroupRelativVolumeStep : -(int8_t)ParamSON_CHGroupRelativVolumeStep;
             logDebugP("Set volume relative %d", volume);
-            auto groupCoordinator = _sonosApi.findGroupCoordinator();
+            auto groupCoordinator = _sonosSpeaker->findGroupCoordinator();
             if (groupCoordinator != nullptr)
                 groupCoordinator->setGroupVolumeRelative(volume);
             break;
@@ -287,7 +278,7 @@ void SonosChannel::processInputKo(GroupObject& ko)
         {
             boolean mute = ko.value(DPT_Switch);
             logDebugP("Set group mute %d", mute);
-            auto groupCoordinator = _sonosApi.findGroupCoordinator();
+            auto groupCoordinator = _sonosSpeaker->findGroupCoordinator();
             if (groupCoordinator != nullptr)
                 groupCoordinator->setGroupMute(mute);
             break;
@@ -296,7 +287,7 @@ void SonosChannel::processInputKo(GroupObject& ko)
         {
             boolean play = ko.value(DPT_Switch);
             logDebugP("Set play %d", play);
-            auto groupCoordinator = _sonosApi.findGroupCoordinator();
+            auto groupCoordinator = _sonosSpeaker->findGroupCoordinator();
             if (groupCoordinator == nullptr)
                 return;
             if (play)
@@ -311,12 +302,12 @@ void SonosChannel::processInputKo(GroupObject& ko)
             if (next)
             {
                 logDebugP("Set Next");
-                _sonosApi.next();
+                _sonosSpeaker->next();
             }
             else
             {
                 logDebugP("Set Previous");
-                _sonosApi.previous();
+                _sonosSpeaker->previous();
             }
             break;
         }
@@ -343,7 +334,7 @@ void SonosChannel::processInputKo(GroupObject& ko)
                 return;
             uint8_t _channelIndex = sourceNumber - 1;
             auto sourceType = ParamSONSRC_CHSourceType;
-            auto groupCoordinator = _sonosApi.findGroupCoordinator();
+            auto groupCoordinator = _sonosSpeaker->findGroupCoordinator();
             if (groupCoordinator == nullptr)
                 return;
             switch (sourceType)
@@ -371,30 +362,32 @@ void SonosChannel::processInputKo(GroupObject& ko)
                 case 4: // Music libary dir
                 {
                     const char* uri = (const char*)ParamSONSRC_CHSourceUri;
+                    groupCoordinator->setShuffle(ParamSONSRC_CHRandom);
                     groupCoordinator->playMusicLibraryDirectory(uri);
                     break;
                 }
                 case 5: // Line In
                 {
-                    if (groupCoordinator != &_sonosApi)
+                    if (groupCoordinator != _sonosSpeaker)
                     {
-                        groupCoordinator->delegateGroupCoordinationTo(&_sonosApi, false);
+                        groupCoordinator->delegateGroupCoordinationTo(_sonosSpeaker, false);
                     }
-                    _sonosApi.playLineIn();
+                    _sonosSpeaker->playLineIn();
                     break;
                 }
                 case 6: // TV In
                 {
-                    if (groupCoordinator != &_sonosApi)
+                    if (groupCoordinator != _sonosSpeaker)
                     {
-                        groupCoordinator->delegateGroupCoordinationTo(&_sonosApi, false);
+                        groupCoordinator->delegateGroupCoordinationTo(_sonosSpeaker, false);
                     }
-                    _sonosApi.playTVIn();
+                    _sonosSpeaker->playTVIn();
                     break;
                 }
                 case 7: // Sonos playlist
                 {
                     const char* uri = (const char*)ParamSONSRC_CHSourceUri;
+                    groupCoordinator->setShuffle(ParamSONSRC_CHRandom);
                     groupCoordinator->playSonosPlaylist(uri);
                 }
                 case 8: // Sonos Uri
@@ -406,7 +399,8 @@ void SonosChannel::processInputKo(GroupObject& ko)
                         groupCoordinator->playInternetRadio(uri, title, imageUrl, "");
                     else
                     {
-                        groupCoordinator->setAVTransportURI(nullptr, uri);
+                        groupCoordinator->setShuffle(ParamSONSRC_CHRandom);
+                        groupCoordinator->setAVTransportURI(nullptr, uri);     
                         groupCoordinator->play();
                     }
                     break;
@@ -422,8 +416,10 @@ void SonosChannel::processInputKo(GroupObject& ko)
             if (trigger)
             {
                 byte notification = index - SON_KoCHNotificationSound1 + 1;
-                logDebugP("play notification %d", notification);
+                logDebugP("play notification %d", notification);      
+#if ARDUINO_ARCH_ESP32    
                 playNotification(notification);
+#endif
             }
         }
     }
@@ -442,15 +438,15 @@ void SonosChannel::joinChannel(uint8_t channelNumber)
             }
             else
             {
-                auto groupCoordinator = sonosChannel->_sonosApi.findGroupCoordinator();
-                _sonosApi.joinToGroupCoordinator(groupCoordinator);
+                auto groupCoordinator = sonosChannel->_sonosSpeaker->findGroupCoordinator();
+                _sonosSpeaker->joinToGroupCoordinator(groupCoordinator);
             }
         }
     }
     if (channelNumber == 0)
     {
         if (!delegateCoordination(false))
-            _sonosApi.unjoin();
+            _sonosSpeaker->unjoin();
     }
 }
 
@@ -459,12 +455,12 @@ bool SonosChannel::processCommand(const std::string cmd, bool diagnoseKo)
     if (cmd == "uid")
     {
         Serial.println();
-        Serial.println(_sonosApi.getUID().c_str());
+        Serial.println(_sonosSpeaker->getUID().c_str());
     }
     else if (cmd == "track")
     {
         Serial.println();
-        auto trackInfo = _sonosApi.getTrackInfo();
+        auto trackInfo = _sonosSpeaker->getTrackInfo();
         Serial.println(trackInfo.trackNumber);
         Serial.println(trackInfo.duration);
         Serial.println(trackInfo.position);
@@ -478,7 +474,7 @@ bool SonosChannel::processCommand(const std::string cmd, bool diagnoseKo)
         if (value < 0 || value > 100)
             Serial.printf("Invalid volume %d\r\n", value);
         else
-            _volumeController.setVolume(value);
+            _sonosSpeaker->setVolume(value);
     }
     else if (cmd.rfind("rvol ", 0) == 0)
     {
@@ -487,7 +483,7 @@ bool SonosChannel::processCommand(const std::string cmd, bool diagnoseKo)
         if (value < -100 || value > 100)
             Serial.printf("Invalid relative volume %d\r\n", value);
         else
-            _sonosApi.setVolumeRelative(value);
+            _sonosSpeaker->setVolumeRelative(value);
     }
     else if (cmd.rfind("gvol ", 0) == 0)
     {
@@ -496,7 +492,7 @@ bool SonosChannel::processCommand(const std::string cmd, bool diagnoseKo)
         if (value < 0 || value > 100)
             Serial.printf("Invalid volume %d\r\n", value);
         else
-            _groupVolumeController.setVolume(value);
+            _sonosSpeaker->setGroupVolume(value);
     }
     else if (cmd.rfind("rgvol ", 0) == 0)
     {
@@ -505,7 +501,7 @@ bool SonosChannel::processCommand(const std::string cmd, bool diagnoseKo)
         if (value < -100 || value > 100)
             Serial.printf("Invalid relative volume %d\r\n", value);
         else
-            _sonosApi.setGroupVolumeRelative(value);
+            _sonosSpeaker->setGroupVolumeRelative(value);
     }
     else if (cmd.rfind("treb ", 0) == 0)
     {
@@ -514,12 +510,12 @@ bool SonosChannel::processCommand(const std::string cmd, bool diagnoseKo)
         if (value < -10 || value > 10)
             Serial.printf("Invalid treble %d\r\n", value);
         else
-            _sonosApi.setTreble(value);
+            _sonosSpeaker->setTreble(value);
     }
     else if (cmd == "treb")
     {
         Serial.println();
-        Serial.println(_sonosApi.getTreble());
+        Serial.println(_sonosSpeaker->getTreble());
     }
     else if (cmd.rfind("bass ", 0) == 0)
     {
@@ -528,96 +524,96 @@ bool SonosChannel::processCommand(const std::string cmd, bool diagnoseKo)
         if (value < -10 || value > 10)
             Serial.printf("Invalid bass %d\r\n", value);
         else
-            _sonosApi.setBass(value);
+            _sonosSpeaker->setBass(value);
     }
     else if (cmd == "bass")
     {
         Serial.println();
-        Serial.println(_sonosApi.getBass());
+        Serial.println(_sonosSpeaker->getBass());
     }
     else if (cmd.rfind("mute ", 0) == 0)
     {
         Serial.println();
         bool mute = cmd.substr(5) == "1";
-        _sonosApi.setMute(mute);
+        _sonosSpeaker->setMute(mute);
     }
     else if (cmd.rfind("gmute ", 0) == 0)
     {
         Serial.println();
         bool mute = cmd.substr(6) == "1";
-        _sonosApi.setGroupMute(mute);
+        _sonosSpeaker->setGroupMute(mute);
     }
     else if (cmd == "vol")
     {
         Serial.println();
-        Serial.println(_sonosApi.getVolume());
+        Serial.println(_sonosSpeaker->getVolume());
     }
     else if (cmd == "gvol")
     {
         Serial.println();
-        Serial.println(_sonosApi.getGroupVolume());
+        Serial.println(_sonosSpeaker->getGroupVolume());
     }
     else if (cmd.rfind("ldn ", 0) == 0)
     {
         Serial.println();
         bool loudness = cmd.substr(4) == "1";
-        _sonosApi.setLoudness(loudness);
+        _sonosSpeaker->setLoudness(loudness);
     }
     else if (cmd == "ldn")
     {
         Serial.println();
-        Serial.println(_sonosApi.getLoudness() ? "1" : "0");
+        Serial.println(_sonosSpeaker->getLoudness() ? "1" : "0");
     }
     else if (cmd.rfind("led ", 0) == 0)
     {
         Serial.println();
         bool on = cmd.substr(4) == "1";
-        _sonosApi.setStatusLight(on);
+        _sonosSpeaker->setStatusLight(on);
     }
     else if (cmd == "led")
     {
         Serial.println();
-        Serial.println(_sonosApi.getStatusLight() ? "1" : "0");
+        Serial.println(_sonosSpeaker->getStatusLight() ? "1" : "0");
     }
     else if (cmd == "mute")
     {
         Serial.println();
-        Serial.println(_sonosApi.getMute() ? "1" : "0");
+        Serial.println(_sonosSpeaker->getMute() ? "1" : "0");
     }
     else if (cmd == "gmute")
     {
         Serial.println();
-        Serial.println(_sonosApi.getGroupMute() ? "1" : "0");
+        Serial.println(_sonosSpeaker->getGroupMute() ? "1" : "0");
     }
     else if (cmd == "state")
     {
         Serial.println();
-        Serial.println(_sonosApi.getPlayState());
+        Serial.println(_sonosSpeaker->getPlayState());
     }
     else if (cmd == "play")
     {
         Serial.println();
-        _sonosApi.play();
+        _sonosSpeaker->play();
     }
     else if (cmd == "pause")
     {
         Serial.println();
-        _sonosApi.pause();
+        _sonosSpeaker->pause();
     }
     else if (cmd == "next")
     {
         Serial.println();
-        _sonosApi.next();
+        _sonosSpeaker->next();
     }
     else if (cmd == "prev")
     {
         Serial.println();
-        _sonosApi.previous();
+        _sonosSpeaker->previous();
     }
     else if (cmd == "findc")
     {
         Serial.println();
-        auto groupCoordinator = _sonosApi.findGroupCoordinator();
+        auto groupCoordinator = _sonosSpeaker->findGroupCoordinator();
         if (groupCoordinator != nullptr)
             Serial.println(groupCoordinator->getSpeakerIP().toString());
         else
@@ -626,7 +622,7 @@ bool SonosChannel::processCommand(const std::string cmd, bool diagnoseKo)
     else if (cmd == "findnpc")
     {
         Serial.println();
-        auto groupCoordinator = _sonosApi.findNextPlayingGroupCoordinator();
+        auto groupCoordinator = _sonosSpeaker->findNextPlayingGroupCoordinator();
         if (groupCoordinator != nullptr)
             Serial.println(groupCoordinator->getSpeakerIP().toString());
         else
@@ -660,7 +656,7 @@ bool SonosChannel::processCommand(const std::string cmd, bool diagnoseKo)
             Serial.println("is deactivated");
             return true;
         }
-        _sonosApi.delegateGroupCoordinationTo(&(channel->_sonosApi), true);
+        _sonosSpeaker->delegateGroupCoordinationTo(channel->_sonosSpeaker, true);
     }
     else if (cmd.rfind("join ", 0) == 0)
     {
@@ -668,83 +664,81 @@ bool SonosChannel::processCommand(const std::string cmd, bool diagnoseKo)
         auto targetChannel = atoi(cmd.substr(5).c_str());
         joinChannel(targetChannel);
     }
+#if ARDUINO_ARCH_ESP32 
     else if (cmd.rfind("noti ", 0) == 0)
     {
         Serial.println();
         auto notificationNr = atoi(cmd.substr(5).c_str());
         playNotification(notificationNr);
     }
+#endif
     else if (cmd.rfind("src ", 0) == 0)
     {
         Serial.println();
         auto src = atoi(cmd.substr(4).c_str());
         auto ko = KoSON_CHSourceNumber;
-        ko.valueNoSend(src, DPT_Value_1_Ucount);
+        ko.valueNoSend((uint8_t) src, DPT_Value_1_Ucount);
         processInputKo(ko);
     }
     else if (cmd.rfind("pl ", 0) == 0)
     {
         auto playList = cmd.substr(2);
-        _sonosApi.playSonosPlaylist(playList.c_str());
+        _sonosSpeaker->playSonosPlaylist(playList.c_str());
     }
     else if (cmd == "test1")
     {
-        _sonosApi.playInternetRadio("https://orf-live.ors-shoutcast.at/wie-q2a.m3u", "Radio Wien");
+        _sonosSpeaker->playInternetRadio("https://orf-live.ors-shoutcast.at/wie-q2a.m3u", "Radio Wien");
     }
     else if (cmd == "test2")
     {
-        _sonosApi.playMusicLibraryDirectory("//192.168.0.1/Share/Storage/Musik/Violent Femmes/3");
+        _sonosSpeaker->playMusicLibraryDirectory("//192.168.0.1/Share/Storage/Musik/Violent Femmes/3");
     }
     else if (cmd == "test3")
     {
-        _sonosApi.playMusicLibraryDirectory("//192.168.0.1/Share/Storage/Musik/Whippersnapper/Stories/");
+        _sonosSpeaker->playMusicLibraryDirectory("//192.168.0.1/Share/Storage/Musik/Whippersnapper/Stories/");
     }
     else if (cmd == "test4")
     {
-        _sonosApi.playMusicLibraryFile("//192.168.0.1/Share/Storage/Musik/Violent%20Femmes/3/01%20-%20Violent%20Femmes%20-%20Nightmares.mp3");
+        _sonosSpeaker->playMusicLibraryFile("//192.168.0.1/Share/Storage/Musik/Violent%20Femmes/3/01%20-%20Violent%20Femmes%20-%20Nightmares.mp3");
     }
     else if (cmd == "test5")
     {
-        _sonosApi.stop();
+        _sonosSpeaker->stop();
     }
     else
         return false;
     return true;
 }
-
+#if ARDUINO_ARCH_ESP32 
 void SonosChannel::playNotification(byte notificationNumber)
 {
-    if (_playNotification != nullptr)
-    {
-        delete _playNotification;
-        _playNotification = nullptr;
-    }
     switch (notificationNumber)
     {
         case 1:
-            _playNotification = new SonosApiPlayNotification(_sonosApi.getSpeakerIP(), (const char*)ParamSON_NotificationUrl1, ParamSON_NotificationVolume1, _sonosApi.getUID());
+            _sonosSpeaker->playNotification((const char*)ParamSON_NotificationUrl1, ParamSON_NotificationVolume1);
             break;
         case 2:
-            _playNotification = new SonosApiPlayNotification(_sonosApi.getSpeakerIP(), (const char*)ParamSON_NotificationUrl2, ParamSON_NotificationVolume2, _sonosApi.getUID());
+            _sonosSpeaker->playNotification((const char*)ParamSON_NotificationUrl2, ParamSON_NotificationVolume2);
             break;
         case 3:
-            _playNotification = new SonosApiPlayNotification(_sonosApi.getSpeakerIP(), (const char*)ParamSON_NotificationUrl3, ParamSON_NotificationVolume3, _sonosApi.getUID());
+            _sonosSpeaker->playNotification((const char*)ParamSON_NotificationUrl3, ParamSON_NotificationVolume3);
             break;
         case 4:
-            _playNotification = new SonosApiPlayNotification(_sonosApi.getSpeakerIP(), (const char*)ParamSON_NotificationUrl4, ParamSON_NotificationVolume4, _sonosApi.getUID());
+            _sonosSpeaker->playNotification((const char*)ParamSON_NotificationUrl4, ParamSON_NotificationVolume4);
             break;
     }
 }
+#endif
 
 void SonosChannel::joinNextPlayingGroup()
 {
     delegateCoordination(true);
 
-    auto groupCoordinator = _sonosApi.findNextPlayingGroupCoordinator();
+    auto groupCoordinator = _sonosSpeaker->findNextPlayingGroupCoordinator();
     if (groupCoordinator != nullptr)
     {
         logDebugP("Join with %s", groupCoordinator->getSpeakerIP().toString().c_str());
-        _sonosApi.joinToGroupCoordinator(groupCoordinator);
+        _sonosSpeaker->joinToGroupCoordinator(groupCoordinator);
     }
     else
         logDebugP("No next playing group found");
@@ -752,14 +746,14 @@ void SonosChannel::joinNextPlayingGroup()
 
 bool SonosChannel::delegateCoordination(bool rejoinGroup)
 {
-    auto currentGroupCoordinator = _sonosApi.findGroupCoordinator(true);
-    if (currentGroupCoordinator == &_sonosApi)
+    auto currentGroupCoordinator = _sonosSpeaker->findGroupCoordinator(true);
+    if (currentGroupCoordinator == _sonosSpeaker)
     {
         // delegate to other participant of the group
-        auto firstParticpant = _sonosApi.findFirstParticipant(true);
+        auto firstParticpant = _sonosSpeaker->findFirstParticipant(true);
         if (firstParticpant != nullptr)
         {
-            _sonosApi.delegateGroupCoordinationTo(firstParticpant, rejoinGroup);
+            _sonosSpeaker->delegateGroupCoordinationTo(firstParticpant, rejoinGroup);
             return true;
         }
     }

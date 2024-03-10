@@ -2,15 +2,17 @@
 #include "OpenKNX.h"
 #include "ChannelOwnerModule.h"
 #include "SonosApi.h"
+#if USE_ESP_ASNC_WEB_SERVER 
+#include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
-
+#endif
 #ifndef OPENKNX_DUALCORE
 #error Sonos Module requires OPENKNX_DUALCORE
 #endif
 
 class SonosModule : public ChannelOwnerModule
 {
-    AsyncWebServer* _webServer;
+    SonosApi _sonosApi;
     bool _channelSetupCalled = false;
     volatile bool _channelSetup1Called = false;
   public:

@@ -12,43 +12,50 @@
                 <Memory CodeSegment="%AID%_RS-04-00000" Offset="0" BitOffset="0" />
               </Parameter>           
    
+              <!-- Random-->
+              <Parameter Id="%AID%_P-%TT%%CC%002" Name="CH%C%Random" ParameterType="%AID%_PT-CheckBox" Text="Zufallswiedergabe" Value="0">
+                <Memory CodeSegment="%AID%_RS-04-00000" Offset="0" BitOffset="7" />
+              </Parameter>
+
               <!-- Source Title -->
-              <Parameter Id="%AID%_P-%TT%%CC%002" Name="CH%C%SourceTitle" ParameterType="%AID%_PT-SourceTitle" Text="Name" Value="">
+              <Parameter Id="%AID%_P-%TT%%CC%003" Name="CH%C%SourceTitle" ParameterType="%AID%_PT-SourceTitle" Text="Name" Value="">
                 <Memory CodeSegment="%AID%_RS-04-00000" Offset="1" BitOffset="0" />
               </Parameter>           
 
               <!-- Source Uri -->
-              <Parameter Id="%AID%_P-%TT%%CC%003" Name="CH%C%SourceUri" ParameterType="%AID%_PT-SourceUri" Text="URL" Value="">
+              <Parameter Id="%AID%_P-%TT%%CC%004" Name="CH%C%SourceUri" ParameterType="%AID%_PT-SourceUri" Text="URL" Value="">
                 <Memory CodeSegment="%AID%_RS-04-00000" Offset="21" BitOffset="0" />
               </Parameter>           
 
               <!-- Source Uri Image-->
-              <Parameter Id="%AID%_P-%TT%%CC%004" Name="CH%C%SourceUriImage" ParameterType="%AID%_PT-SourceUri" Text="Logobild URL" Value="">
+              <Parameter Id="%AID%_P-%TT%%CC%005" Name="CH%C%SourceUriImage" ParameterType="%AID%_PT-SourceUri" Text="Logobild URL" Value="">
                 <Memory CodeSegment="%AID%_RS-04-00000" Offset="171" BitOffset="0" />
               </Parameter>           
-       
+
             </Parameters>
             <ParameterRefs>
               <!-- Source Type -->
               <ParameterRef Id="%AID%_P-%TT%%CC%001_R-%TT%%CC%00101" RefId="%AID%_P-%TT%%CC%001" />
-              <!-- Source Title -->
+              <!-- Random -->
               <ParameterRef Id="%AID%_P-%TT%%CC%002_R-%TT%%CC%00201" RefId="%AID%_P-%TT%%CC%002" />
+              <!-- Source Title -->
+              <ParameterRef Id="%AID%_P-%TT%%CC%003_R-%TT%%CC%00301" RefId="%AID%_P-%TT%%CC%003" />
               
               <!-- Source Radio -->
-              <ParameterRef Id="%AID%_P-%TT%%CC%003_R-%TT%%CC%00301" RefId="%AID%_P-%TT%%CC%003" Text="Streaming URL"/>  
+              <ParameterRef Id="%AID%_P-%TT%%CC%004_R-%TT%%CC%00401" RefId="%AID%_P-%TT%%CC%004" Text="Streaming URL"/>  
               <!-- Source Url -->
-              <ParameterRef Id="%AID%_P-%TT%%CC%003_R-%TT%%CC%00302" RefId="%AID%_P-%TT%%CC%003" Text="URL"/>  
+              <ParameterRef Id="%AID%_P-%TT%%CC%004_R-%TT%%CC%00402" RefId="%AID%_P-%TT%%CC%004" Text="URL"/>  
               <!-- Source Network File -->
-              <ParameterRef Id="%AID%_P-%TT%%CC%003_R-%TT%%CC%00303" RefId="%AID%_P-%TT%%CC%003" Text="Netzwerk Dateipfad"/>  
+              <ParameterRef Id="%AID%_P-%TT%%CC%004_R-%TT%%CC%00403" RefId="%AID%_P-%TT%%CC%004" Text="Netzwerk Dateipfad"/>  
               <!-- Source Network Directory -->
-              <ParameterRef Id="%AID%_P-%TT%%CC%003_R-%TT%%CC%00304" RefId="%AID%_P-%TT%%CC%003" Text="Netzwerk Verzeichnis"/>  
+              <ParameterRef Id="%AID%_P-%TT%%CC%004_R-%TT%%CC%00404" RefId="%AID%_P-%TT%%CC%004" Text="Netzwerk Verzeichnis"/>  
               <!-- Source Playlist -->
-              <ParameterRef Id="%AID%_P-%TT%%CC%003_R-%TT%%CC%00307" RefId="%AID%_P-%TT%%CC%003" Text="Name der Playliste"/>  
+              <ParameterRef Id="%AID%_P-%TT%%CC%004_R-%TT%%CC%00407" RefId="%AID%_P-%TT%%CC%004" Text="Name der Playliste"/>  
               <!-- Source Sonos Uri -->
-              <ParameterRef Id="%AID%_P-%TT%%CC%003_R-%TT%%CC%00308" RefId="%AID%_P-%TT%%CC%003" Text="Sonos URI"/>  
+              <ParameterRef Id="%AID%_P-%TT%%CC%004_R-%TT%%CC%00408" RefId="%AID%_P-%TT%%CC%004" Text="Sonos URI"/>  
 
               <!-- Source Image Uri -->
-              <ParameterRef Id="%AID%_P-%TT%%CC%004_R-%TT%%CC%00401" RefId="%AID%_P-%TT%%CC%004" />  
+              <ParameterRef Id="%AID%_P-%TT%%CC%005_R-%TT%%CC%00501" RefId="%AID%_P-%TT%%CC%005" />  
 
             </ParameterRefs>
             <ComObjectTable>
@@ -62,29 +69,31 @@
                 <Channel Id="%AID%_CH-SONSRC%CC%" Name="f%CC%SONSRCSource" Number="SON%CC%" Text="Tonquelle %C%" >
                   <ParameterBlock Id="%AID%_PB-%TT%%CC%01" Name="SON%C%SourceWrapper" Inline="true">
                     <!-- Tonquelle 1 -->
-                  <ParameterSeparator Id="%AID%_PS-nnn" Text="Tonquelle 1" UIHint="Headline" />
+                  <ParameterSeparator Id="%AID%_PS-nnn" Text="Tonquelle %C%" UIHint="Headline" />
                   <!-- Source Type -->
                   <ParameterRefRef RefId="%AID%_P-%TT%%CC%001_R-%TT%%CC%00101" HelpContext="Empty" IndentLevel="1" />
                   <choose ParamRefId="%AID%_P-%TT%%CC%001_R-%TT%%CC%00101">  <!-- Source Type -->
                     <when test="1" >  <!-- Radio -->
                       <!-- Stream Url-->
-                      <ParameterRefRef RefId="%AID%_P-%TT%%CC%003_R-%TT%%CC%00301" HelpContext="Empty" IndentLevel="1" />
-                      <!-- Title-->
-                      <ParameterRefRef RefId="%AID%_P-%TT%%CC%002_R-%TT%%CC%00201" HelpContext="Empty" IndentLevel="1" />
-                      <!-- Image Url-->
                       <ParameterRefRef RefId="%AID%_P-%TT%%CC%004_R-%TT%%CC%00401" HelpContext="Empty" IndentLevel="1" />
+                      <!-- Title-->
+                      <ParameterRefRef RefId="%AID%_P-%TT%%CC%003_R-%TT%%CC%00301" HelpContext="Empty" IndentLevel="1" />
+                      <!-- Image Url-->
+                      <ParameterRefRef RefId="%AID%_P-%TT%%CC%005_R-%TT%%CC%00501" HelpContext="Empty" IndentLevel="1" />
                     </when>  <!-- Radio -->
                     <when test="2" >  <!-- http -->
                       <!-- Url-->
-                      <ParameterRefRef RefId="%AID%_P-%TT%%CC%003_R-%TT%%CC%00302" HelpContext="Empty" IndentLevel="1" />
+                      <ParameterRefRef RefId="%AID%_P-%TT%%CC%004_R-%TT%%CC%00402" HelpContext="Empty" IndentLevel="1" />
                     </when>  <!-- http -->
                     <when test="3" >  <!-- Network File -->
                       <!-- Network file-->
-                      <ParameterRefRef RefId="%AID%_P-%TT%%CC%003_R-%TT%%CC%00303" HelpContext="Empty" IndentLevel="1" />
+                      <ParameterRefRef RefId="%AID%_P-%TT%%CC%004_R-%TT%%CC%00403" HelpContext="Empty" IndentLevel="1" />
                     </when>  <!-- Network File -->
                     <when test="4" >  <!-- Network Directory -->
                       <!-- Network directory-->
-                      <ParameterRefRef RefId="%AID%_P-%TT%%CC%003_R-%TT%%CC%00304" HelpContext="Empty" IndentLevel="1" />
+                      <ParameterRefRef RefId="%AID%_P-%TT%%CC%004_R-%TT%%CC%00404" HelpContext="Empty" IndentLevel="1" />
+                      <!-- Random-->
+                      <ParameterRefRef RefId="%AID%_P-%TT%%CC%002_R-%TT%%CC%00201" HelpContext="Empty" IndentLevel="1" />
                     </when>  <!-- Network Directory -->
                     <when test="5" >  <!-- Line In -->
                     </when>  <!-- Line In -->
@@ -92,15 +101,19 @@
                     </when>  <!-- Line In -->
                     <when test="7" >  <!-- Sonos Playlist -->
                       <!-- Sonos playlist-->
-                      <ParameterRefRef RefId="%AID%_P-%TT%%CC%003_R-%TT%%CC%00307" HelpContext="Empty" IndentLevel="1" />                
+                      <ParameterRefRef RefId="%AID%_P-%TT%%CC%004_R-%TT%%CC%00407" HelpContext="Empty" IndentLevel="1" />                
+                      <!-- Random-->
+                      <ParameterRefRef RefId="%AID%_P-%TT%%CC%002_R-%TT%%CC%00201" HelpContext="Empty" IndentLevel="1" />
                     </when>  <!-- Sonos playlist -->
                     <when test="8" >  <!-- Sonos URI -->
                       <!-- Uri-->
-                      <ParameterRefRef RefId="%AID%_P-%TT%%CC%003_R-%TT%%CC%00308" HelpContext="Empty" IndentLevel="1" />
+                      <ParameterRefRef RefId="%AID%_P-%TT%%CC%004_R-%TT%%CC%00408" HelpContext="Empty" IndentLevel="1" />
                       <!-- Title-->
-                      <ParameterRefRef RefId="%AID%_P-%TT%%CC%002_R-%TT%%CC%00201" HelpContext="Empty" IndentLevel="1" />
+                      <ParameterRefRef RefId="%AID%_P-%TT%%CC%003_R-%TT%%CC%00301" HelpContext="Empty" IndentLevel="1" />
                       <!-- Image Url-->
-                      <ParameterRefRef RefId="%AID%_P-%TT%%CC%004_R-%TT%%CC%00401" HelpContext="Empty" IndentLevel="1" />
+                      <ParameterRefRef RefId="%AID%_P-%TT%%CC%005_R-%TT%%CC%00501" HelpContext="Empty" IndentLevel="1" />
+                      <!-- Random-->
+                      <ParameterRefRef RefId="%AID%_P-%TT%%CC%002_R-%TT%%CC%00201" HelpContext="Empty" IndentLevel="1" />
                     </when>  <!-- Sonos URI -->
                     </choose> <!-- Source Type -->
                   </ParameterBlock>

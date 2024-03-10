@@ -8,7 +8,7 @@
           <Static>
             <ParameterTypes>
               <ParameterType Id="%AID%_PT-SourceType" Name="SourceType">
-                <TypeRestriction Base="Value" SizeInBit="8">
+                <TypeRestriction Base="Value" SizeInBit="7">
                   <Enumeration Text="Inaktiv" Value="0" Id="%ENID%" />
                   <Enumeration Text="Radio Stream" Value="1" Id="%ENID%" />
                   <Enumeration Text="Http"  Value="2" Id="%ENID%" />

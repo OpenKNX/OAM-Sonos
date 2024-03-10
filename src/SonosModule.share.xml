@@ -32,6 +32,7 @@
               <ParameterType Id="%AID%_PT-NotificationVolume" Name="NotificationVolume">
                 <TypeNumber SizeInBit="8" Type="unsignedInt" minInclusive="1" maxInclusive="100" />
               </ParameterType>
+
             </ParameterTypes>
             <Parameters>
             <!-- Notification sounds -->

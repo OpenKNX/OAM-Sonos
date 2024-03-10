@@ -1,9 +1,6 @@
 #include "SonosModule.h"
 #include "SonosChannel.h"
 
-#include <AsyncTCP.h>
-#include <ESPAsyncWebServer.h>
-
 SonosModule::SonosModule()
     : ChannelOwnerModule(SON_ChannelCount)
 {
@@ -26,9 +23,7 @@ OpenKNX::Channel *SonosModule::createChannel(uint8_t _channelIndex /* this param
     if (ParamSON_CHSonosChannelUsage <= 1)
         return nullptr;
 
-    auto sonosApi = new SonosApi();
-    auto channel = new SonosChannel(*this, _channelIndex, *sonosApi);
-    sonosApi->init(_webServer, channel->speakerIP());
+    auto channel = new SonosChannel(*this, _channelIndex, _sonosApi);
     if (firstChannel == nullptr)
         firstChannel = channel;
     return channel;
@@ -36,9 +31,7 @@ OpenKNX::Channel *SonosModule::createChannel(uint8_t _channelIndex /* this param
 
 void SonosModule::setup()
 {
-    WiFi.mode(WIFI_STA);
-    WiFi.begin((const char *)ParamNET_WifiSSID, (const char *)ParamNET_WifiPassword);
-    // Do not call baseclass, baseclass will be called after first WiFi connection
+    
 }
 
 void SonosModule::setup1()
@@ -71,6 +64,16 @@ void SonosModule::processInputKo(GroupObject &ko)
 
 bool SonosModule::processCommand(const std::string cmd, bool diagnoseKo)
 {
+    if (cmd == "son debug")
+    {
+        _sonosApi.setDebugSerial(&Serial);
+        return true;
+    }
+    if (cmd == "son nodebug")
+    {
+        _sonosApi.setDebugSerial(nullptr);
+        return true;
+    }
     if (cmd.rfind("son", 0) == 0)
     {
         auto channelString = cmd.substr(3);
@@ -132,6 +135,8 @@ void SonosModule::showHelp()
     openknx.console.printHelpLine("son<CC> led", "Show led state of channel CC. i.e. son01 led");
     openknx.console.printHelpLine("son<CC> led <X>", "Set led state of channel CC. i.e. son01 led 1");
     openknx.console.printHelpLine("son<CC> pl <XXXXX>", "Start playing playlist named XX on channel CC. i.e. son01 pl best");
+    openknx.console.printHelpLine("son debug", "Debug sonos api");
+    openknx.console.printHelpLine("son nodebug", "Disable sonos api debug messages");
 }
 
 void SonosModule::showInformations()
@@ -147,10 +152,9 @@ bool SonosModule::restorePower()
     return true;
 }
 
-AsyncWebServer *webServer;
 void SonosModule::loop()
 {
-
+    _sonosApi.loop();
     bool connected = WiFi.status() == WL_CONNECTED;
     if (!connected)
     {
@@ -159,12 +163,9 @@ void SonosModule::loop()
     if (!_channelSetupCalled)
     {
         logInfoP("Wifi connected. IP: %s", WiFi.localIP().toString());
-        _webServer = new AsyncWebServer(80);
   
         ChannelOwnerModule::setup();
         _channelSetupCalled = true;
-
-        _webServer->begin();
     }
     // if (webServer != nullptr)
     //     webServer->handleClient();
