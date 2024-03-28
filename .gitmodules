@@ -1,0 +1,3 @@
+[submodule "lib/SonosArduinoLocalUpnpAPI"]
+	path = lib/SonosArduinoLocalUpnpAPI
+	url = https://github.com/mgeramb/SonosArduinoLocalUpnpAPI.git
