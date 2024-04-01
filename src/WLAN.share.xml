@@ -28,6 +28,14 @@
               <!-- WifiPassword -->
               <ParameterRef Id="%AID%_UP-%TT%00042_R-%TT%0004201" RefId="%AID%_UP-%TT%00042" />
             </ParameterRefs>
+            <ComObjectTable>
+              <!-- WLAN State -->
+              <ComObject Id="%AID%_O-%TT%00001" Name="WLANState" Text="WLAN Status" Number="20" FunctionText="WLAN Verbunden" ObjectSize="1 Bit" ReadFlag="Enabled" WriteFlag="Disabled" CommunicationFlag="Enabled" TransmitFlag="Enabled" UpdateFlag="Disabled" ReadOnInitFlag="Disabled" />
+            </ComObjectTable>            
+            <ComObjectRefs>
+              <!-- WLAN State -->
+              <ComObjectRef Id="%AID%_O-%TT%00001_R-%TT%0000101" RefId="%AID%_O-%TT%00001" Name="WLANState" Priority="Low" ObjectSize="1 Bit" DatapointType="DPST-1-1" />    
+            </ComObjectRefs>
           </Static>
           <Dynamic>
            <ChannelIndependentBlock>
@@ -37,6 +45,8 @@
                 <ParameterRefRef RefId="%AID%_UP-%TT%00041_R-%TT%0004101" IndentLevel="1" HelpContext="WLAN-Wifi" />
                  <!-- WifiPassword -->
                 <ParameterRefRef RefId="%AID%_UP-%TT%00042_R-%TT%0004201" IndentLevel="1" HelpContext="WLAN-Wifi" />
+                <!-- WLAN State-->
+                <ComObjectRefRef RefId="%AID%_O-%TT%00001_R-%TT%0000101" />  
               </ParameterBlock>
             </ChannelIndependentBlock>
          </Dynamic>

@@ -27,11 +27,11 @@ class SonosModule : public ChannelOwnerModule
     void processBeforeRestart() override;
     void processBeforeTablesUnload() override;
     void showInformations() override;
-    void showHelp() override;
     void savePower() override;
     bool restorePower() override;
     void loop() override;
     void loop1() override;
+    void showHelp() override;
     bool processCommand(const std::string cmd, bool diagnoseKo) override;
   protected:
     OpenKNX::Channel* createChannel(uint8_t _channelIndex /* this parameter is used in macros, do not rename */) override; 

@@ -9,8 +9,8 @@
                                          (time & 0x3FFF) * 3600000 ) : 0 )
                                              
 #define MAIN_OpenKnxId 0xAE
-#define MAIN_ApplicationNumber 43
-#define MAIN_ApplicationVersion 19
+#define MAIN_ApplicationNumber 44
+#define MAIN_ApplicationVersion 1
 #define MAIN_ParameterSize 4293
 #define MAIN_MaxKoNumber 1029
 #define MAIN_OrderNumber "MGKnxSON"
@@ -149,6 +149,11 @@
 #define ParamWLAN_WifiSSID                            (knx.paramData(WLAN_WifiSSID))
 // Passswort
 #define ParamWLAN_WifiPassword                        (knx.paramData(WLAN_WifiPassword))
+
+#define WLAN_KoWLANState 20
+
+// WLAN Status
+#define KoWLAN_WLANState                           (knx.getGroupObject(WLAN_KoWLANState))
 
 #define SONSRC_ChannelCount 5
 
