@@ -326,6 +326,7 @@ void SonosChannel::processInputKo(GroupObject& ko)
             uint8_t channelNumber = ko.value(DPT_Value_1_Ucount);
             logDebugP("Join channel %d", channelNumber);
             joinChannel(channelNumber);
+            break;
         }
         case SON_KoCHSourceNumber:
         {
@@ -389,6 +390,7 @@ void SonosChannel::processInputKo(GroupObject& ko)
                     const char* uri = (const char*)ParamSONSRC_CHSourceUri;
                     groupCoordinator->setShuffle(ParamSONSRC_CHRandom);
                     groupCoordinator->playSonosPlaylist(uri);
+                    break;
                 }
                 case 8: // Sonos Uri
                 {
@@ -406,6 +408,7 @@ void SonosChannel::processInputKo(GroupObject& ko)
                     break;
                 }
             }
+            break;
         }
         case SON_KoCHNotificationSound1:
         case SON_KoCHNotificationSound2:
@@ -421,6 +424,7 @@ void SonosChannel::processInputKo(GroupObject& ko)
                 playNotification(notification);
 #endif
             }
+            break;
         }
     }
 }
