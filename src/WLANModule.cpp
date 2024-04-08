@@ -81,6 +81,10 @@ bool WLANModule::processCommand(const std::string cmd, bool diagnoseKo)
     return false;
 }
 
+bool WLANModule::connected()
+{
+    return WiFi.status() == WL_CONNECTED;
+}
 
 
 void WLANModule::setup(bool configured)
@@ -135,10 +139,10 @@ void WLANModule::setup(bool configured)
 void WLANModule::loop()
 {
 #if ARDUINO_ARCH_ESP32 
-    bool connected = WiFi.status() == WL_CONNECTED;   
-    if ((bool)KoWLAN_WLANState.value(DPT_Switch) != connected)
+    bool isConnected = connected();   
+    if ((bool)KoWLAN_WLANState.value(DPT_Switch) != isConnected)
     {
-        KoWLAN_WLANState.value(connected, DPT_Switch);
+        KoWLAN_WLANState.value(isConnected, DPT_Switch);
     }
 #endif
 }

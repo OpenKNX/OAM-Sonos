@@ -15,6 +15,7 @@ class WLANModule : public OpenKNX::Module
     const std::string name() override;
     const std::string version() override;
     void showHelp() override;
+    bool connected();
     bool processCommand(const std::string cmd, bool diagnoseKo) override;
 
 };
