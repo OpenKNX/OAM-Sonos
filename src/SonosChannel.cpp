@@ -311,6 +311,16 @@ void SonosChannel::processInputKo(GroupObject& ko)
             }
             break;
         }
+        case SON_KoCHStop:
+        {
+            boolean trigger = ko.value(DPT_Trigger);
+            if (trigger)
+            {
+                logDebugP("Set Stop");
+                _sonosSpeaker->stop();
+            }
+            break;
+        }
         case SON_KoCHJoinNextActiveGroup:
         {
             boolean trigger = ko.value(DPT_Trigger);
@@ -613,6 +623,11 @@ bool SonosChannel::processCommand(const std::string cmd, bool diagnoseKo)
     {
         Serial.println();
         _sonosSpeaker->previous();
+    }
+    else if (cmd == "stop")
+    {
+        Serial.println();
+        _sonosSpeaker->stop();
     }
     else if (cmd == "findc")
     {

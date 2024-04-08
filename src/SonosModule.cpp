@@ -124,6 +124,7 @@ void SonosModule::showHelp()
     openknx.console.printHelpLine("son<CC> src <S>", "Start playing of the source number S of channel CC. i.e. son01 src 1");
     openknx.console.printHelpLine("son<CC> play", "Start playing of the current media of channel CC. i.e. son01 play");
     openknx.console.printHelpLine("son<CC> pause", "Pause playing of channel CC. i.e. son01 pause");
+    openknx.console.printHelpLine("son<CC> stop", "Stop playing of channel CC. i.e. son01 stop");
     openknx.console.printHelpLine("son<CC> next", "Channel CC go to next song. i.e. son01 next");
     openknx.console.printHelpLine("son<CC> prev", "Channel CC go to previous song. i.e. son01 prev");
     openknx.console.printHelpLine("son<CC> findc", "Find the coordinator of the Channel CC. i.e. son01 findc");

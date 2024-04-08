@@ -9,10 +9,10 @@
                                          (time & 0x3FFF) * 3600000 ) : 0 )
                                              
 #define MAIN_OpenKnxId 0xAE
-#define MAIN_ApplicationNumber 44
-#define MAIN_ApplicationVersion 1
+#define MAIN_ApplicationNumber 43
+#define MAIN_ApplicationVersion 21
 #define MAIN_ParameterSize 4293
-#define MAIN_MaxKoNumber 1029
+#define MAIN_MaxKoNumber 1059
 #define MAIN_OrderNumber "MGKnxSON"
 #define BASE_ModuleVersion 17
 #define LOG_ModuleVersion 49
@@ -235,7 +235,7 @@
 
 // Communication objects per channel (multiple occurrence)
 #define SON_KoBlockOffset 400
-#define SON_KoBlockSize 21
+#define SON_KoBlockSize 22
 
 #define SON_KoCalcNumber(index) (index + SON_KoBlockOffset + _channelIndex * SON_KoBlockSize)
 #define SON_KoCalcIndex(number) ((number >= SON_KoCalcNumber(0) && number < SON_KoCalcNumber(SON_KoBlockSize)) ? (number - SON_KoBlockOffset) % SON_KoBlockSize : -1)
@@ -249,19 +249,20 @@
 #define SON_KoCHPlay 5
 #define SON_KoCHPlayFeedback 6
 #define SON_KoCHPreviousNext 7
-#define SON_KoCHGroupVolume 8
-#define SON_KoCHGroupVolumeState 9
-#define SON_KoCHGroupVolumeRelativ 10
-#define SON_KoCHGroupMute 11
-#define SON_KoCHGroupMuteState 12
-#define SON_KoCHJoinNextActiveGroup 13
-#define SON_KoCHJoinChannelNumber 14
-#define SON_KoCHSourceNumber 15
-#define SON_KoCHSourceState 16
-#define SON_KoCHNotificationSound1 17
-#define SON_KoCHNotificationSound2 18
-#define SON_KoCHNotificationSound3 19
-#define SON_KoCHNotificationSound4 20
+#define SON_KoCHStop 8
+#define SON_KoCHGroupVolume 9
+#define SON_KoCHGroupVolumeState 10
+#define SON_KoCHGroupVolumeRelativ 11
+#define SON_KoCHGroupMute 12
+#define SON_KoCHGroupMuteState 13
+#define SON_KoCHJoinNextActiveGroup 14
+#define SON_KoCHJoinChannelNumber 15
+#define SON_KoCHSourceNumber 16
+#define SON_KoCHSourceState 17
+#define SON_KoCHNotificationSound1 18
+#define SON_KoCHNotificationSound2 19
+#define SON_KoCHNotificationSound3 20
+#define SON_KoCHNotificationSound4 21
 
 // %C% Lautstärke
 #define KoSON_CHVolume                            (knx.getGroupObject(SON_KoCalcNumber(SON_KoCHVolume)))
@@ -279,6 +280,8 @@
 #define KoSON_CHPlayFeedback                      (knx.getGroupObject(SON_KoCalcNumber(SON_KoCHPlayFeedback)))
 // %C% Vorheriger/Nächster Titel
 #define KoSON_CHPreviousNext                      (knx.getGroupObject(SON_KoCalcNumber(SON_KoCHPreviousNext)))
+// %C% Stoppen
+#define KoSON_CHStop                              (knx.getGroupObject(SON_KoCalcNumber(SON_KoCHStop)))
 // %C% Gruppenlautstärke
 #define KoSON_CHGroupVolume                       (knx.getGroupObject(SON_KoCalcNumber(SON_KoCHGroupVolume)))
 // %C% Gruppenlautstärke Status
