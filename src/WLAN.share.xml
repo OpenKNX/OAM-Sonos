@@ -30,7 +30,7 @@
             </ParameterRefs>
             <ComObjectTable>
               <!-- WLAN State -->
-              <ComObject Id="%AID%_O-%TT%00001" Name="WLANState" Text="WLAN Status" Number="20" FunctionText="WLAN Verbunden" ObjectSize="1 Bit" ReadFlag="Enabled" WriteFlag="Disabled" CommunicationFlag="Enabled" TransmitFlag="Enabled" UpdateFlag="Disabled" ReadOnInitFlag="Disabled" />
+              <ComObject Id="%AID%_O-%TT%00001" Name="WLANState" Text="WLAN Status" Number="0" FunctionText="WLAN Verbunden" ObjectSize="1 Bit" ReadFlag="Enabled" WriteFlag="Disabled" CommunicationFlag="Enabled" TransmitFlag="Enabled" UpdateFlag="Disabled" ReadOnInitFlag="Disabled" />
             </ComObjectTable>            
             <ComObjectRefs>
               <!-- WLAN State -->
