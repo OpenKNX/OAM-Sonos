@@ -26,10 +26,11 @@
     <op:verify File="../lib/OFM-Network/library.json" ModuleVersion="2" /> 
   </op:define> -->
 
-  <op:define prefix="WLAN" ModuleType="12" 
-    share="WLAN.share.xml" 
+   <op:define prefix="WLAN" ModuleType="12" 
+    share="../lib/OFM-WLANModule/src/WLAN.share.xml"
     KoSingleOffset="20">
-  </op:define>
+    <op:verify File="../lib/OFM-WLANModule/library.json" ModuleVersion="0" /> 
+   </op:define>
 
   <op:define prefix="SONSRC" ModuleType="21"
     share="SonosModule.Sources.share.xml"

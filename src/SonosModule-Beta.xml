@@ -4,7 +4,7 @@
   <op:ETS
     OpenKnxId="0xAE"
     ApplicationNumber="0x2C"
-    ApplicationVersion="1"
+    ApplicationVersion="2"
     ReplacesVersions="0"
     ApplicationRevision="0"
     ProductName="Sonos Steuerung"
@@ -27,9 +27,10 @@
   </op:define> -->
 
   <op:define prefix="WLAN" ModuleType="12" 
-    share="WLAN.share.xml" 
-    KoOffset="20">
-  </op:define>
+    share="../lib/OFM-WLANModule/src/WLAN.share.xml"
+    KoSingleOffset="20">
+    <op:verify File="../lib/OFM-WLANModule/library.json" ModuleVersion="0" /> 
+   </op:define>
 
   <op:define prefix="SONSRC" ModuleType="21"
     share="SonosModule.Sources.share.xml"
