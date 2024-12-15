@@ -1,0 +1,84 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+        {
+            "label": "Generate Dependencies.txt",
+            "type": "shell",
+            "command": "lib/OGM-Common/scripts/setup/reusable/Build-Dependencies.ps1",
+            "args": [
+            ],
+            "problemMatcher": [],
+            "group": "test"
+        },
+        {
+            "label": "OpenKNXproducer (DEV)",
+            "type": "shell",
+            "command": "OpenKNXproducer",
+            "args": [
+                "create",
+                "--Debug",
+                "-h",
+                "include/knxprod.h",
+                "src/Sonos-Dev"
+            ],
+            "problemMatcher": [],
+            "group": "test"
+        },
+        {
+            "label": "OpenKNXproducer (Beta)",
+            "type": "shell",
+            "command": "OpenKNXproducer",
+            "args": [
+                "create",
+                "--Debug",
+                "-h",
+                "include/knxprod.h",
+                "src/Sonos-Beta"
+            ],
+            "problemMatcher": [],
+            "group": "test"
+        },
+       
+        {
+            "label": "Develop: Adafruit_Feather_ESP32_V2",
+            "type": "shell",
+            "command": "scripts/OpenKNX-Build.ps1",
+            "args": [
+                "develop_Adafruit_Feather_ESP32_V2"
+            ],
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "Develop: Adafruit_Feather_ESP32_V2 (USB)",
+            "type": "shell",
+            "command": "scripts/OpenKNX-Build.ps1",
+            "args": [
+                "develop_Adafruit_Feather_ESP32_V2_USB",
+                "upload"
+            ],
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "Build-Dev",
+            "type": "shell",
+            "command": "scripts/Build-Release.ps1", 
+            "args": [
+                "Dev"
+            ],
+            "problemMatcher": [],
+            "group": "test"
+        },
+        {
+            "label": "Build-Beta",
+            "type": "shell",
+            "command": "scripts/Build-Release.ps1", 
+            "args": [
+                "Beta"
+            ],
+            "problemMatcher": [],
+            "group": "test"
+        }
+	]
+}
