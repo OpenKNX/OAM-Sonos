@@ -1,5 +1,5 @@
 ------- Built with -------
-d1ab151 v1dev lib/knx https://github.com/OpenKNX/knx.git
+919b8e3 v1dev lib/knx https://github.com/OpenKNX/knx.git
 a6c49a6 v1 lib/OFM-ConfigTransfer https://github.com/OpenKNX/OFM-ConfigTransfer.git
 e39c804 v1dev lib/OFM-FileTransferModule https://github.com/OpenKNX/OFM-FileTransferModule.git
 0025144 feature/blocktype/count+aggregation lib/OFM-FunctionBlocks https://github.com/OpenKNX/OFM-FunctionBlocks.git
