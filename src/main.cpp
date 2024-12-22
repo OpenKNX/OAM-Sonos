@@ -13,6 +13,7 @@ AutoConnectConfig config;
 
 void setup()
 {
+
     const uint8_t firmwareRevision = 1;
     openknx.init(firmwareRevision);
     openknx.addModule(1, openknxNetwork);
