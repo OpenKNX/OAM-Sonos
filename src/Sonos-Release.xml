@@ -1,21 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <?xml-model href="../../Organization/knxprod-support/knx_project_20/knx-editor.xsd" type="application/xml" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <KNX xmlns="http://knx.org/xml/project/20" xmlns:op="http://github.com/OpenKNX/OpenKNXproducer">
+  
   <op:config href="Sonos.conf.xml" />
   <op:ETS
     OpenKnxId="0xAE"
-    ApplicationNumber="0x2B"
-    ApplicationVersion="1.7"
-    ReplacesVersions="1.6 1.5 1.4 1.3 1.2 1.1 1.0 0.15 0.14 0.13 0.12 0.11 0.10 0.9 0.8 0.7 0.6 0.5 0.4 0.3 0.2 0.1"
+    ApplicationNumber="0x2C"
+    ApplicationVersion="%ReleaseApplicationVersion%"
+    ReplacesVersions="%ReleaseReplacesVersions%"
     ApplicationRevision="0"
     ProductName="Sonos Steuerung"
     BusCurrent="30"
-    BuildSuffix="-Dev"
-    BuildSuffixText=" (Dev)"
+    BuildSuffix=""
+    BuildSuffixText=""
     MediumTypes="MT-0 MT-5"
     OrderNumber="MGKnxSON" />
-
-  <op:define prefix="BASE" ModuleType="10"
+  
+    <op:define prefix="BASE" ModuleType="10"
     share="../lib/OGM-Common/src/Common.share.xml">
     <op:verify File="../lib/OGM-Common/library.json" ModuleVersion="%BASE_VerifyVersion%" /> 
   </op:define>
@@ -60,6 +61,6 @@
     KoOffset="250">
     <op:verify File="../lib/OFM-FunctionBlocks/library.json" ModuleVersion="%FCB_VerifyVersion%" />
   </op:define>
-  
+
   <generate />
 </KNX>

@@ -7,7 +7,7 @@
   <op:config name="%BASE_VerifyVersion%" value="1.3" />
   <op:config name="%NET_VerifyVersion%" value="0.4" />
   <op:config name="%SON_VerifyVersion%" value="0.1" />
-  <op:config name="%FCB_VerifyVersion%" value="0.2" />
+  <op:config name="%FCB_VerifyVersion%" value="0.4" />
  
 
   <op:config name="%ReleaseApplicationVersion%" value="0.3" />

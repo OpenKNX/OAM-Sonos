@@ -13,6 +13,7 @@
     BusCurrent="30"
     BuildSuffix="-Beta"
     BuildSuffixText=" (Beta)"
+    MediumTypes="MT-0 MT-5"
     OrderNumber="MGKnxSON" />
   
     <op:define prefix="BASE" ModuleType="10"

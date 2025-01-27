@@ -33,7 +33,7 @@
                 "--Debug",
                 "-h",
                 "include/knxprod.h",
-                "src/Sonos-Beta"
+                "src/Sonos"
             ],
             "problemMatcher": [],
             "group": "test"
@@ -75,7 +75,7 @@
             "type": "shell",
             "command": "scripts/Build-Release.ps1", 
             "args": [
-                "Beta"
+                ""
             ],
             "problemMatcher": [],
             "group": "test"
