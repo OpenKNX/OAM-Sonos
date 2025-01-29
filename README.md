@@ -1,12 +1,17 @@
 
 # OAM-Sonsos
 
-ToDo ...
+This modul allows to control Sonsos speaker via the unoffical local API
 
 ## Features
 
-## Installation
-
+- Grouping / Ungrouping
+- Switch to next playing group
+- Change volume
+- Mute
+- Play / Pause
+- Start playing radio, mediafiles etc.
+- Play notifcation sound over the current running music
 
 ## Firmware
 
