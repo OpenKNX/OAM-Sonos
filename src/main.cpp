@@ -3,6 +3,7 @@
 #include "SonosModule.h"
 #include "NetworkModule.h"
 #include "FileTransferModule.h"
+#include "FunctionBlocksModule.h"
 #ifdef USE_AUTO_CONNECT
 #include <AutoConnect.h>
 #include <WebServer.h>
@@ -14,13 +15,15 @@ AutoConnectConfig config;
 void setup()
 {
 
-    const uint8_t firmwareRevision = 1;
+    const uint8_t firmwareRevision = 0;
     openknx.init(firmwareRevision);
-    openknx.addModule(1, openknxNetwork);
-    openknx.addModule(2, openknxLogic);
+    openknx.addModule(0, openknxNetwork);
+    openknx.addModule(1, openknxLogic);
+    openknx.addModule(2, openknxFunctionBlocksModule);
     openknx.addModule(3, openknxSonosModule);
     openknx.addModule(6, openknxFileTransferModule);
-   openknx.setup();
+
+    openknx.setup();
 #ifdef USE_AUTO_CONNECT
     config.apid ="OpenKNX";
     config.password = "12345678";
