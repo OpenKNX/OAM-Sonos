@@ -10,16 +10,16 @@
                                              
 #define MAIN_OpenKnxId 0xAE
 #define MAIN_ApplicationNumber 44
-#define MAIN_ApplicationVersion 4
+#define MAIN_ApplicationVersion 5
 #define MAIN_ParameterSize 8439
 #define MAIN_MaxKoNumber 1059
 #define MAIN_OrderNumber "MGKnxSON"
-#define BASE_ModuleVersion 19
-#define NET_ModuleVersion 4
-#define UCT_ModuleVersion 3
+#define BASE_ModuleVersion 20
+#define NET_ModuleVersion 5
+#define UCT_ModuleVersion 4
 #define SON_ModuleVersion 1
 #define SONSRC_ModuleVersion 1
-#define LOG_ModuleVersion 54
+#define LOG_ModuleVersion 55
 #define FCB_ModuleVersion 5
 // Parameter with single occurrence
 
