@@ -16,7 +16,7 @@
 #define ETS_ModuleId_SONSRC 5
 #define ETS_ModuleId_LOG 6
 #define ETS_ModuleId_FCB 7
-#define MAIN_FirmwareName "Sonos Steuerung"
+#define MAIN_FirmwareName "Sonos Steuerung (Beta)"
 #define MAIN_OpenKnxId 0xAE
 #define MAIN_ApplicationNumber 44
 #define MAIN_ApplicationVersion 6
