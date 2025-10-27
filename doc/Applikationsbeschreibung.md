@@ -11,7 +11,7 @@ Die Sonos App besteht aus folgenden Modulen:
 
 - [Basiseinstellungen](https://github.com/OpenKNX/OGM-Common/blob/v1/doc/Applikationsbeschreibung-Common.md)
 - [Netzwerk](https://github.com/OpenKNX/OFM-Network/blob/v1/doc/Applikationsbeschreibung-Netzwerk.md)
-- [Sonos](https://github.com/OpenKNX/OFM-Sonso/tree/v1/doc/Applikationsbeschreibung-Sonos.md)
+- [Sonos](https://github.com/OpenKNX/OFM-Sonos/blob/v1/doc/Applikationsbeschreibung-Sonos.md)
 - [Logik](https://github.com/OpenKNX/OFM-LogicModule/blob/v1/doc/Applikationsbeschreibung-Logik.md)
 - [Funktionsblöcke](https://github.com/OpenKNX/OFM-FunctionBlocks/blob/v1/doc/Applikationsbeschreibung-FunctionBlocks.md)
 
