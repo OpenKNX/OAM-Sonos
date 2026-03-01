@@ -8,6 +8,7 @@
     ApplicationNumber="0x2C"
     ApplicationVersion="%ReleaseApplicationVersion%"
     ReplacesVersions="%ReleaseReplacesVersions%"
+    UpdateLibraryJson="true"
     ApplicationRevision="0"
     ProductName="Sonos Steuerung"
     BusCurrent="30"
