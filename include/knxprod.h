@@ -16,13 +16,13 @@
 #define ETS_ModuleId_SONSRC 5
 #define ETS_ModuleId_LOG 6
 #define ETS_ModuleId_FCB 7
-#define MAIN_FirmwareName "Sonos Steuerung"
+#define MAIN_FirmwareName "Sonos Steuerung (Dev)"
 #define MAIN_OpenKnxId 0xAE
-#define MAIN_ApplicationNumber 44
-#define MAIN_ApplicationVersion 7
-#define MAIN_FirmwareRevision 1
+#define MAIN_ApplicationNumber 43
+#define MAIN_ApplicationVersion 28
+#define MAIN_FirmwareRevision 0
 #define MAIN_ApplicationEncoding iso-8859-15
-#define MAIN_ParameterSize 8618
+#define MAIN_ParameterSize 11228
 #define MAIN_MaxKoNumber 1059
 #define MAIN_OrderNumber "MGKnxSON"
 #define BASE_ModuleVersion 23
@@ -91,7 +91,7 @@
 #define BASE_Info1LedFunc                        80      // 16 Bits, Bit 15-0
 #define BASE_Info2LedFunc                        82      // 16 Bits, Bit 15-0
 #define BASE_Info3LedFunc                        84      // 16 Bits, Bit 15-0
-#define BASE_DefaultLedFunc                      86      // 1 Bit, Bit 7
+#define BASE_DefaultLedFunc                      85      // 1 Bit, Bit 7
 #define     BASE_DefaultLedFuncMask 0x80
 #define     BASE_DefaultLedFuncShift 7
 #define BASE_Dummy                               109      // uint8_t
@@ -960,7 +960,7 @@
 // Welcher Feiertag ist morgen?
 #define KoLOG_Holiday2                            (knx.getGroupObject(LOG_KoHoliday2))
 
-#define LOG_ChannelCount 20
+#define LOG_ChannelCount 50
 
 // Parameter per channel
 #define LOG_ParamBlockOffset 5662
@@ -2837,7 +2837,7 @@
 // Ausgang
 #define KoLOG_KOfO                                (knx.getGroupObject(LOG_KoCalcNumber(LOG_KoKOfO)))
 
-#define FCB_VisibleChannels                     7402      // uint8_t
+#define FCB_VisibleChannels                     10012      // uint8_t
 
 // Verfügbare Kanäle
 #define ParamFCB_VisibleChannels                     (knx.paramByte(FCB_VisibleChannels))
@@ -2845,7 +2845,7 @@
 #define FCB_ChannelCount 15
 
 // Parameter per channel
-#define FCB_ParamBlockOffset 7403
+#define FCB_ParamBlockOffset 10013
 #define FCB_ParamBlockSize 81
 #define FCB_ParamCalcIndex(index) (index + FCB_ParamBlockOffset + _channelIndex * FCB_ParamBlockSize)
 
@@ -3917,9 +3917,13 @@
 #define BASE_KommentarModuleModuleParamSize 0
 #define BASE_KommentarModuleSubmodulesParamSize 0
 #define BASE_KommentarModuleParamSize 0
-#define BASE_KommentarModuleParamOffset 8618
+#define BASE_KommentarModuleParamOffset 11228
 #define BASE_KommentarModuleCalcIndex(index, m1) (index + BASE_KommentarModuleParamOffset + _channelIndex * BASE_KommentarModuleCount * BASE_KommentarModuleParamSize + m1 * BASE_KommentarModuleParamSize)
 
+
+
+
+// enumeration types
 
 
 #ifdef MAIN_FirmwareRevision
