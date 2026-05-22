@@ -40,13 +40,20 @@
     <op:verify File="../lib/OFM-Sonos/library.json" ModuleVersion="%SON_VerifyVersion%" /> 
    </op:define>
  
-  <op:define prefix="SONSRC" ModuleType="21"
+ <op:define prefix="SONSRC" ModuleType="21"
     share="../lib/OFM-Sonos/src/SonosModule.Sources.share.xml"
     template="../lib/OFM-Sonos/src/SonosModule.Sources.templ.xml"
-    NumChannels="5">
+    NumChannels="20">
     <op:verify File="../lib/OFM-Sonos/library.json" ModuleVersion="%SON_VerifyVersion%" /> 
   </op:define>
 
+  <op:define prefix="SONNOT" ModuleType="25"
+    share="../lib/OFM-Sonos/src/SonosModule.Notifications.share.xml"
+    template="../lib/OFM-Sonos/src/SonosModule.Notifications.templ.xml"
+    NumChannels="10">
+    <op:verify File="../lib/OFM-Sonos/library.json" ModuleVersion="%SON_VerifyVersion%" /> 
+  </op:define>
+  
   <op:define prefix="LOG" ModuleType="10"
     share="../lib/OFM-LogicModule/src/Logikmodul.share.xml"
     template="../lib/OFM-LogicModule/src/Logikmodul.templ.xml"
