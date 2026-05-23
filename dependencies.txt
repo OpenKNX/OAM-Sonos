@@ -4,7 +4,8 @@ eca6977 v1dev lib/OFM-ConfigTransfer https://github.com/OpenKNX/OFM-ConfigTransf
 629ca09 v1dev lib/OFM-FileTransferModule https://github.com/OpenKNX/OFM-FileTransferModule.git
 e8ec058 v1 lib/OFM-FunctionBlocks https://github.com/OpenKNX/OFM-FunctionBlocks.git
 45e2159 v1 lib/OFM-LogicModule https://github.com/OpenKNX/OFM-LogicModule.git
-0beda8e v1dev-hotshit lib/OFM-Network https://github.com/OpenKNX/OFM-Network.git
-8ec5b10 v1dev lib/OFM-Sonos https://github.com/OpenKNX/OFM-Sonos.git
-30ae31d v1dev-webconsole lib/OGM-Common https://github.com/OpenKNX/OGM-Common.git
+1bb8fee v1dev-hotshit lib/OFM-Network https://github.com/OpenKNX/OFM-Network.git
+eeb1977 v1dev lib/OFM-Sonos https://github.com/OpenKNX/OFM-Sonos.git
+9e6e57a v1dev-webconsole lib/OGM-Common https://github.com/OpenKNX/OGM-Common.git
 a9e034d v1dev lib/OGM-HardwareConfig https://github.com/OpenKNX/OGM-HardwareConfig.git
+7570582 main lib/SonosArduinoLocalUpnpAPI https://github.com/mgeramb/SonosArduinoLocalUpnpAPI
