@@ -20,7 +20,7 @@
 #define MAIN_FirmwareName "Sonos Steuerung (Dev)"
 #define MAIN_OpenKnxId 0xAE
 #define MAIN_ApplicationNumber 43
-#define MAIN_ApplicationVersion 31
+#define MAIN_ApplicationVersion 32
 #define MAIN_FirmwareRevision 0
 #define MAIN_ApplicationEncoding iso-8859-15
 #define MAIN_ParameterSize 17111
