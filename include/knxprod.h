@@ -17,11 +17,11 @@
 #define ETS_ModuleId_SONNOT 6
 #define ETS_ModuleId_LOG 7
 #define ETS_ModuleId_FCB 8
-#define MAIN_FirmwareName "Sonos Steuerung (Beta)"
+#define MAIN_FirmwareName "Sonos Steuerung"
 #define MAIN_OpenKnxId 0xAE
 #define MAIN_ApplicationNumber 44
 #define MAIN_ApplicationVersion 9
-#define MAIN_FirmwareRevision 0
+#define MAIN_FirmwareRevision 1
 #define MAIN_ApplicationEncoding iso-8859-15
 #define MAIN_ParameterSize 17198
 #define MAIN_MaxKoNumber 1089
@@ -274,7 +274,7 @@
 #define ParamNET_StaticIP                            ((bool)(knx.paramByte(NET_StaticIP) & NET_StaticIPMask))
 // mDNS
 #define ParamNET_mDNS                                ((bool)(knx.paramByte(NET_mDNS) & NET_mDNSMask))
-// Webserver (BETA)
+// Weberver (BETA)
 #define ParamNET_HTTP                                ((bool)(knx.paramByte(NET_HTTP) & NET_HTTPMask))
 // NTP-Client
 #define ParamNET_NTP                                 ((bool)(knx.paramByte(NET_NTP) & NET_NTPMask))
